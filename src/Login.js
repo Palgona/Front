@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, View, Image } from "react-native";
 import React, { useState } from "react";
 import { login, getProfile as getKakaoProfile } from "@react-native-seoul/kakao-login";
-import Signup from './Signup';
+
 
 const App = ({ navigation }) => { // navigation을 올바르게 받도록 수정합니다.
   const [result, setResult] = useState("");
