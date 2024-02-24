@@ -15,7 +15,7 @@ function MainTabNavigator() {
         activeTintColor: colors.main, 
         inactiveTintColor: colors.secondary,
         labelStyle: { display: 'none' }, // 글씨 숨기기
-      }}
+      }}  
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarIcon: ({ color, size }) => {
