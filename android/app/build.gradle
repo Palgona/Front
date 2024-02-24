@@ -73,8 +73,13 @@ android {
     ndkVersion rootProject.ext.ndkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
-
+    
+    java {
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
+    }
     namespace "com.palgona"
+
     defaultConfig {
         applicationId "com.palgona"
         minSdkVersion rootProject.ext.minSdkVersion

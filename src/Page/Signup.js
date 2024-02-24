@@ -1,11 +1,30 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, Alert, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, TextInput, Alert, Image, TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
 import axios from 'axios';
+//import AsyncStorage from '@react-native-async-storage/async-storage';
+import { theme } from '../styles/theme';
+
 
 const Signup = ({ navigation }) => {
   const [nickName, setNickName] = useState('');
   const [profileImage, setProfileImage] = useState(null);
+  const [jwtToken, setJwtToken] = useState('');
+
+  useEffect(() => {
+    getToken();
+  }, []);
+
+  const getToken = async () => {
+    try {
+      const token = await AsyncStorage.getItem('jwtToken');
+      if (token !== null) {
+        setJwtToken(token);
+      }
+    } catch (error) {
+      console.error('Error getting token:', error);
+    }
+  };
 
   const handleChoosePhoto = () => {
     const options = {
@@ -37,31 +56,28 @@ const Signup = ({ navigation }) => {
         name: 'profileImage.jpg',
       });
 
-      const jwtToken = ''; // 여기에 jwt token(access, refresh)을 넣어야 합니다. 해당 앱에서 어떻게 관리하는지에 따라 달라집니다.
+      const token = await AsyncStorage.getItem('jwtToken');
 
-      const response = await axios.post('https://auth/auth/signup', formData, {
+      const response = await axios.post('http://ec2-43-202-6-45.ap-northeast-2.compute.amazonaws.com:8080//api/v1/auth/signup', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          'Authorization': `Bearer ${jwtToken}`,
+          'Authorization': `Bearer ${token}`,
         },
       });
 
       if (response.status === 200) {
         Alert.alert('회원 가입 성공', '회원 가입이 완료되었습니다.');
-        navigation.navigate('Home'); // Home.js로 이동
+        navigation.navigate('Home');
       } else {
         Alert.alert('회원 가입 실패', '서버 오류로 회원 가입에 실패했습니다.');
-        // 나중에 수정
-        navigation.navigate('Home'); // Home.js로 이동
+        navigation.navigate('Home');
       }
     } catch (error) {
       console.error('Error signing up:', error);
       Alert.alert('오류', '회원 가입 중 오류가 발생했습니다.');
-      //나중에 수정
-      navigation.navigate('Home'); // Home.js로 이동
+      navigation.navigate('Home');
     }
   };
-
 
   return (
     <Container>
@@ -133,7 +149,7 @@ const CustomButton = styled.TouchableOpacity`
   width: 100%;
   height: 23%;
   background-color: #F2CD5C;
-  border-radius: 20px; /* 버튼을 둥글게 만듭니다. */
+  border-radius: 20px;
   align-items: center;
   justify-content: center;
 `;

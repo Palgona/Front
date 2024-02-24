@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { login, getProfile as getKakaoProfile } from "@react-native-seoul/kakao-login";
 
 
+
 const App = ({ navigation }) => { // navigation을 올바르게 받도록 수정합니다.
   const [result, setResult] = useState("");
 
@@ -18,6 +19,7 @@ const App = ({ navigation }) => { // navigation을 올바르게 받도록 수정
       console.log("User Profile:", userProfile);
 
       setResult(JSON.stringify(token)); // 토큰을 문자열로 표시하지 않음
+      console.log("Token:", token); 
 
       // 로그인 성공 시 Signup 페이지로 이동
       navigation.navigate('Signup');
@@ -50,7 +52,7 @@ const App = ({ navigation }) => { // navigation을 올바르게 받도록 수정
         profileImage
       });
 
-      const response = await fetch('https://auth/signup', {
+      const response = await fetch('http://ec2-43-202-6-45.ap-northeast-2.compute.amazonaws.com:8080/api/vi/auth/login', {
         method: 'POST',
         headers,
         body
@@ -79,7 +81,7 @@ const App = ({ navigation }) => { // navigation을 올바르게 받도록 수정
 
   const refreshAccessToken = async (refreshToken) => {
     try {
-      const response = await fetch('https://auth/refresh', {
+      const response = await fetch('http://ec2-43-202-6-45.ap-northeast-2.compute.amazonaws.com:8080/api/vi/auth/refresh', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -103,7 +105,7 @@ const App = ({ navigation }) => { // navigation을 올바르게 받도록 수정
 
   return (
     <View style={styles.container}>
-      <Image source={require('../assets/logologin.png')} style={styles.image} />
+      <Image source={require('../../assets/logologin.png')} style={styles.image} />
       <View style={styles.spacing} />
       <Pressable
         style={styles.button}
@@ -111,7 +113,7 @@ const App = ({ navigation }) => { // navigation을 올바르게 받도록 수정
           signInWithKakao();
         }}
       >
-        <Image source={require('../assets/kakao_login_large_wide.png')} style={styles.imageButton} />
+        <Image source={require('../../assets/kakao_login_large_wide.png')} style={styles.imageButton} />
       </Pressable>
     </View>
   );
