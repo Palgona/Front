@@ -22,7 +22,7 @@ const Signup = ({ navigation }) => {
         setJwtToken(token);
       }
     } catch (error) {
-      console.error('Error getting token:', error);
+      console.error('Error getting token:', error);s
     }
   };
 
