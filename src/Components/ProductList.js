@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { icons, colors } from '../styles/theme';
+import { API_URL } from '../globalVariables.js';
 
 const ProductList = () => {
   const navigation = useNavigation();

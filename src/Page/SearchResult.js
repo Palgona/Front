@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { buttonStyles } from '../styles/buttonStyles'; 
 import { theme } from '../styles/theme';
 import ProductList from '../Components/ProductList';
+import { API_URL } from '../globalVariables.js';
 
 const SearchResult = ({ route }) => {
   const { searchTerm } = route.params;

@@ -3,6 +3,7 @@ import { View, Text, FlatList, Image, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { colors, theme } from '../styles/theme';
+import { API_URL } from '../globalVariables.js';
 
 const ChatList = () => {
   const navigation = useNavigation();
@@ -15,7 +16,7 @@ const ChatList = () => {
   // 채팅 목록을 가져오는 함수
   const fetchChats = async () => {
     try {
-      const response = await axios.get('http://ec2-43-202-6-45.ap-northeast-2.compute.amazonaws.com:8080//api/v1/chats'); // 채팅 목록을 가져오는 API 호출
+      const response = await axios.get(API_URL+'/chats'); // 채팅 목록을 가져오는 API 호출
       setChats(response.data); // 가져온 채팅 목록을 상태에 설정
     } catch (error) {
       console.error('Error fetching chat list:', error);
