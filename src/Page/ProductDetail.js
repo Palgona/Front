@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Modal, Button } from 'react-native';
 import { icons, } from '../styles/theme'; 
+import { API_URL } from '../globalVariables.js';
 
 const ProductDetail = ({ route, navigation }) => {
   const { productId } = route.params;

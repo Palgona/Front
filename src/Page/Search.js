@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-nativ
 import { useNavigation } from '@react-navigation/native';
 import { buttonStyles } from '../styles/buttonStyles'; 
 import { theme } from '../styles/theme';
+import { API_URL } from '../globalVariables.js';
 
 const Search = () => {
   const navigation = useNavigation();

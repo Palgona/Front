@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, View, Image } from "react-native";
 import React, { useState } from "react";
 import { login, getProfile as getKakaoProfile } from "@react-native-seoul/kakao-login";
-
+import { API_URL } from '../globalVariables.js';
 
 
 const App = ({ navigation }) => { // navigation을 올바르게 받도록 수정합니다.
@@ -52,7 +52,7 @@ const App = ({ navigation }) => { // navigation을 올바르게 받도록 수정
         profileImage
       });
 
-      const response = await fetch('http://ec2-43-202-6-45.ap-northeast-2.compute.amazonaws.com:8080/api/vi/auth/login', {
+      const response = await fetch(API_URL+'/auth/login', {
         method: 'POST',
         headers,
         body
@@ -81,7 +81,7 @@ const App = ({ navigation }) => { // navigation을 올바르게 받도록 수정
 
   const refreshAccessToken = async (refreshToken) => {
     try {
-      const response = await fetch('http://ec2-43-202-6-45.ap-northeast-2.compute.amazonaws.com:8080/api/vi/auth/refresh', {
+      const response = await fetch(API_URL+'/auth/refresh', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

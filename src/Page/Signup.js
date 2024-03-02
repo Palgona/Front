@@ -4,6 +4,7 @@ import styled from 'styled-components/native';
 import axios from 'axios';
 //import AsyncStorage from '@react-native-async-storage/async-storage';
 import { theme } from '../styles/theme';
+import { API_URL } from '../globalVariables.js';
 
 
 const Signup = ({ navigation }) => {
@@ -22,7 +23,7 @@ const Signup = ({ navigation }) => {
         setJwtToken(token);
       }
     } catch (error) {
-      console.error('Error getting token:', error);
+      console.error('Error getting token:', error);s
     }
   };
 
@@ -50,21 +51,31 @@ const Signup = ({ navigation }) => {
     try {
       const formData = new FormData();
       formData.append('nickName', nickName);
-      formData.append('profileImage', {
-        uri: profileImage,
-        type: 'image/jpeg',
-        name: 'profileImage.jpg',
-      });
-
+      
+      // 이미지를 선택하지 않았을 때 기본 이미지 파일을 설정합니다.
+      if(profileImage) {
+        formData.append('profileImage', {
+          uri: profileImage,
+          type: 'image/jpeg',
+          name: 'profileImage.jpg',
+        });
+      } else {
+        formData.append('profileImage', {
+          uri: '기본이미지파일.jpg', // 기본 이미지 파일 경로를 지정합니다.
+          type: 'image/jpeg',
+          name: 'profileImage.jpg',
+        });
+      }
+  
       const token = await AsyncStorage.getItem('jwtToken');
-
-      const response = await axios.post('http://ec2-43-202-6-45.ap-northeast-2.compute.amazonaws.com:8080//api/v1/auth/signup', formData, {
+  
+      const response = await axios.post(API_URL+'/auth/signup', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${token}`,
         },
       });
-
+  
       if (response.status === 200) {
         Alert.alert('회원 가입 성공', '회원 가입이 완료되었습니다.');
         navigation.navigate('Home');
@@ -78,6 +89,7 @@ const Signup = ({ navigation }) => {
       navigation.navigate('Home');
     }
   };
+  
 
   return (
     <Container>

@@ -4,13 +4,14 @@ import axios from 'axios';
 import ProductList from '../Components/ProductList'; 
 import { theme, colors, icons } from '../styles/theme';
 import { buttonStyles } from '../styles/buttonStyles'; 
+import { API_URL } from '../globalVariables.js';
 
 const Home = ({ navigation }) => {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
     // API 호출 및 상품 데이터 가져오기
-    axios.get('/products')
+    axios.get(API_URL+'/products')
       .then(response => {
         setProducts(response.data.products);
       })

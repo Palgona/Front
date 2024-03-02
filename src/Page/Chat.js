@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, FlatList, TouchableOpacity, KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
 import axios from 'axios';
+import { API_URL } from '../globalVariables.js';
 
 const Chat = ({ route }) => {
   const { chatRoomId } = route.params;
@@ -15,7 +16,7 @@ const Chat = ({ route }) => {
   // 채팅 메시지 데이터를 가져오는 함수
   const fetchChatMessages = async () => {
     try {
-      const response = await axios.get(`http://ec2-43-202-6-45.ap-northeast-2.compute.amazonaws.com:8080/api/v1/chats/${chatRoomId}/messages`); // 채팅 메시지 가져오는 API 호출
+      const response = await axios.get(API_URL+`/chats/${chatRoomId}/messages`); // 채팅 메시지 가져오는 API 호출
       setMessages(response.data); // 가져온 채팅 메시지를 상태에 설정
     } catch (error) {
       console.error('Error fetching chat messages:', error);
