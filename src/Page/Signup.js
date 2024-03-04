@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { View, TextInput, Alert, Image, TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
 import axios from 'axios';
-//import AsyncStorage from '@react-native-async-storage/async-storage';
+import ImagePicker from 'react-native-image-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { theme } from '../styles/theme';
 import { API_URL } from '../globalVariables.js';
 
@@ -23,7 +24,7 @@ const Signup = ({ navigation }) => {
         setJwtToken(token);
       }
     } catch (error) {
-      console.error('Error getting token:', error);s
+      console.error('Error getting token:', error);
     }
   };
 
@@ -35,8 +36,8 @@ const Signup = ({ navigation }) => {
         path: 'images',
       },
     };
-
-    ImagePicker.showImagePicker(options, response => {
+  
+    ImagePicker.launchImageLibrary(options, response => {
       if (response.didCancel) {
         console.log('User cancelled image picker');
       } else if (response.error) {
@@ -46,26 +47,17 @@ const Signup = ({ navigation }) => {
       }
     });
   };
+  
 
   const handleSubmit = async () => {
     try {
       const formData = new FormData();
       formData.append('nickName', nickName);
-      
-      // 이미지를 선택하지 않았을 때 기본 이미지 파일을 설정합니다.
-      if(profileImage) {
-        formData.append('profileImage', {
-          uri: profileImage,
-          type: 'image/jpeg',
-          name: 'profileImage.jpg',
-        });
-      } else {
-        formData.append('profileImage', {
-          uri: '기본이미지파일.jpg', // 기본 이미지 파일 경로를 지정합니다.
-          type: 'image/jpeg',
-          name: 'profileImage.jpg',
-        });
-      }
+      formData.append('image', {
+        uri: profileImage,
+        type: 'image/jpeg',
+        name: 'profileImage.jpg',
+      });
   
       const token = await AsyncStorage.getItem('jwtToken');
   

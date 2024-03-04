@@ -8,6 +8,7 @@ import searchIcon from '../../assets/icons/search.png';
 import homeIcon from '../../assets/icons/home.png';
 import heart from '../../assets/icons/heart.png';
 import chat from '../../assets/icons/chat.png';
+import close from '../../assets/icons/close.png';
 
 export const colors = {
     main: '#F2CD5C',
@@ -24,6 +25,7 @@ export const icons = {
     home: homeIcon,
     heart: heart,
     chat: chat,
+    close: close,
   };
   
 export const theme = StyleSheet.create({

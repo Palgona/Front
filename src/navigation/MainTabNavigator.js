@@ -11,11 +11,6 @@ const Tab = createBottomTabNavigator();
 function MainTabNavigator() {
   return (
     <Tab.Navigator
-      tabBarOptions={{
-        activeTintColor: colors.main, 
-        inactiveTintColor: colors.secondary,
-        labelStyle: { display: 'none' }, // 글씨 숨기기
-      }}  
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarIcon: ({ color, size }) => {
@@ -30,6 +25,12 @@ function MainTabNavigator() {
           }
 
           return <Image source={iconName} style={{ tintColor: color, width: size, height: size }} />;
+        },
+        tabBarActiveTintColor: colors.main,
+        tabBarInactiveTintColor: colors.secondary,
+        tabBarLabelStyle: { display: 'none' },
+        tabBarStyle: {
+          display: 'flex',
         },
       })}
     >

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Modal, Button } from 'react-native';
-import { icons, } from '../styles/theme'; 
+import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { icons, colors } from '../styles/theme'; 
 import { API_URL } from '../globalVariables.js';
+import ProductModal from '../Components/ProductModal';
 
 const ProductDetail = ({ route, navigation }) => {
   const { productId } = route.params;
@@ -23,6 +24,11 @@ const ProductDetail = ({ route, navigation }) => {
   useEffect(() => {
     // 데이터 가져오는 로직을 여기에 구현
     // 여기서는 예시 데이터를 사용하여 상품 정보를 설정합니다.
+    /* API를 호출하여 상품 정보를 가져오는 로직
+    fetch(`${API_URL}/products/${productId}`)
+    .then(response => response.json())
+    .then(data => setProduct(data))
+    .catch(error => console.error('Error fetching product:', error)); */
     setProduct(exampleProduct);
   }, []);
 
@@ -47,59 +53,46 @@ const ProductDetail = ({ route, navigation }) => {
         <Text style={styles.goBack}>{'<   '}</Text>
       </TouchableOpacity>
 
-      {/* 이미지 */}
-      <Image source={{ uri: product.imageUrls[0] }} style={styles.productImage} />
+      {/* 이미지와 상품 정보 */}
+      <ScrollView>
+        {/* 이미지 */}
+        <Image source={{ uri: product.imageUrls[0] }} style={styles.productImage} />
 
-      {/* 상품 정보 */}
-      <View style={styles.productInfo}>
-        {/* 상품 이름과 사용자 정보 */}
-        <View style={styles.nameAndUser}>
-          <Text style={styles.productName}>{product.name}</Text>
-          {/* 사용자 이미지와 닉네임 */}
-          <View style={styles.userInfo}>
-            <Image source={{ uri: product.owner.avatar }} style={styles.userImage} />
-            <Text style={styles.userName}>{product.owner.username}</Text>
+        {/* 상품 정보 */}
+        <View style={styles.productInfo}>
+          {/* 상품 이름과 사용자 정보 */}
+          <View style={styles.nameAndUser}>
+            <Text style={styles.productName}>{product.name}</Text>
+            {/* 사용자 이미지와 닉네임 */}
+            <View style={styles.userInfo}>
+              <Image source={{ uri: product.owner.avatar }} style={styles.userImage} />
+              <Text style={styles.userName}>{product.owner.username}</Text>
+            </View>
           </View>
-        </View>
-        {/* 가격, 최고 입찰가, 채팅 및 찜 정보 */}
-        <View style={styles.details}>
-          <Text style={styles.price}>Highest Bid: ${product.price}</Text>
-          <Text style={styles.chatAndLike}>Chat: 10 / Like: 20</Text>
-        </View>
-        {/* 상품 설명 */}
-        <ScrollView style={styles.descriptionContainer}>
+          {/* 가격, 최고 입찰가, 채팅 및 찜 정보 */}
+          <View style={styles.details}>
+            <Text style={styles.price}>현재 최고가: {product.price}원</Text>
+            <Text style={styles.chatAndLike}>Chat: 10 / Like: 20</Text>
+          </View>
+          {/* 상품 설명 */}
           <Text style={styles.productDescription}>{product.content}</Text>
-        </ScrollView>
-      </View>
+        </View>
+      </ScrollView>
 
       {/* 하단 버튼 */}
       <View style={styles.buttonContainer}>
         {/* 채팅하기 버튼 */}
-        <TouchableOpacity style={styles.chatButton} onPress={handleChatPress}>
-          <Text style={styles.buttonText}>Chat</Text>
+        <TouchableOpacity style={styles.Button} onPress={handleChatPress}>
+          <Text style={styles.buttonText}>채팅하기</Text>
         </TouchableOpacity>
         {/* 참여하기 버튼 */}
-        <TouchableOpacity style={styles.bidButton} onPress={handleBidPress}>
-          <Text style={styles.buttonText}>Bid</Text>
+        <TouchableOpacity style={styles.Button} onPress={handleBidPress}>
+          <Text style={styles.buttonText}>참여하기</Text>
         </TouchableOpacity>
       </View>
 
       {/* 모달 */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(!modalVisible);
-        }}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text>Modal Content</Text>
-            <Button title="Close" onPress={() => setModalVisible(!modalVisible)} />
-          </View>
-        </View>
-      </Modal>
+      {modalVisible && <ProductModal visible={modalVisible} onClose={() => setModalVisible(false)} />}
     </View>
   );
 };
@@ -108,6 +101,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    backgroundColor: 'white',
   },
   goBack: {
     marginBottom: 10,
@@ -141,16 +135,16 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 15,
-    marginRight: 10,
+    marginRight: 5,
   },
   userName: {
     fontSize: 16,
-    color: 'blue',
   },
   details: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 10,
+    marginBottom: 15,
+    marginTop: 15,
   },
   price: {
     fontSize: 18,
@@ -171,40 +165,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     position: 'absolute',
+    backgroundColor: 'white',
+    padding: 10,
     bottom: 20,
     left: 20,
     right: 20,
   },
-  chatButton: {
-    backgroundColor: 'blue',
-    borderRadius: 5,
+  Button: {
+    backgroundColor: colors.main,
+    borderRadius: 50,
     paddingVertical: 10,
     flex: 1,
     marginRight: 10,
     alignItems: 'center',
   },
-  bidButton: {
-    backgroundColor: 'green',
-    borderRadius: 5,
-    paddingVertical: 10,
-    flex: 1,
-    alignItems: 'center',
-  },
   buttonText: {
-    color: 'white',
+    color: 'black',
     fontSize: 16,
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalContent: {
-    backgroundColor: 'white',
-    padding: 20,
-    borderRadius: 10,
-    elevation: 5,
   },
 });
 
