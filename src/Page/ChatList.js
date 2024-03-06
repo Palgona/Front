@@ -50,7 +50,7 @@ const ChatList = () => {
         keyExtractor={(item) => item.chatRoomId.toString()}
         ListEmptyComponent={() => (
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text style={{ fontSize: 18 }}>채팅 목록이 없습니다.</Text>
+            <Text style={{ fontSize: 15 }}>채팅 목록이 없습니다.</Text>
           </View>
         )}
       />

@@ -26,6 +26,7 @@ if linkage != nil
 end
 
 target 'Palgona' do
+  pod 'react-native-flipper', '~> 0.87.0'
   config = use_native_modules!
 
   use_react_native!(

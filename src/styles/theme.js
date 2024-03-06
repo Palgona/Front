@@ -7,6 +7,7 @@ import myPageIcon from '../../assets/icons/mypage.png';
 import searchIcon from '../../assets/icons/search.png';
 import homeIcon from '../../assets/icons/home.png';
 import heart from '../../assets/icons/heart.png';
+import heartClick from '../../assets/icons/heartClick.png';
 import chat from '../../assets/icons/chat.png';
 import close from '../../assets/icons/close.png';
 
@@ -24,6 +25,7 @@ export const icons = {
     search: searchIcon,
     home: homeIcon,
     heart: heart,
+    heartClick: heartClick,
     chat: chat,
     close: close,
   };

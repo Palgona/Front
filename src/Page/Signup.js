@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Alert, Image, TouchableOpacity } from 'react-native';
+import { View, TextInput, Alert, Image, TouchableOpacity, PermissionsAndroid } from 'react-native';
 import styled from 'styled-components/native';
 import axios from 'axios';
 import ImagePicker from 'react-native-image-picker';
@@ -28,6 +28,31 @@ const Signup = ({ navigation }) => {
     }
   };
 
+  const requestGalleryPermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+        {
+          title: 'Gallery Permission',
+          message: 'This app needs access to your gallery.',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        handleChoosePhoto();
+      } else {
+        Alert.alert(
+          'Gallery Permission Denied',
+          'Please allow access to the gallery in App Settings to upload photos.'
+        );
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+  };
+
   const handleChoosePhoto = () => {
     const options = {
       title: 'Select Profile Image',
@@ -47,7 +72,6 @@ const Signup = ({ navigation }) => {
       }
     });
   };
-  
 
   const handleSubmit = async () => {
     try {
@@ -89,7 +113,7 @@ const Signup = ({ navigation }) => {
         {profileImage ? (
           <ProfileImage source={{ uri: profileImage }} />
         ) : (
-          <TouchableOpacity onPress={handleChoosePhoto}>
+          <TouchableOpacity onPress={requestGalleryPermission}>
             <ChoosePhotoText>Choose Photo</ChoosePhotoText>
           </TouchableOpacity>
         )}

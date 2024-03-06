@@ -8,6 +8,7 @@ const ProductDetail = ({ route, navigation }) => {
   const { productId } = route.params;
   const [product, setProduct] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [liked, setLiked] = useState(false);
 
   // 예시 데이터
   const exampleProduct = {
@@ -17,8 +18,10 @@ const ProductDetail = ({ route, navigation }) => {
       avatar: 'https://via.placeholder.com/150',
     },
     price: 100,
-    content: '아이폰14 화이트 깨끗해요 잘썼어요'.repeat(20), // 긴 설명을 위해 반복
+    content: '아이폰14 화이트 깨끗해요 잘썼어요'.repeat(50), // 긴 설명을 위해 반복
     imageUrls: ['https://via.placeholder.com/300'],
+    chatCount: 10, // 채팅 수
+    likeCount: 20, // 찜 수
   };
 
   useEffect(() => {
@@ -42,6 +45,11 @@ const ProductDetail = ({ route, navigation }) => {
     setModalVisible(true); // 모달 열기
   };
 
+  const handleLikePress = () => {
+    // 좋아요(like) 버튼을 누르면 liked 상태를 반전시킴
+    setLiked(!liked);
+  };
+
   if (!product) {
     return <Text>Loading...</Text>; // 데이터가 로드되지 않은 경우 로딩 메시지를 표시합니다.
   }
@@ -55,27 +63,38 @@ const ProductDetail = ({ route, navigation }) => {
 
       {/* 이미지와 상품 정보 */}
       <ScrollView>
-        {/* 이미지 */}
-        <Image source={{ uri: product.imageUrls[0] }} style={styles.productImage} />
+        <View style={styles.scrollContainer}>
+          {/* 이미지 */}
+          <Image source={{ uri: product.imageUrls[0] }} style={styles.productImage} />
 
-        {/* 상품 정보 */}
-        <View style={styles.productInfo}>
-          {/* 상품 이름과 사용자 정보 */}
-          <View style={styles.nameAndUser}>
-            <Text style={styles.productName}>{product.name}</Text>
-            {/* 사용자 이미지와 닉네임 */}
-            <View style={styles.userInfo}>
-              <Image source={{ uri: product.owner.avatar }} style={styles.userImage} />
-              <Text style={styles.userName}>{product.owner.username}</Text>
+          {/* 상품 정보 */}
+          <View style={styles.productInfo}>
+            {/* 상품 이름과 사용자 정보 */}
+            <View style={styles.nameAndUser}>
+              <Text style={styles.productName}>{product.name}</Text>
+              {/* 사용자 이미지와 닉네임 */}
+              <View style={styles.userInfo}>
+                <Image source={{ uri: product.owner.avatar }} style={styles.userImage} />
+                <Text style={styles.userName}>{product.owner.username}</Text>
+              </View>
             </View>
+            {/* 가격, 최고 입찰가, 채팅 및 찜 정보 */}
+            <View style={styles.details}>
+              <Text style={styles.price}>현재 최고가: {product.price}원</Text>
+              <View style={styles.chatAndLike}>
+                <TouchableOpacity style={styles.iconContainer}>
+                  <Image source={icons.chat} style={styles.icon} />
+                  <Text style={styles.iconText}>{product.chatCount}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={handleLikePress} style={styles.iconContainer}>
+                  <Image source={liked ? icons.heartClick : icons.heart} style={[styles.icon, liked && styles.likedIcon]} />
+                  <Text style={styles.iconText}>{product.likeCount}</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+            {/* 상품 설명 */}
+            <Text style={styles.productDescription}>{product.content}</Text>
           </View>
-          {/* 가격, 최고 입찰가, 채팅 및 찜 정보 */}
-          <View style={styles.details}>
-            <Text style={styles.price}>현재 최고가: {product.price}원</Text>
-            <Text style={styles.chatAndLike}>Chat: 10 / Like: 20</Text>
-          </View>
-          {/* 상품 설명 */}
-          <Text style={styles.productDescription}>{product.content}</Text>
         </View>
       </ScrollView>
 
@@ -107,6 +126,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontSize: 16,
     color: 'blue',
+  },
+  scrollContainer: {
+    marginBottom: 55,
   },
   productImage: {
     width: '100%',
@@ -151,11 +173,22 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   chatAndLike: {
-    fontSize: 14,
-    color: 'gray',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 10,
   },
-  descriptionContainer: {
-    maxHeight: 200,
+  iconContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  icon: {
+    width: 21,
+    height: 21,
+    marginLeft: 10,
+  },
+  iconText: {
+    fontSize: 16,
+    marginLeft: 3,
   },
   productDescription: {
     fontSize: 16,
