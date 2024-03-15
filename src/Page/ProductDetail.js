@@ -61,18 +61,24 @@ const ProductDetail = ({ route, navigation }) => {
       <ScrollView>
         <View style={styles.scrollContainer}>
           {/* 이미지 */}
-          <Image source={{ uri: product.imageUrls[0] }} style={styles.productImage} />
+          <TouchableOpacity onPress={() => navigation.navigate('User')}>
+            <Image source={{ uri: product.imageUrls[0] }} style={styles.productImage} />
+          </TouchableOpacity>
 
           {/* 상품 정보 */}
           <View style={styles.productInfo}>
             {/* 상품 이름과 사용자 정보 */}
             <View style={styles.nameAndUser}>
-              <Text style={styles.productName}>{product.name}</Text>
+              <TouchableOpacity onPress={() => navigation.navigate('User')}>
+                <Text style={styles.productName}>{product.name}</Text>
+              </TouchableOpacity>
               {/* 사용자 이미지와 닉네임 */}
-              <View style={styles.userInfo}>
-                <Image source={{ uri: product.owner.avatar }} style={styles.userImage} />
-                <Text style={styles.userName}>{product.owner.username}</Text>
-              </View>
+              <TouchableOpacity onPress={() => navigation.navigate('User')}>
+                <View style={styles.userInfo}>
+                  <Image source={{ uri: product.owner.avatar }} style={styles.userImage} />
+                  <Text style={styles.userName}>{product.owner.username}</Text>
+                </View>
+              </TouchableOpacity>
             </View>
             {/* 가격, 최고 입찰가, 채팅 및 찜 정보 */}
             <View style={styles.details}>

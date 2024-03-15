@@ -11,6 +11,7 @@ import heartClick from '../../assets/icons/heartClick.png';
 import chat from '../../assets/icons/chat.png';
 import close from '../../assets/icons/close.png';
 import camera from '../../assets/icons/camera.png';
+import report from '../../assets/icons/report.png';
 
 export const colors = {
     main: '#F2CD5C',
@@ -30,6 +31,7 @@ export const icons = {
     chat: chat,
     close: close,
     camera: camera,
+    report: report,
   };
   
 export const theme = StyleSheet.create({

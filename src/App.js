@@ -10,6 +10,7 @@ import SearchResult from './Page/SearchResult';
 import ChatList from './Page/ChatList';
 import Chat from './Page/Chat';
 import ProductDetail from './Page/ProductDetail'; 
+import User from './Page/User';
 
 const Stack = createStackNavigator();
 
@@ -60,6 +61,11 @@ export default function App() {
         <Stack.Screen
           name="ProductDetail"
           component={ProductDetail}
+          options={{ headerShown: false }} 
+        />
+        <Stack.Screen
+          name="User"
+          component={User}
           options={{ headerShown: false }} 
         />
       </Stack.Navigator>

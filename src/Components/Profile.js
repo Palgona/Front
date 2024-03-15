@@ -1,41 +1,45 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet, Dimensions } from 'react-native';
 
-const Profile = ({ imageUri, username, bio }) => {
+const Profile = ({ user }) => {
   return (
     <View style={styles.container}>
-      <Image source={{ uri: imageUri }} style={styles.image} />
+      {/* 사용자 프로필 이미지 */}
+      <Image source={{ uri: user.profile_image }} style={styles.avatar} />
+      
+      {/* 닉네임과 소개 */}
       <View style={styles.userInfo}>
-        <Text style={styles.username}>{username}</Text>
-        <Text style={styles.bio}>{bio}</Text>
+        <Text style={styles.nickname}>{user.nickname}</Text>
+        <Text style={styles.bio}>{user.bio}</Text>
       </View>
     </View>
   );
 };
 
+const screenWidth = Dimensions.get('window').width;
+
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 20,
+    width: screenWidth * 0.7, // 화면 너비의 70%
   },
-  image: {
-    width: 150,
-    height: 150,
+  avatar: {
+    width: 90, 
+    height: 90,
     borderRadius: 75,
-    marginRight: 20,
+    marginRight: 15,
   },
   userInfo: {
     flex: 1,
   },
-  username: {
-    fontSize: 24,
+  nickname: {
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 5,
+    marginBottom: 10,
   },
   bio: {
-    fontSize: 16,
-    textAlign: 'left',
+    fontSize: 13,
   },
 });
 
