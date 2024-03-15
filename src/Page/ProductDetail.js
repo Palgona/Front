@@ -56,10 +56,6 @@ const ProductDetail = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* 이전으로 돌아가는 버튼 */}
-      <TouchableOpacity onPress={() => navigation.goBack()}>
-        <Text style={styles.goBack}>{'<   '}</Text>
-      </TouchableOpacity>
 
       {/* 이미지와 상품 정보 */}
       <ScrollView>
@@ -119,16 +115,11 @@ const ProductDetail = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: 'white',
-  },
-  goBack: {
-    marginBottom: 10,
-    fontSize: 16,
-    color: 'blue',
   },
   scrollContainer: {
     marginBottom: 55,
+    padding: 20,
   },
   productImage: {
     width: '100%',
@@ -200,7 +191,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     backgroundColor: 'white',
     padding: 10,
-    bottom: 20,
+    bottom: 0,
     left: 20,
     right: 20,
   },
@@ -210,6 +201,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     flex: 1,
     marginRight: 10,
+    marginBottom: 10,
     alignItems: 'center',
   },
   buttonText: {

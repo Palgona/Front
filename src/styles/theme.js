@@ -10,6 +10,7 @@ import heart from '../../assets/icons/heart.png';
 import heartClick from '../../assets/icons/heartClick.png';
 import chat from '../../assets/icons/chat.png';
 import close from '../../assets/icons/close.png';
+import camera from '../../assets/icons/camera.png';
 
 export const colors = {
     main: '#F2CD5C',
@@ -28,6 +29,7 @@ export const icons = {
     heartClick: heartClick,
     chat: chat,
     close: close,
+    camera: camera,
   };
   
 export const theme = StyleSheet.create({

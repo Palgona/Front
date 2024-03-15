@@ -8,9 +8,6 @@ const ProductModal = ({ onClose, currentPrice, bidPrice }) => {
   return (
     <View style={[styles.modal, { height: height / 4 }]}>
       <View style={styles.modalContent}>
-        <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-          <Text style={styles.closeText}>&times;</Text>
-        </TouchableOpacity>
         <View style={styles.priceContainer}>
           <View style={styles.priceRow}>
             <Text style={styles.priceLabel}>현재가격</Text>
@@ -41,8 +38,9 @@ const styles = {
   modalContent: {
     backgroundColor: colors.main,
     padding: 20,
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
+    paddingTop: 50,
+    borderTopLeftRadius: 50,
+    borderTopRightRadius: 50,
     flex: 1, // 모달 전체를 차지하도록 설정
   },
   closeButton: {
@@ -74,12 +72,13 @@ const styles = {
     justifyContent: 'space-between',
   },
   button: {
-    backgroundColor: 'lightgray',
+    backgroundColor: 'white',
     paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 50,
+    paddingHorizontal: 10,
+    borderRadius: 10,
     alignItems: 'center',
     flex: 1,
+    margin: 5,
   },
   buttonText: {
     fontSize: 16,
