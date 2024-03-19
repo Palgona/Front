@@ -6,18 +6,19 @@ import ProductList from '../Components/ProductList';
 const Bookmark = () => {
   const navigation = useNavigation();
 
+  const handleSellList = () => {
+    // 판매내역 페이지로 이동
+    navigation.navigate('SellList', { memberId });
+  };
+
   return (
     <View style={styles.container}>
       {/* 페이지 상단에 장바구니 텍스트 표시 */}
-      <Text style={styles.title}>장바구니</Text>
+      <Text style={styles.title}>판매내역</Text>
       
       {/* 상품 리스트를 보여주는 ProductList 컴포넌트 */}
       <ProductList />
 
-      {/* 뒤로가기 버튼 */}
-      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-        <Text style={styles.backButtonText}>{'< 뒤로가기'}</Text>
-      </TouchableOpacity>
     </View>
   );
 };
@@ -26,7 +27,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 10,
-    paddingTop: 20,
+    paddingTop: 50,
+    backgroundColor: 'white',
   },
   title: {
     fontSize: 20,

@@ -19,7 +19,7 @@ const User = ({ navigation }) => {
 
   const handleSellList = () => {
     // 판매내역 페이지로 이동
-    // navigation.navigate('SellList', { memberId });
+    navigation.navigate('SellList');
   };
 
   const handleReview = () => {

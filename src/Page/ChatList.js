@@ -5,7 +5,7 @@ import axios from 'axios';
 import { colors, theme } from '../styles/theme';
 import { API_URL } from '../globalVariables.js';
 
-const ChatList = () => {
+const ChatList = ({ user }) => { // 사용자 정보를 prop으로 받음
   const navigation = useNavigation();
   const [chats, setChats] = useState([]);
 
@@ -16,20 +16,34 @@ const ChatList = () => {
   // 채팅 목록을 가져오는 함수
   const fetchChats = async () => {
     try {
-      const response = await axios.get(API_URL+'/chats'); // 채팅 목록을 가져오는 API 호출
-      setChats(response.data); // 가져온 채팅 목록을 상태에 설정
+      // 여기서는 예시 데이터를 사용하므로 axios를 사용하지 않고 하드코딩하여 채팅 목록을 설정합니다.
+      const exampleChats = [
+        {
+          chatRoomId: 1,
+          profileImage: 'https://via.placeholder.com/150',
+          nickname: '유저1',
+          lastMessage: '안녕하세요!',
+        },
+        {
+          chatRoomId: 2,
+          profileImage: 'https://via.placeholder.com/150',
+          nickname: '유저2',
+          lastMessage: '반가워요!',
+        },
+      ];
+      setChats(exampleChats); // 예시 채팅 목록을 상태에 설정
     } catch (error) {
       console.error('Error fetching chat list:', error);
     }
   };
 
-  const handleChatPress = (chatRoomId) => {
-    navigation.navigate('Chat', { chatRoomId });
+  const handleChatPress = (chatRoomId, user) => { // user 객체를 전달
+    navigation.navigate('Chat', { chatRoomId, user });
   };
 
   const renderItem = ({ item }) => {
     return (
-      <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', padding: 10 }} onPress={() => handleChatPress(item.chatRoomId)}>
+      <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', padding: 10 }} onPress={() => handleChatPress(item.chatRoomId, { profileImage: item.profileImage, nickname: item.nickname })}>
         <Image source={{ uri: item.profileImage }} style={{ width: 50, height: 50, borderRadius: 25 }} />
         <View style={{ marginLeft: 10 }}>
           <Text style={{ fontSize: 16 }}>{item.nickname}</Text>
@@ -60,7 +74,7 @@ const ChatList = () => {
 
 const styles = {
   headerContainer: {
-    backgroundColor: colors.main,
+    backgroundColor: colors.mainYellow,
     padding: 10,
   },
   headerText: {

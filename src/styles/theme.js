@@ -14,9 +14,11 @@ import camera from '../../assets/icons/camera.png';
 import report from '../../assets/icons/report.png';
 
 export const colors = {
-    main: '#F2CD5C',
-    secondary: '#A8ABA6',
-    point: '#F4965B',
+    mainYellow: '#FFDE66',
+    secondYellow: '#FFF1BC',
+    mainGreen: '#6A9C78',
+    secondGreen: '#C3E0B2',
+    background: '#FCFCFA',
   };
 
 export const icons = {
