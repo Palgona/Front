@@ -12,7 +12,13 @@ const ProductList = () => {
     const dummyProducts = [
       { id: 1, name: 'Product 1', price: 50, image: 'https://via.placeholder.com/150', chatCount: 10, likeCount: 20 },
       { id: 2, name: 'Product 2', price: 70, image: 'https://via.placeholder.com/150', chatCount: 5, likeCount: 15 },
-      // 나머지 상품 데이터도 추가
+      { id: 3, name: 'Product 3', price: 50, image: 'https://via.placeholder.com/150', chatCount: 10, likeCount: 20 },
+      { id: 4, name: 'Product 4', price: 70, image: 'https://via.placeholder.com/150', chatCount: 5, likeCount: 15 },
+      { id: 5, name: 'Product 5', price: 50, image: 'https://via.placeholder.com/150', chatCount: 10, likeCount: 20 },
+      { id: 6, name: 'Product 6', price: 70, image: 'https://via.placeholder.com/150', chatCount: 5, likeCount: 15 },
+      { id: 7, name: 'Product 7', price: 50, image: 'https://via.placeholder.com/150', chatCount: 10, likeCount: 20 },
+      { id: 8, name: 'Product 8', price: 70, image: 'https://via.placeholder.com/150', chatCount: 5, likeCount: 15 },
+      
     ];
     setProducts(dummyProducts);
   }, []);
@@ -81,22 +87,23 @@ const styles = StyleSheet.create({
   },
   productPrice: {
     fontSize: 14,
-    color: colors.secondary,
+    color: colors.darkGray,
   },
   chatAndLike: {
     flexDirection: 'row',
+    width: '20%',
     marginTop: 10,
   },
   icon: {
     width: 15,
     height: 15,
-    marginLeft: 10,
     marginRight: 3,
-    tintColor: colors.secondary,
+    marginLeft: 5,
+    tintColor: colors.mainGray,
   },
   chatAndLikeText: {
     fontSize: 12,
-    color: colors.secondary,
+    color: colors.mainGray,
   },
 });
 

@@ -18,6 +18,8 @@ export const colors = {
     secondYellow: '#FFF1BC',
     mainGreen: '#6A9C78',
     secondGreen: '#C3E0B2',
+    mainGray: '#807D73',
+    darkGray: '#55503E',
     background: '#FCFCFA',
   };
 
@@ -39,6 +41,6 @@ export const icons = {
 export const theme = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff', // 흰색 배경
+    backgroundColor: 'white', 
   },
 });

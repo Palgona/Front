@@ -27,12 +27,12 @@ export const buttonStyles = StyleSheet.create({
     width: 40,
     height: 40,
     marginLeft: 5,
-    backgroundColor: colors.secondary,
+    backgroundColor: 'white',
   },
   iconimage:{
     width: 24,
     height: 24,
-    tintColor: '#ffffff',
+    tintColor: colors.darkGray,
   }
   
 });

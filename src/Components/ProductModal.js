@@ -36,12 +36,12 @@ const styles = {
     justifyContent: 'flex-end', // 화면 아래에서 올라오도록 변경
   },
   modalContent: {
-    backgroundColor: colors.main,
+    backgroundColor: colors.secondYellow,
     padding: 20,
     paddingTop: 50,
-    borderTopLeftRadius: 50,
-    borderTopRightRadius: 50,
-    flex: 1, // 모달 전체를 차지하도록 설정
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    flex: 1, 
   },
   closeButton: {
     position: 'absolute',
@@ -62,10 +62,12 @@ const styles = {
   },
   priceLabel: {
     fontSize: 16,
+    color: colors.darkGray,
   },
   priceValue: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: colors.darkGray,
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -75,13 +77,14 @@ const styles = {
     backgroundColor: 'white',
     paddingVertical: 10,
     paddingHorizontal: 10,
-    borderRadius: 10,
+    borderRadius: 50,
     alignItems: 'center',
     flex: 1,
     margin: 5,
   },
   buttonText: {
     fontSize: 16,
+    color: colors.darkGray,
   },
 };
 

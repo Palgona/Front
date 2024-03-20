@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import { icons, colors } from '../styles/theme'; 
+import { icons, colors, theme } from '../styles/theme'; 
 import { API_URL } from '../globalVariables.js';
 import ProductModal from '../Components/ProductModal';
 
@@ -55,7 +55,7 @@ const ProductDetail = ({ route, navigation }) => {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={theme.container}>
 
       {/* 이미지와 상품 정보 */}
       <ScrollView>
@@ -119,10 +119,6 @@ const ProductDetail = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'white',
-  },
   scrollContainer: {
     marginBottom: 55,
     padding: 20,
@@ -136,6 +132,7 @@ const styles = StyleSheet.create({
   },
   productInfo: {
     marginBottom: 20,
+    color: colors.darkGray,
   },
   nameAndUser: {
     flexDirection: 'row',
@@ -145,6 +142,7 @@ const styles = StyleSheet.create({
   productName: {
     fontSize: 24,
     fontWeight: 'bold',
+    color: colors.darkGray,
   },
   userInfo: {
     flexDirection: 'row',
@@ -202,7 +200,7 @@ const styles = StyleSheet.create({
     right: 20,
   },
   Button: {
-    backgroundColor: colors.main,
+    backgroundColor: colors.mainYellow,
     borderRadius: 50,
     paddingVertical: 10,
     flex: 1,
@@ -211,7 +209,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonText: {
-    color: 'black',
+    color: colors.darkGray,
     fontSize: 16,
   },
 });

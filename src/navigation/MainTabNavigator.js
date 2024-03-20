@@ -26,8 +26,8 @@ function MainTabNavigator() {
 
           return <Image source={iconName} style={{ tintColor: color, width: size, height: size }} />;
         },
-        tabBarActiveTintColor: colors.main,
-        tabBarInactiveTintColor: colors.secondary,
+        tabBarActiveTintColor: colors.mainYellow,
+        tabBarInactiveTintColor: colors.mainGray,
         tabBarLabelStyle: { display: 'none' },
         tabBarStyle: {
           display: 'flex',
