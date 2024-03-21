@@ -3,6 +3,7 @@ import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from 'rea
 import { icons, colors, theme } from '../styles/theme'; 
 import { API_URL } from '../globalVariables.js';
 import ProductModal from '../Components/ProductModal';
+import Swiper from 'react-native-swiper';
 
 const ProductDetail = ({ route, navigation }) => {
   const { productId } = route.params;
@@ -19,10 +20,16 @@ const ProductDetail = ({ route, navigation }) => {
     },
     price: 100,
     content: '아이폰14 화이트 깨끗해요 잘썼어요'.repeat(50), // 긴 설명을 위해 반복
-    imageUrls: ['https://via.placeholder.com/300'],
+    imageUrls: [
+      'https://via.placeholder.com/300/aabbcc/FFFFFF?text=Image+1',
+      'https://via.placeholder.com/300/3498DB/FFFFFF?text=Image+2',
+      'https://via.placeholder.com/300/2ECC71/FFFFFF?text=Image+3',
+      'https://via.placeholder.com/300/ccbbff/FFFFFF?text=Image+4',
+    ],
     chatCount: 10, // 채팅 수
     likeCount: 20, // 찜 수
   };
+  
 
   useEffect(() => {
     // 데이터 가져오는 로직을 여기에 구현
@@ -56,14 +63,17 @@ const ProductDetail = ({ route, navigation }) => {
 
   return (
     <View style={theme.container}>
-
       {/* 이미지와 상품 정보 */}
       <ScrollView>
         <View style={styles.scrollContainer}>
-          {/* 이미지 */}
-            <Image source={{ uri: product.imageUrls[0] }} style={styles.productImage} />
-
-          {/* 상품 정보 */}
+        <Swiper
+        dotStyle={{ backgroundColor: colors.mainGray }}
+        activeDotStyle={{ backgroundColor: colors.mainYellow}}
+         >
+        {product.imageUrls.map((imageUrl, index) => (
+          <Image key={index} source={{ uri: imageUrl }} style={styles.productImage} />
+        ))}
+      </Swiper>
           <View style={styles.productInfo}>
             {/* 상품 이름과 사용자 정보 */}
             <View style={styles.nameAndUser}>
@@ -119,12 +129,16 @@ const styles = StyleSheet.create({
     marginBottom: 55,
     padding: 20,
   },
+  Swiper: {
+    width: '100%',
+    aspectRatio: 1,
+    marginBottom: 10,
+  },
   productImage: {
     width: '100%',
     aspectRatio: 1,
     resizeMode: 'contain',
     borderRadius: 10,
-    marginBottom: 20,
   },
   productInfo: {
     marginBottom: 20,
