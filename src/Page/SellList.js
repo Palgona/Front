@@ -27,22 +27,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 10,
-    paddingTop: 50,
+    paddingTop: 30,
     backgroundColor: 'white',
   },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 10,
+    marginBottom: 20,
   },
   backButton: {
     marginTop: 20,
     alignSelf: 'center',
-  },
-  backButtonText: {
-    fontSize: 16,
-    color: 'blue',
   },
 });
 

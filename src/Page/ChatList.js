@@ -75,7 +75,7 @@ const ChatList = ({ user }) => { // 사용자 정보를 prop으로 받음
 const styles = {
   headerContainer: {
     backgroundColor: colors.mainYellow,
-    padding: 10,
+    padding: 20,
   },
   headerText: {
     fontSize: 20,

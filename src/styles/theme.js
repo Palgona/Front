@@ -21,6 +21,7 @@ export const colors = {
     mainGray: '#807D73',
     darkGray: '#55503E',
     background: '#FCFCFA',
+    point: '#ED2B2A',
   };
 
 export const icons = {

@@ -61,17 +61,13 @@ const ProductDetail = ({ route, navigation }) => {
       <ScrollView>
         <View style={styles.scrollContainer}>
           {/* 이미지 */}
-          <TouchableOpacity onPress={() => navigation.navigate('User')}>
             <Image source={{ uri: product.imageUrls[0] }} style={styles.productImage} />
-          </TouchableOpacity>
 
           {/* 상품 정보 */}
           <View style={styles.productInfo}>
             {/* 상품 이름과 사용자 정보 */}
             <View style={styles.nameAndUser}>
-              <TouchableOpacity onPress={() => navigation.navigate('User')}>
-                <Text style={styles.productName}>{product.name}</Text>
-              </TouchableOpacity>
+              <Text style={styles.productName}>{product.name}</Text>
               {/* 사용자 이미지와 닉네임 */}
               <TouchableOpacity onPress={() => navigation.navigate('User')}>
                 <View style={styles.userInfo}>
@@ -125,8 +121,8 @@ const styles = StyleSheet.create({
   },
   productImage: {
     width: '100%',
-    height: 300,
-    resizeMode: 'cover',
+    aspectRatio: 1,
+    resizeMode: 'contain',
     borderRadius: 10,
     marginBottom: 20,
   },
@@ -180,10 +176,15 @@ const styles = StyleSheet.create({
     width: 21,
     height: 21,
     marginLeft: 10,
+    tintColor: colors.mainGray,
   },
+  likedIcon: {
+    tintColor: colors.point,
+  }, 
   iconText: {
     fontSize: 16,
     marginLeft: 3,
+    color: colors.mainGray,
   },
   productDescription: {
     fontSize: 16,

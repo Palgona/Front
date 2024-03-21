@@ -55,11 +55,6 @@ export default function App() {
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="Chat"
-          component={Chat}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
           name="ProductDetail"
           component={ProductDetail}
           options={{ headerShown: false }} 
@@ -73,6 +68,11 @@ export default function App() {
           name="SellList"
           component={SellList}
           options={{ headerShown: false }} 
+        />
+        <Stack.Screen
+          name="Chat"
+          component={Chat}
+          options={{ headerShown: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>

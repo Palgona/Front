@@ -7,7 +7,6 @@ import { colors, theme, icons } from '../styles/theme';
 import { API_URL } from '../globalVariables.js';
 
 const Chat = ({ route }) => {
-  const navigation = useNavigation();
   const { chatRoomId, user } = route.params;
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');

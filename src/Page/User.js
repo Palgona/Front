@@ -8,7 +8,7 @@ const User = ({ navigation }) => {
   const user = {
     nickname: '김가룡',
     profile_image: 'https://via.placeholder.com/90',
-    bio: '하이루 김가룡데스',
+    bio: '하이루 나는 김가룡',
   };
 
   const handleReport = () => {
@@ -66,51 +66,56 @@ const User = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'flex-start',
-      padding: 30,
-      backgroundColor: 'white',
-    },
-    profileContainer: {
-      flexDirection: 'row', // 가로 방향으로 정렬
-      alignItems: 'center', // 세로 방향에서 중앙 정렬
-      marginBottom: 50, // 프로필과 버튼 사이에 여백 추가
-      marginTop: '20%', // 상단 여백 설정
-    },
-    reportButton: {
-      flexDirection: 'column',
-      alignItems: 'center',
-      marginLeft: 'auto',
-      padding: 10,
-      borderRadius: 5,
-    },
-    reportIcon: {
-      width: 25,
-      height: 25,
-      marginBottom: 5,
-    },
-    reportButtonText: {
-      color: 'black',
-      fontSize: 10,
-      fontWeight: 'bold',
-    },
-    functionList: {
-      width: '100%',
-    },
-    functionItem: {
-      marginVertical: 15,
-      fontSize: 20,
-    },
-    functionText: {
-      fontSize: 17,
-    },
-    separator: {
-      height: 1,
-      backgroundColor: 'gray',
-      marginBottom: 30,
-    },
-  });
+  container: {
+    flex: 1,
+    padding: 20,
+    paddingTop: '20%',
+    backgroundColor: colors.background,
+  },
+  profileContainer: {
+    flexDirection: 'row', 
+    alignItems: 'center',
+    marginBottom: '10%', 
+    padding: 10,
+    paddingVertical: 20,
+    borderRadius: 10,
+    backgroundColor: colors.secondYellow,
+  },
+  reportButton: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    marginLeft: 'auto',
+    padding: 10,
+    borderRadius: 5,
+    color: colors.mainGray,
+  },
+  reportIcon: {
+    width: 25,
+    height: 25,
+    marginBottom: 5,
+    tintColor: colors.mainGray,
+  },
+  reportButtonText: {
+    color: colors.mainGray,
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+  functionList: {
+    width: '100%',
+  },
+  functionItem: {
+    marginVertical: 15,
+    fontSize: 20,
+  },
+  functionText: {
+    fontSize: 17,
+    color: colors.mainGray,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: colors.mainGray,
+    marginBottom: 30,
+  },
+});
   
 export default User;
