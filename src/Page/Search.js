@@ -26,9 +26,11 @@ const Search = () => {
     }
   };
 
-  const saveSearchTerm = async () => {
+  const saveSearchTerm = async (searchTermToAdd) => {
     try {
-      await AsyncStorage.setItem('previousSearches', JSON.stringify(previousSearches));
+      const updatedSearches = [...previousSearches, searchTermToAdd];
+      await AsyncStorage.setItem('previousSearches', JSON.stringify(updatedSearches));
+      setPreviousSearches(updatedSearches); // Update state after saving
     } catch (error) {
       console.error('Error saving previous searches:', error);
     }
@@ -36,18 +38,20 @@ const Search = () => {
 
   const handleSearch = () => {
     if (searchTerm.trim() !== '') {
-      const updatedSearches = [...previousSearches, searchTerm];
-      setPreviousSearches(updatedSearches);
       navigation.navigate('SearchResult', { searchTerm });
       setSearchTerm('');
-      saveSearchTerm(); // Save the searches after adding the new one
+      saveSearchTerm(searchTerm); // Save the new search term
     }
   };
 
-  const handleDeleteSearch = index => {
+  const handleDeleteSearch = async (index) => {
     const updatedSearches = previousSearches.filter((_, i) => i !== index);
-    setPreviousSearches(updatedSearches);
-    saveSearchTerm(); // Save the searches after deleting one
+    setPreviousSearches(updatedSearches); // Update state before saving
+    try {
+      await AsyncStorage.setItem('previousSearches', JSON.stringify(updatedSearches));
+    } catch (error) {
+      console.error('Error saving previous searches:', error);
+    }
   };
 
   return (
