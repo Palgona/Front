@@ -78,13 +78,14 @@ const Search = () => {
 const styles = StyleSheet.create({
   iconContainer: {
     position: 'absolute',
-    right: 10,
+    right: 20,
     top: '50%',
     transform: [{ translateY: -10 }],
   },
   icon: {
     width: 20,
     height: 20,
+    tintColor: colors.mainGray,
   },
 });
 

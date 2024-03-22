@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { Dimensions, View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { icons, colors, theme } from '../styles/theme'; 
 import { API_URL } from '../globalVariables.js';
 import ProductModal from '../Components/ProductModal';
 import Swiper from 'react-native-swiper';
+
+const windowWidth = Dimensions.get('window').width;
 
 const ProductDetail = ({ route, navigation }) => {
   const { productId } = route.params;
   const [product, setProduct] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [liked, setLiked] = useState(false);
+  
 
   // 예시 데이터
   const exampleProduct = {
@@ -66,10 +69,10 @@ const ProductDetail = ({ route, navigation }) => {
       {/* 이미지와 상품 정보 */}
       <ScrollView>
         <View style={styles.scrollContainer}>
-        <Swiper
+        <Swiper style={styles.Swiper}
         dotStyle={{ backgroundColor: colors.mainGray }}
         activeDotStyle={{ backgroundColor: colors.mainYellow}}
-         >
+        >
         {product.imageUrls.map((imageUrl, index) => (
           <Image key={index} source={{ uri: imageUrl }} style={styles.productImage} />
         ))}
@@ -130,9 +133,10 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   Swiper: {
-    width: '100%',
-    aspectRatio: 1,
-    marginBottom: 10,
+   //width: '100%',
+    //aspectRatio: 1,
+    marginBottom: 5,
+    height: windowWidth,
   },
   productImage: {
     width: '100%',
@@ -141,7 +145,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   productInfo: {
-    marginBottom: 20,
+    marginBottom: 10,
     color: colors.darkGray,
   },
   nameAndUser: {
