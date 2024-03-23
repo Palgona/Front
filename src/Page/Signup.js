@@ -1,71 +1,49 @@
-import React, { useState, useEffect } from 'react';
-import { View, TextInput, Alert, Image, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, Image, TextInput, StyleSheet, Alert } from 'react-native';
 import styled from 'styled-components/native';
+import { launchImageLibrary } from 'react-native-image-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-//import AsyncStorage from '@react-native-async-storage/async-storage';
-import { theme } from '../styles/theme';
 import { API_URL } from '../globalVariables.js';
+import { colors, icons } from '../styles/theme'; 
 
-
-const Signup = ({ navigation }) => {
+const Signup = ({navigation}) => {
   const [nickName, setNickName] = useState('');
-  const [profileImage, setProfileImage] = useState(null);
-  const [jwtToken, setJwtToken] = useState('');
+  const [imageFile, setImageFile] = useState(null);
 
-  useEffect(() => {
-    getToken();
-  }, []);
-
-  const getToken = async () => {
-    try {
-      const token = await AsyncStorage.getItem('jwtToken');
-      if (token !== null) {
-        setJwtToken(token);
+  const onSelectImage = () => {
+    launchImageLibrary(
+      {
+        mediaType: 'photo',
+        maxWidth: 512,
+        maxHeight: 512,
+        includeBase64: true
+      }, 
+      (response) => {
+        if (response.didCancel) {
+          console.log('User cancelled image picker');
+        } else if (response.errorCode) {
+          console.log('Image Error: ', response.errorCode);
+        } else {
+          setImageFile(response.assets[0].base64);
+        }
       }
-    } catch (error) {
-      console.error('Error getting token:', error);s
-    }
+    );
   };
 
-  const handleChoosePhoto = () => {
-    const options = {
-      title: 'Select Profile Image',
-      storageOptions: {
-        skipBackup: true,
-        path: 'images',
-      },
-    };
-
-    ImagePicker.showImagePicker(options, response => {
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else {
-        setProfileImage(response.uri);
-      }
-    });
-  };
-
-  const handleSubmit = async () => {
+  const handleSignup = async () => {
     try {
+      if (!imageFile) {
+        Alert.alert('Image Required', 'Please select an image.');
+        return;
+      }
       const formData = new FormData();
       formData.append('nickName', nickName);
-      
-      // 이미지를 선택하지 않았을 때 기본 이미지 파일을 설정합니다.
-      if(profileImage) {
-        formData.append('profileImage', {
-          uri: profileImage,
-          type: 'image/jpeg',
-          name: 'profileImage.jpg',
-        });
-      } else {
-        formData.append('profileImage', {
-          uri: '기본이미지파일.jpg', // 기본 이미지 파일 경로를 지정합니다.
-          type: 'image/jpeg',
-          name: 'profileImage.jpg',
-        });
-      }
+      formData.append('image', {
+        uri: `data:image/jpeg;base64,${imageFile}`,
+        type: 'image/jpeg',
+        name: 'profileImage.jpg',
+      });
   
       const token = await AsyncStorage.getItem('jwtToken');
   
@@ -89,86 +67,77 @@ const Signup = ({ navigation }) => {
       navigation.navigate('Home');
     }
   };
-  
 
   return (
-    <Container>
-      <ProfileImageContainer>
-        {profileImage ? (
-          <ProfileImage source={{ uri: profileImage }} />
+    <View style={styles.container}>
+      <TouchableOpacity onPress={onSelectImage} style={styles.profileImageContainer}>
+        {imageFile ? (
+          <Image source={{ uri: `data:image/jpeg;base64,${imageFile}` }} style={styles.profileImage} />
         ) : (
-          <TouchableOpacity onPress={handleChoosePhoto}>
-            <ChoosePhotoText>Choose Photo</ChoosePhotoText>
-          </TouchableOpacity>
+          <View style={styles.defaultProfileImage} />
         )}
-      </ProfileImageContainer>
-      <Input
-        placeholder="Nick Name"
+      </TouchableOpacity>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter your nickname"
         onChangeText={text => setNickName(text)}
         value={nickName}
       />
-      <ButtonContainer>
-        <CustomButton onPress={handleSubmit}>
-          <CustomButtonText>회원 가입</CustomButtonText>
-        </CustomButton>
-      </ButtonContainer>
-    </Container>
+      <TouchableOpacity onPress={handleSignup} style={styles.signupButton}>
+        <Text style={styles.signupButtonText}>Signup</Text>
+      </TouchableOpacity>
+    </View>
   );
 };
 
-const Container = styled.View`
-  flex: 1;
-  justify-content: center;
-  align-items: center;
-  background-color: white;
-`;
-
-const ProfileImageContainer = styled.View`
-  width: 150px;
-  height: 150px;
-  border-radius: 75px;
-  background-color: #e1e1e1;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 20px;
-`;
-
-const ProfileImage = styled(Image)`
-  width: 150px;
-  height: 150px;
-  border-radius: 75px;
-`;
-
-const ChoosePhotoText = styled.Text`
-  color: #007bff;
-`;
-
-const Input = styled.TextInput`
-  width: 80%;
-  height: 40px;
-  border-color: gray;
-  border-width: 1px;
-  border-radius: 50px;
-  margin-bottom: 20px;
-  padding-horizontal: 10px;
-`;
-
-const ButtonContainer = styled.View`
-  width: 80%;
-`;
-
-const CustomButton = styled.TouchableOpacity`
-  width: 100%;
-  height: 23%;
-  background-color: #F2CD5C;
-  border-radius: 20px;
-  align-items: center;
-  justify-content: center;
-`;
-
-const CustomButtonText = styled.Text`
-  color: white;
-  font-size: 16px;
-`;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.background,
+  },
+  profileImageContainer: {
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    backgroundColor: colors.secondYellow,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  profileImage: {
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+  },
+  defaultProfileImage: {
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    backgroundColor: colors.secondYellow,
+  },
+  input: {
+    width: '80%',
+    height: 40,
+    borderColor: colors.mainGray,
+    borderWidth: 1,
+    borderRadius: 50,
+    paddingHorizontal: 10,
+    marginBottom: 20,
+  },
+  signupButton: {
+    width: '80%',
+    backgroundColor: colors.mainYellow,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 50,
+    alignItems: 'center',
+  },
+  signupButtonText: {
+    color: 'black',
+    fontSize: 16,
+  },
+});
 
 export default Signup;

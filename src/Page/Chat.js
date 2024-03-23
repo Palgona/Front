@@ -1,23 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, FlatList, TouchableOpacity, KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, FlatList, Image, TouchableOpacity, TextInput, StyleSheet, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
+import { launchImageLibrary } from 'react-native-image-picker';
+import { colors, theme, icons } from '../styles/theme'; 
 import { API_URL } from '../globalVariables.js';
 
 const Chat = ({ route }) => {
-  const { chatRoomId } = route.params;
-
+  const { chatRoomId, user } = route.params;
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
+  const [partnerProfile, setPartnerProfile] = useState(user);
 
   useEffect(() => {
-    fetchChatMessages(); // 채팅 메시지 데이터 가져오기
+    //fetchChatMessages();
+    setMessages(exampleMessages);
   }, []);
-
-  // 채팅 메시지 데이터를 가져오는 함수
+  const exampleMessages = [
+    { id: 1, text: '달에게 말을 했죠', sender: 'partner' },
+    { id: 2, text: '하늘 위로 올라가', sender: 'me' },
+    { id: 3, text: '네모난 달이 떴죠', sender: 'partner' },
+    { id: 4, text: '나는 꿈을 꾸었죠', sender: 'me' },
+    // 나머지 채팅 메시지 예시 데이터 추가
+  ];
   const fetchChatMessages = async () => {
     try {
-      const response = await axios.get(API_URL+`/chats/${chatRoomId}/messages`); // 채팅 메시지 가져오는 API 호출
-      setMessages(response.data); // 가져온 채팅 메시지를 상태에 설정
+      const response = await axios.get(API_URL+`/chats/${chatRoomId}/messages`);
+      setMessages(response.data.messages);
     } catch (error) {
       console.error('Error fetching chat messages:', error);
     }
@@ -25,35 +34,87 @@ const Chat = ({ route }) => {
 
   const handleSend = () => {
     if (text.trim() !== '') {
-      sendMessageToServer(text); // 서버로 메시지 전송
+      sendMessageToServer(text);
       setMessages([{ id: Date.now(), text, sender: 'me' }, ...messages]);
       setText('');
     }
   };
 
-  const sendMessageToServer = (message) => {
-    // 서버로 메시지를 전송하는 로직
-    // axios 또는 Socket을 사용하여 서버로 메시지 전송
+  const handleImageSend = () => {
+    launchImageLibrary(
+      {
+        mediaType: 'photo',
+        maxWidth: 512,
+        maxHeight: 512,
+        includeBase64: true
+      }, 
+      (response) => {
+        if (response.didCancel) {
+          console.log('User cancelled image picker');
+        } else if (response.errorCode) {
+          console.log('Image Error: ', response.errorCode);
+        } else {
+          sendImageToServer(response.assets[0].uri);
+        }
+      }
+    );
   };
 
-  const renderItem = ({ item }) => (
-    <View style={[styles.messageBubble, item.sender === 'me' ? styles.myMessage : styles.otherMessage]}>
-      <Text style={styles.messageText}>{item.text}</Text>
-    </View>
-  );
+  const sendMessageToServer = (message) => {
+    // send message to server logic
+  };
+
+  const sendImageToServer = async (uri) => {
+    try {
+      const formData = new FormData();
+      formData.append('image', {
+        uri: uri,
+        type: 'image/jpeg',
+        name: 'chatImage.jpg',
+      });
+
+      // Implement your server request to send the image
+      // After successful upload, add the image message to the messages list
+      const newMessage = { id: Date.now(), image: uri, sender: 'me' };
+      setMessages([newMessage, ...messages]);
+    } catch (error) {
+      console.error('Error sending image message:', error);
+      Alert.alert('Error', 'Failed to send image message');
+    }
+  };
+
+  const renderItem = ({ item }) => {
+    if (item.text) {
+      return (
+        <View style={[styles.messageBubble, item.sender === 'me' ? styles.myMessage : styles.otherMessage]}>
+          <Text style={styles.messageText}>{item.text}</Text>
+        </View>
+      );
+    } else if (item.image) {
+      return (
+        <View style={[styles.messageBubble, item.sender === 'me' ? styles.myMessage : styles.otherMessage]}>
+          <Image source={{ uri: item.image }} style={styles.messageImage} resizeMode='contain'/>
+        </View>
+      );
+    }
+  };
 
   return (
     <View style={styles.container}>
+      <View style={styles.partnerProfileContainer}>
+        <Image source={{ uri: partnerProfile.profileImage }} style={styles.partnerProfileImage} />
+        <Text style={styles.partnerName}>{partnerProfile.nickname}</Text>
+      </View>
       <FlatList
         data={messages}
         renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()}
-        inverted // 최신 메시지가 화면 하단에 표시되도록 역순으로 표시
+        inverted
       />
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : null}
-        style={styles.inputContainer}
-      >
+      <View style={styles.inputContainer}>
+        <TouchableOpacity onPress={handleImageSend} style={styles.imageContainer}>
+          <Image source={icons.camera} style={styles.imageIcon} />
+        </TouchableOpacity>
         <TextInput
           style={styles.input}
           value={text}
@@ -64,7 +125,7 @@ const Chat = ({ route }) => {
         <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
           <Text style={styles.sendButtonText}>전송</Text>
         </TouchableOpacity>
-      </KeyboardAvoidingView>
+      </View>
     </View>
   );
 };
@@ -72,7 +133,7 @@ const Chat = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.background,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -80,7 +141,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderTopWidth: 1,
-    borderTopColor: '#CCCCCC',
+    borderTopColor: '#cccccc',
   },
   input: {
     flex: 1,
@@ -94,7 +155,7 @@ const styles = StyleSheet.create({
   sendButton: {
     paddingHorizontal: 15,
     paddingVertical: 10,
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.mainGreen,
     borderRadius: 20,
   },
   sendButtonText: {
@@ -105,19 +166,52 @@ const styles = StyleSheet.create({
     maxWidth: '70%',
     padding: 10,
     borderRadius: 10,
-    marginVertical: 5,
+    marginVertical: 2,
   },
   myMessage: {
     alignSelf: 'flex-end',
-    backgroundColor: '#DCF8C6',
+    borderRadius: 10,
+    backgroundColor: colors.secondYellow,
   },
   otherMessage: {
     alignSelf: 'flex-start',
-    backgroundColor: '#E5E5EA',
+    backgroundColor: colors.secondGreen,
   },
   messageText: {
     fontSize: 16,
+    color: 'black',
   },
+  messageImage: {
+    width: '70%',
+    aspectRatio: 1,
+    borderRadius: 10,
+  },
+  partnerProfileContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#CCCCCC',
+  },
+  partnerProfileImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 10,
+  },
+  partnerName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  imageContainer: {
+    paddingHorizontal: 10,
+  },
+  imageIcon: {
+    width: 25,
+    height: 25,
+    tintColor: colors.mainGreen,
+  },
+
 });
 
 export default Chat;

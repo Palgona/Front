@@ -10,6 +10,8 @@ import SearchResult from './Page/SearchResult';
 import ChatList from './Page/ChatList';
 import Chat from './Page/Chat';
 import ProductDetail from './Page/ProductDetail'; 
+import User from './Page/User';
+import SellList from './Page/SellList';
 
 const Stack = createStackNavigator();
 
@@ -53,14 +55,24 @@ export default function App() {
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="Chat"
-          component={Chat}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
           name="ProductDetail"
           component={ProductDetail}
           options={{ headerShown: false }} 
+        />
+        <Stack.Screen
+          name="User"
+          component={User}
+          options={{ headerShown: false }} 
+        />
+        <Stack.Screen
+          name="SellList"
+          component={SellList}
+          options={{ headerShown: false }} 
+        />
+        <Stack.Screen
+          name="Chat"
+          component={Chat}
+          options={{ headerShown: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>

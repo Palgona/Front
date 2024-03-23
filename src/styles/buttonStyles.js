@@ -4,7 +4,7 @@ import { colors } from './theme';
 export const buttonStyles = StyleSheet.create({
   input: {
     height: 40,
-    backgroundColor: '#F1F0F0', // 연한 회색 배경색
+    backgroundColor: colors.secondYellow, // 연한 회색 배경색
     borderRadius: 50, // 검색 바 모서리 둥글게
     paddingHorizontal: 20,
     margin: 15,
@@ -14,11 +14,12 @@ export const buttonStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginLeft: 20, // 간격 조정
-    backgroundColor: '#ffffff',
+    marginBottom: 10,
   },
   previousSearchText: {
-    fontSize: 15, // 글씨 크기 살짝 키우기
+    fontSize: 15, 
     marginRight: 5, // 간격 조정
+    color: colors.mainGray,
   },
   smallButton:{
     borderRadius: 100,
@@ -27,12 +28,12 @@ export const buttonStyles = StyleSheet.create({
     width: 40,
     height: 40,
     marginLeft: 5,
-    backgroundColor: colors.secondary,
+    backgroundColor: 'white',
   },
   iconimage:{
     width: 24,
     height: 24,
-    tintColor: '#ffffff',
+    tintColor: colors.darkGray,
   }
   
 });

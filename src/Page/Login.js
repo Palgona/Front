@@ -4,7 +4,7 @@ import { login, getProfile as getKakaoProfile } from "@react-native-seoul/kakao-
 import { API_URL } from '../globalVariables.js';
 
 
-const App = ({ navigation }) => { // navigation을 올바르게 받도록 수정합니다.
+const App = ({ navigation }) => {
   const [result, setResult] = useState("");
 
   const signInWithKakao = async () => {
@@ -19,7 +19,7 @@ const App = ({ navigation }) => { // navigation을 올바르게 받도록 수정
       console.log("User Profile:", userProfile);
 
       setResult(JSON.stringify(token)); // 토큰을 문자열로 표시하지 않음
-      console.log("Token:", token); 
+      console.log("Token:", token);
 
       // 로그인 성공 시 Signup 페이지로 이동
       navigation.navigate('Signup');
@@ -52,19 +52,32 @@ const App = ({ navigation }) => { // navigation을 올바르게 받도록 수정
         profileImage
       });
 
-      const response = await fetch(API_URL+'/auth/login', {
+      // auth/refresh-token에 대한 요청
+      const responseRefresh = await fetch(API_URL+'/auth/refresh-token', {
         method: 'POST',
-        headers,
-        body
+        headers: headers
       });
 
-      if (!response.ok) {
-        throw new Error('url failed to sign up');
+      if (!responseRefresh.ok) {
+        throw new Error('Failed to refresh token');
       }
 
-      console.log('User signed up successfully');
+      console.log('Token refreshed successfully');
+
+      // auth/login에 대한 요청
+      const responseLogin = await fetch(API_URL+'/auth/login', {
+        method: 'GET',
+        headers: headers
+      });
+
+      if (!responseLogin.ok) {
+        throw new Error('Failed to login');
+      }
+
+      const data = await responseLogin.json();
+      console.log('User logged in successfully:', data);
     } catch (err) {
-      console.error('Error signing up:', err);
+      console.error('Error signing in:', err);
     }
   };
 
@@ -81,7 +94,7 @@ const App = ({ navigation }) => { // navigation을 올바르게 받도록 수정
 
   const refreshAccessToken = async (refreshToken) => {
     try {
-      const response = await fetch(API_URL+'/auth/refresh', {
+      const response = await fetch(API_URL+'/auth/refresh-token', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
