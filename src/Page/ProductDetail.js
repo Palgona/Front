@@ -37,11 +37,11 @@ const ProductDetail = ({ route, navigation }) => {
   useEffect(() => {
     // 데이터 가져오는 로직을 여기에 구현
     // 여기서는 예시 데이터를 사용하여 상품 정보를 설정합니다.
-    /* API를 호출하여 상품 정보를 가져오는 로직
-    fetch(`${API_URL}/products/${productId}`)
+   //API를 호출하여 상품 정보를 가져오는 로직
+    /*fetch(`${API_URL}/products/${productId}`)
     .then(response => response.json())
     .then(data => setProduct(data))
-    .catch(error => console.error('Error fetching product:', error)); */
+    .catch(error => console.error('Error fetching product:', error));*/
     setProduct(exampleProduct);
   }, []);
 
