@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { colors, theme } from '../styles/theme';
@@ -23,12 +23,16 @@ const ChatList = ({ user }) => { // 사용자 정보를 prop으로 받음
           profileImage: 'https://via.placeholder.com/150',
           nickname: '유저1',
           lastMessage: '안녕하세요!',
+          newMessages: 2, // 예시로 새로운 메시지 개수를 설정합니다.
+          lastMessageTime: '13:30', // 예시로 최근 메시지 시간을 설정합니다.
         },
         {
           chatRoomId: 2,
           profileImage: 'https://via.placeholder.com/150',
           nickname: '유저2',
           lastMessage: '반가워요!',
+          newMessages: 10,
+          lastMessageTime: '15:20',
         },
       ];
       setChats(exampleChats); // 예시 채팅 목록을 상태에 설정
@@ -43,12 +47,18 @@ const ChatList = ({ user }) => { // 사용자 정보를 prop으로 받음
 
   const renderItem = ({ item }) => {
     return (
-      <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', padding: 10 }} onPress={() => handleChatPress(item.chatRoomId, { profileImage: item.profileImage, nickname: item.nickname })}>
-        <Image source={{ uri: item.profileImage }} style={{ width: 50, height: 50, borderRadius: 25 }} />
-        <View style={{ marginLeft: 10 }}>
-          <Text style={{ fontSize: 16 }}>{item.nickname}</Text>
+      <TouchableOpacity style={styles.chatItem} onPress={() => handleChatPress(item.chatRoomId, { profileImage: item.profileImage, nickname: item.nickname })}>
+        <Image source={{ uri: item.profileImage }} style={styles.profileImage} />
+        <View style={styles.chatContent}>
+          <View style={styles.header}>
+            <Text style={styles.nickname}>{item.nickname}</Text>
+            <Text style={styles.lastMessageTime}>{item.lastMessageTime}</Text>
+          </View>
           <Text>{item.lastMessage}</Text>
         </View>
+        {item.newMessages > 0 && <View style={styles.newMessagesBadge}>
+          <Text style={styles.newMessagesCount}>{item.newMessages}</Text>
+        </View>}
       </TouchableOpacity>
     );
   };
@@ -63,8 +73,8 @@ const ChatList = ({ user }) => { // 사용자 정보를 prop으로 받음
         renderItem={renderItem}
         keyExtractor={(item) => item.chatRoomId.toString()}
         ListEmptyComponent={() => (
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text style={{ fontSize: 15 }}>채팅 목록이 없습니다.</Text>
+          <View style={styles.emptyListComponent}>
+            <Text style={styles.emptyListText}>채팅 목록이 없습니다.</Text>
           </View>
         )}
       />
@@ -72,7 +82,7 @@ const ChatList = ({ user }) => { // 사용자 정보를 prop으로 받음
   );
 };
 
-const styles = {
+const styles = StyleSheet.create({
   headerContainer: {
     backgroundColor: colors.mainYellow,
     padding: 20,
@@ -82,6 +92,58 @@ const styles = {
     fontWeight: 'bold',
     marginLeft: 10,
   },
-};
+  chatItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 15,
+  },
+  profileImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+  },
+  chatContent: {
+    flex: 1,
+    marginLeft: 10,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  nickname: {
+    fontSize: 16,
+    color: colors.darkGray,
+  },
+  lastMessageTime: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    fontSize: 12,
+    color: colors.mainGray,
+  },
+  newMessagesBadge: {
+    position: 'absolute',
+    right: '4%',
+    top: '77%',
+    backgroundColor: colors.point,
+    borderRadius: 15,
+    width: 25,
+    height: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  newMessagesCount: {
+    color: 'white',
+  },
+  emptyListComponent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyListText: {
+    fontSize: 15,
+  },
+});
 
 export default ChatList;
