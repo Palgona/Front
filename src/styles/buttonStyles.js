@@ -14,9 +14,10 @@ export const buttonStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginLeft: 20, // 간격 조정
+    marginBottom: 10,
   },
   previousSearchText: {
-    fontSize: 15, // 글씨 크기 살짝 키우기
+    fontSize: 15, 
     marginRight: 5, // 간격 조정
     color: colors.mainGray,
   },
