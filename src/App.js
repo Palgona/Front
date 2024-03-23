@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import MainTabNavigator from './navigation/MainTabNavigator'; // 분리된 네비게이션 불러오기
 import Login from './Page/Login';
 import Signup from './Page/Signup';
@@ -12,8 +13,10 @@ import Chat from './Page/Chat';
 import ProductDetail from './Page/ProductDetail'; 
 import User from './Page/User';
 import SellList from './Page/SellList';
+import Category from './Page/Category';
 
 const Stack = createStackNavigator();
+const Drawer = createDrawerNavigator();
 
 export default function App() {
   return (
@@ -76,5 +79,6 @@ export default function App() {
         />
       </Stack.Navigator>
     </NavigationContainer>
+    
   );
 }

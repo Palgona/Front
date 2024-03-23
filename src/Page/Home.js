@@ -27,6 +27,10 @@ const Home = ({ navigation }) => {
     navigation.navigate('Search');
   };
 
+  const handleCategoryPress = () => {
+    navigation.navigate('Category');
+  };
+
   const handleProductWritePress = () => {
     navigation.navigate('ProductWrite');
   };
@@ -63,7 +67,7 @@ const Home = ({ navigation }) => {
           <TouchableOpacity onPress={handleSearchPress} style={buttonStyles.smallButton}>
             <Image source={icons.alarm} style={buttonStyles.iconimage} resizeMode="contain" />
           </TouchableOpacity>
-          <TouchableOpacity onPress={handleSearchPress} style={buttonStyles.smallButton}>
+          <TouchableOpacity onPress={handleCategoryPress} style={buttonStyles.smallButton}>
             <Image source={icons.category} style={buttonStyles.iconimage} resizeMode="contain" />
           </TouchableOpacity>
         </View>
@@ -75,9 +79,6 @@ const Home = ({ navigation }) => {
           </TouchableOpacity>
           <TouchableOpacity onPress={() => handleOptionPress('category')} style={styles.optionButton}>
             <Text style={styles.optionButtonText}>카테고리</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleOptionPress('accuracy')} style={styles.optionButton}>
-            <Text style={styles.optionButtonText}>정확도</Text>
           </TouchableOpacity>
         </View>
         
