@@ -16,10 +16,10 @@ function MainTabNavigator() {
         tabBarIcon: ({ color, size }) => {
           let iconName;
 
-          if (route.name === 'ChatList') {
-            iconName = icons.chat;
-          } else if (route.name === 'MainHome') {
+          if (route.name === 'MainHome') {
             iconName = icons.home;
+          } else if (route.name === 'ChatList') {
+            iconName = icons.chat;
           } else if (route.name === 'MyPage') {
             iconName = icons.myPage;
           }

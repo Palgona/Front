@@ -45,7 +45,7 @@ const App = ({ navigation }) => {
 
       const headers = {
         'Content-Type': 'application/json',
-        'accessToken': token.accessToken
+        'Authorization': "Bearer "+ accessToken
       };
       const body = JSON.stringify({
         nickName,
@@ -53,6 +53,7 @@ const App = ({ navigation }) => {
       });
 
       // auth/refresh-token에 대한 요청
+      /*
       const responseRefresh = await fetch(API_URL+'/auth/refresh-token', {
         method: 'POST',
         headers: headers
@@ -60,10 +61,10 @@ const App = ({ navigation }) => {
 
       if (!responseRefresh.ok) {
         throw new Error('Failed to refresh token');
-      }
+      } 
 
       console.log('Token refreshed successfully');
-
+*/
       // auth/login에 대한 요청
       const responseLogin = await fetch(API_URL+'/auth/login', {
         method: 'GET',
@@ -71,7 +72,7 @@ const App = ({ navigation }) => {
       });
 
       if (!responseLogin.ok) {
-        throw new Error('Failed to login');
+        throw new Error('로그인 실패!');
       }
 
       const data = await responseLogin.json();
