@@ -46,9 +46,34 @@ const ProductDetail = ({ route, navigation }) => {
     setProduct(exampleProduct);
   }, []);
 
-  const handleChatPress = () => {
-    // 채팅하기 클릭 시 동작
-    // 상대방과 채팅할 수 있는 페이지로 이동하는 로직 구현
+  const handleChatPress = async () => {
+    try {
+      const accessToken = await getAccessToken();
+  
+      // 채팅방 생성 API 호출
+      const createChatResponse = await fetch(`${API_URL}/chats`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'accessToken': accessToken
+        },
+        body: JSON.stringify({
+          visitorId: 0
+        })
+      });
+  
+      if (!createChatResponse.ok) {
+        throw new Error('Failed to create chat room');
+      }
+  
+      const createChatData = await createChatResponse.json();
+  
+      // 생성된 채팅방으로 넘어가기
+      const chatRoomId = createChatData.chatRoomId;
+      navigation.navigate('Chat', { chatRoomId: chatRoomId }); // Chat 컴포넌트로 이동 및 chatRoomId 전달
+    } catch (error) {
+      console.error('Error creating chat room:', error);
+    }
   };
 
   const handleBidPress = () => {
