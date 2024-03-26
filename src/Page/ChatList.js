@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { toString, View, Text, FlatList, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { colors, theme } from '../styles/theme';
 import { API_URL } from '../globalVariables.js';
+import { storeAccessToken, getAccessToken, removeAccessToken } from '../token.js';
 
-const ChatList = ({ user }) => { // 사용자 정보를 prop으로 받음
+const ChatList = ({ user }) => {
   const navigation = useNavigation();
   const [chats, setChats] = useState([]);
 
@@ -16,48 +17,38 @@ const ChatList = ({ user }) => { // 사용자 정보를 prop으로 받음
   // 채팅 목록을 가져오는 함수
   const fetchChats = async () => {
     try {
-      // 여기서는 예시 데이터를 사용하므로 axios를 사용하지 않고 하드코딩하여 채팅 목록을 설정합니다.
-      const exampleChats = [
-        {
-          chatRoomId: 1,
-          profileImage: 'https://via.placeholder.com/150',
-          nickname: '유저1',
-          lastMessage: '안녕하세요!',
-          newMessages: 2, // 예시로 새로운 메시지 개수를 설정합니다.
-          lastMessageTime: '13:30', // 예시로 최근 메시지 시간을 설정합니다.
-        },
-        {
-          chatRoomId: 2,
-          profileImage: 'https://via.placeholder.com/150',
-          nickname: '유저2',
-          lastMessage: '반가워요!',
-          newMessages: 10,
-          lastMessageTime: '15:20',
-        },
-      ];
-      setChats(exampleChats); // 예시 채팅 목록을 상태에 설정
+      const accessToken = await getAccessToken();
+      
+      // 채팅 목록 조회 API 호출
+      const response = await axios.get(`${API_URL}/chats`, {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        }
+      });
+
+      setChats(response.data); // 채팅 목록을 상태에 설정
     } catch (error) {
       console.error('Error fetching chat list:', error);
     }
   };
 
-  const handleChatPress = (chatRoomId, user) => { // user 객체를 전달
+  const handleChatPress = (chatRoomId, user) => {
     navigation.navigate('Chat', { chatRoomId, user });
   };
 
   const renderItem = ({ item }) => {
     return (
-      <TouchableOpacity style={styles.chatItem} onPress={() => handleChatPress(item.chatRoomId, { profileImage: item.profileImage, nickname: item.nickname })}>
-        <Image source={{ uri: item.profileImage }} style={styles.profileImage} />
+      <TouchableOpacity style={styles.chatItem} onPress={() => handleChatPress(item.id, user)}>
+        <Image source={{ uri: user.profileImage }} style={styles.profileImage} />
         <View style={styles.chatContent}>
           <View style={styles.header}>
-            <Text style={styles.nickname}>{item.nickname}</Text>
-            <Text style={styles.lastMessageTime}>{item.lastMessageTime}</Text>
+            <Text style={styles.nickname}>{user.nickname}</Text>
+            <Text style={styles.lastMessageTime}>최근 메시지 시간</Text>
           </View>
           <Text>{item.lastMessage}</Text>
         </View>
-        {item.newMessages > 0 && <View style={styles.newMessagesBadge}>
-          <Text style={styles.newMessagesCount}>{item.newMessages}</Text>
+        {item.unreadMessageCount > 0 && <View style={styles.newMessagesBadge}>
+          <Text style={styles.newMessagesCount}>{item.unreadMessageCount}</Text>
         </View>}
       </TouchableOpacity>
     );
@@ -71,7 +62,7 @@ const ChatList = ({ user }) => { // 사용자 정보를 prop으로 받음
       <FlatList
         data={chats}
         renderItem={renderItem}
-        keyExtractor={(item) => item.chatRoomId.toString()}
+        keyExtractor={(item) => item.id.toString()}
         ListEmptyComponent={() => (
           <View style={styles.emptyListComponent}>
             <Text style={styles.emptyListText}>채팅 목록이 없습니다.</Text>
