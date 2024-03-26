@@ -4,6 +4,7 @@ import { icons, colors, theme } from '../styles/theme';
 import { API_URL } from '../globalVariables.js';
 import ProductModal from '../Components/ProductModal';
 import Swiper from 'react-native-swiper';
+import { storeAccessToken, getAccessToken, removeAccessToken } from '../token.js';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -55,10 +56,40 @@ const ProductDetail = ({ route, navigation }) => {
     setModalVisible(true); // 모달 열기
   };
 
-  const handleLikePress = () => {
+  const handleLikePress = async() => {
     // 좋아요(like) 버튼을 누르면 liked 상태를 반전시킴
     setLiked(!liked);
+  
+    // 서버와 통신하여 북마크를 추가하거나 삭제합니다.
+    const url = `${API_URL}/bookmarks/${productId}`;
+    const method = liked ? 'DELETE' : 'POST';
+    const accessToken = await getAccessToken(); // 여기에 액세스 토큰을 넣어주세요.
+    console.log('Access Token:', accessToken); // 반환된 액세스 토큰을 콘솔에 출력
+    fetch(url, {
+      method: method,
+      headers: {
+        'Content-Type': 'application/json',
+        'accessToken': accessToken
+      },
+      body: JSON.stringify({
+        productId: productId,
+        bookmark: liked // liked가 true면 찜 추가, false면 찜 삭제
+      }),
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      // 서버에서 성공적인 응답을 받은 경우, 필요한 작업을 수행할 수 있습니다.
+      // 예: 사용자에게 메시지 표시 등
+    })
+    .catch(error => {
+      console.error('Error updating bookmark:', error);
+      // 오류 처리를 수행합니다. 예: 사용자에게 오류 메시지 표시
+    });
   };
+  
+  
 
   if (!product) {
     return <Text>Loading...</Text>; // 데이터가 로드되지 않은 경우 로딩 메시지를 표시합니다.

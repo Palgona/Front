@@ -2,6 +2,7 @@ import { Pressable, StyleSheet, View, Image } from "react-native";
 import React, { useState } from "react";
 import { login, getProfile as getKakaoProfile } from "@react-native-seoul/kakao-login";
 import { API_URL } from '../globalVariables.js';
+import { storeAccessToken, getAccessToken, removeAccessToken } from '../token.js';
 
 
 const App = ({ navigation }) => {
@@ -34,6 +35,8 @@ const App = ({ navigation }) => {
       const userProfile = await getKakaoProfile();
       const { nickName, profileImage } = userProfile;
       const accessToken = token.accessToken;
+
+      storeAccessToken(token.accessToken);
 
       // 액세스 토큰이 만료되었는지 확인
       if (isAccessTokenExpired(token)) {
