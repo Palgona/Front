@@ -4,7 +4,7 @@ import { icons, colors, theme } from '../styles/theme';
 import { API_URL } from '../globalVariables.js';
 import ProductModal from '../Components/ProductModal';
 import Swiper from 'react-native-swiper';
-import { storeAccessToken, getAccessToken, removeAccessToken } from '../token.js';
+import { getAccessToken } from '../token.js';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -15,36 +15,72 @@ const ProductDetail = ({ route, navigation }) => {
   const [liked, setLiked] = useState(false);
   
 
-  // 예시 데이터
-  const exampleProduct = {
-    name: '나의 아이폰14',
-    owner: {
-      username: '김가룡',
-      avatar: 'https://via.placeholder.com/150',
-    },
-    price: 100,
-    content: '아이폰14 화이트 깨끗해요 잘썼어요'.repeat(50), // 긴 설명을 위해 반복
-    imageUrls: [
-      'https://via.placeholder.com/300/aabbcc/FFFFFF?text=Image+1',
-      'https://via.placeholder.com/300/3498DB/FFFFFF?text=Image+2',
-      'https://via.placeholder.com/300/2ECC71/FFFFFF?text=Image+3',
-      'https://via.placeholder.com/300/ccbbff/FFFFFF?text=Image+4',
-    ],
-    chatCount: 10, // 채팅 수
-    likeCount: 20, // 찜 수
-  };
-  
+      // 예시 데이터
+    const exampleProduct = {
+      productId: 0,
+      productName: '나의 아이폰14',
+      content: '아이폰14 화이트 깨끗해요 잘썼어요'.repeat(50), // 긴 설명을 위해 반복
+      category: '스마트폰',
+      productState: '중고',
+      deadline: '2024-03-27T08:24:43.012Z',
+      created_at: '2024-03-27T08:24:43.012Z',
+      ownerId: 123, // 판매자의 고유 ID
+      ownerName: '김가룡',
+      ownerImgUrl: 'https://via.placeholder.com/150',
+      highestPrice: 100,
+      bookmarkCount: 20,
+      imageUrls: [
+        'https://via.placeholder.com/300/aabbcc/FFFFFF?text=Image+1',
+        'https://via.placeholder.com/300/3498DB/FFFFFF?text=Image+2',
+        'https://via.placeholder.com/300/2ECC71/FFFFFF?text=Image+3',
+        'https://via.placeholder.com/300/ccbbff/FFFFFF?text=Image+4',
+      ],
+      chatCount: 10, // 채팅 수
+      likeCount: 20, // 찜 수
+    };
+
 
   useEffect(() => {
-    // 데이터 가져오는 로직을 여기에 구현
-    // 여기서는 예시 데이터를 사용하여 상품 정보를 설정합니다.
-   //API를 호출하여 상품 정보를 가져오는 로직
-    /*fetch(`${API_URL}/products/${productId}`)
-    .then(response => response.json())
-    .then(data => setProduct(data))
-    .catch(error => console.error('Error fetching product:', error));*/
+    // 데이터 가져오는 로직
+    fetchProduct();
+
+    // 예시 데이터를 사용하여 상품 정보를 설정합니다.
     setProduct(exampleProduct);
   }, []);
+
+  const fetchProduct = async () => {
+    try {
+      const accessToken = await getAccessToken();
+      const response = await fetch(`${API_URL}/products/${productId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
+        }
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch product');
+      }
+      const data = await response.json();
+      const productData = {
+        productId: data.productId,
+        productName: data.productName,
+        content: data.content,
+        category: data.category,
+        productState: data.productState,
+        deadline: data.deadline,
+        created_at: data.created_at,
+        ownerId: data.ownerId,
+        ownerName: data.ownerName,
+        ownerImgUrl: data.ownerImgUrl,
+        highestPrice: data.highestPrice,
+        bookmarkCount: data.bookmarkCount,
+        imageUrls: data.imageUrls
+      };
+      setProduct(productData);
+    } catch (error) {
+      console.error('Error fetching product:', error);
+    }
+  };
 
   const handleChatPress = async () => {
     try {
@@ -122,32 +158,31 @@ const ProductDetail = ({ route, navigation }) => {
 
   return (
     <View style={theme.container}>
-      {/* 이미지와 상품 정보 */}
+      {/* 상품 이미지 및 정보 */}
       <ScrollView>
         <View style={styles.scrollContainer}>
-        <Swiper style={styles.Swiper}
-        dotStyle={{ backgroundColor: colors.mainGray }}
-        activeDotStyle={{ backgroundColor: colors.mainYellow}}
-        >
-        {product.imageUrls.map((imageUrl, index) => (
-          <Image key={index} source={{ uri: imageUrl }} style={styles.productImage} />
-        ))}
-      </Swiper>
+          <Swiper style={styles.Swiper}
+            dotStyle={{ backgroundColor: colors.mainGray }}
+            activeDotStyle={{ backgroundColor: colors.mainYellow}}
+          >
+            {product.imageUrls.map((imageUrl, index) => (
+              <Image key={index} source={{ uri: imageUrl }} style={styles.productImage} />
+            ))}
+          </Swiper>
           <View style={styles.productInfo}>
-            {/* 상품 이름과 사용자 정보 */}
+            {/* 상품 이름 및 판매자 정보 */}
             <View style={styles.nameAndUser}>
-              <Text style={styles.productName}>{product.name}</Text>
-              {/* 사용자 이미지와 닉네임 */}
-              <TouchableOpacity onPress={() => navigation.navigate('User')}>
+              <Text style={styles.productName}>{product.productName}</Text>
+              <TouchableOpacity onPress={() => navigation.navigate('User', { userId: product.ownerId })}>
                 <View style={styles.userInfo}>
-                  <Image source={{ uri: product.owner.avatar }} style={styles.userImage} />
-                  <Text style={styles.userName}>{product.owner.username}</Text>
+                  <Image source={{ uri: product.ownerImgUrl }} style={styles.userImage} />
+                  <Text style={styles.userName}>{product.ownerName}</Text>
                 </View>
               </TouchableOpacity>
             </View>
-            {/* 가격, 최고 입찰가, 채팅 및 찜 정보 */}
+            {/* 가격, 채팅 및 찜 정보 */}
             <View style={styles.details}>
-              <Text style={styles.price}>현재 최고가: {product.price}원</Text>
+              <Text style={styles.price}>최고가: {product.highestPrice}원</Text>
               <View style={styles.chatAndLike}>
                 <TouchableOpacity style={styles.iconContainer}>
                   <Image source={icons.chat} style={styles.icon} />
@@ -155,7 +190,7 @@ const ProductDetail = ({ route, navigation }) => {
                 </TouchableOpacity>
                 <TouchableOpacity onPress={handleLikePress} style={styles.iconContainer}>
                   <Image source={liked ? icons.heartClick : icons.heart} style={[styles.icon, liked && styles.likedIcon]} />
-                  <Text style={styles.iconText}>{product.likeCount}</Text>
+                  <Text style={styles.iconText}>{product.bookmarkCount}</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -182,6 +217,7 @@ const ProductDetail = ({ route, navigation }) => {
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   scrollContainer: {

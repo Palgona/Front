@@ -11,7 +11,6 @@ const Profile = ({ user }) => {
       {/* 닉네임과 소개 */}
       <View style={styles.userInfo}>
         <Text style={styles.nickname}>{user.nickname}</Text>
-        <Text style={styles.bio}>{user.bio}</Text>
       </View>
     </View>
   );
@@ -23,8 +22,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   avatar: {
-    width: 90,
-    height: 90,
+    width: 80,
+    height: 80,
     borderRadius: 75,
     marginRight: 10,
   },

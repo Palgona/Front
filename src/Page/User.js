@@ -1,14 +1,32 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text, Image } from 'react-native';
 import { icons, colors } from '../styles/theme';
 import Profile from '../Components/Profile';
+import { API_URL } from '../globalVariables.js';
+import axios from 'axios';
 
-const User = ({ navigation }) => {
+const User = ({ route, navigation }) => {
+  const { userId } = route.params;
+  const [memberData, setMemberData] = useState(null);
+
+  useEffect(() => {
+    fetchMemberData();
+  }, []);
+  
+  const fetchMemberData = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/members/${userId}`);
+      setMemberData(response.data);
+    } catch (error) {
+      console.error('Error fetching member data:', error);
+    }
+  };
+
   // 임시 사용자 프로필 정보
   const user = {
-    nickname: '김가룡',
-    profile_image: 'https://via.placeholder.com/90',
-    bio: '하이루 나는 김가룡',
+    userId: memberData ? memberData.userId : '123',
+    nickname: memberData ? memberData.username : '김가룡',
+    profile_image: memberData ? memberData.avatar : 'https://via.placeholder.com/80',
   };
 
   const handleReport = () => {
@@ -19,7 +37,7 @@ const User = ({ navigation }) => {
 
   const handleSellList = () => {
     // 판매내역 페이지로 이동
-    navigation.navigate('SellList');
+    navigation.navigate('SellList', { userId });
   };
 
   const handleReview = () => {
@@ -48,7 +66,7 @@ const User = ({ navigation }) => {
 
       {/* 기능 목록 */}
       <View style={styles.functionList}>
-      <View style={styles.separator} />
+        <View style={styles.separator} />
         <TouchableOpacity style={styles.functionItem} onPress={handleSellList}>
           <Text style={styles.functionText}>판매내역</Text>
         </TouchableOpacity>
