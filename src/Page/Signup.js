@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, TextInput, StyleSheet, Alert } from 'react-native';
-import styled from 'styled-components/native';
 import { launchImageLibrary } from 'react-native-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
@@ -33,27 +32,27 @@ const Signup = ({navigation}) => {
 
   const handleSignup = async () => {
     try {
-      if (!imageFile) {
-        Alert.alert('Image Required', 'Please select an image.');
-        return;
-      }
+      // 이미지를 선택하지 않은 경우 기본 이미지로 설정
       const formData = new FormData();
       formData.append('nickName', nickName);
-      formData.append('image', {
-        uri: `data:image/jpeg;base64,${imageFile}`,
-        type: 'image/jpeg',
-        name: 'profileImage.jpg',
-      });
-  
+      if (!imageFile) {
+        formData.append('image', require('../../assets/user-profile.png'));
+      } else {
+        formData.append('image', {
+          uri: `data:image/jpeg;base64,${imageFile}`,
+          type: 'image/jpeg',
+          name: 'profileImage.jpg',
+        });
+      }
       const token = await AsyncStorage.getItem('jwtToken');
-  
+
       const response = await axios.post(API_URL+'/auth/signup', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${token}`,
         },
       });
-  
+
       if (response.status === 200) {
         Alert.alert('회원 가입 성공', '회원 가입이 완료되었습니다.');
         navigation.navigate('Home');
@@ -64,7 +63,7 @@ const Signup = ({navigation}) => {
     } catch (error) {
       console.error('Error signing up:', error);
       Alert.alert('오류', '회원 가입 중 오류가 발생했습니다.');
-      navigation.navigate('Home');
+      navigation.navigate('Home'); //연결성공하면 지우기
     }
   };
 
@@ -84,7 +83,7 @@ const Signup = ({navigation}) => {
         value={nickName}
       />
       <TouchableOpacity onPress={handleSignup} style={styles.signupButton}>
-        <Text style={styles.signupButtonText}>Signup</Text>
+        <Text style={styles.signupButtonText}>회원가입</Text>
       </TouchableOpacity>
     </View>
   );
@@ -110,12 +109,6 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     borderRadius: 100,
-  },
-  defaultProfileImage: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    backgroundColor: colors.secondYellow,
   },
   input: {
     width: '80%',
