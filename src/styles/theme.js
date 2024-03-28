@@ -12,6 +12,7 @@ import chat from '../../assets/icons/chat.png';
 import close from '../../assets/icons/close.png';
 import camera from '../../assets/icons/camera.png';
 import report from '../../assets/icons/report.png';
+import exit from '../../assets/icons/exit.png';
 
 export const colors = {
     mainYellow: '#FFDE66',
@@ -37,6 +38,7 @@ export const icons = {
     close: close,
     camera: camera,
     report: report,
+    exit: exit,
   };
   
 export const theme = StyleSheet.create({
