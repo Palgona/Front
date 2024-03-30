@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { API_URL } from '../globalVariables.js';
 import { colors, icons } from '../styles/theme'; 
+import { storeAccessToken, getAccessToken, removeAccessToken } from '../token.js';
 
 const Signup = ({navigation}) => {
   const [nickName, setNickName] = useState('');
@@ -44,12 +45,12 @@ const Signup = ({navigation}) => {
           name: 'profileImage.jpg',
         });
       }
-      const token = await AsyncStorage.getItem('jwtToken');
+      const token = await getAccessToken();
 
       const response = await axios.post(API_URL+'/auth/signup', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `${token}`,
         },
       });
 

@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export const storeAccessToken = async (accessToken) => {
   try {
     await AsyncStorage.setItem('accessToken', accessToken);
-    console.log('액세스 토큰이 AsyncStorage에 저장되었습니다.');
+    console.log('액세스 토큰이 AsyncStorage에 저장되었습니다.', accessToken);
   } catch (error) {
     console.error('액세스 토큰을 AsyncStorage에 저장하는 중에 오류가 발생했습니다:', error);
   }
