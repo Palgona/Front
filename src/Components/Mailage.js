@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { Text, View, Button, StyleSheet } from 'react-native';
+import React from 'react';
+import { Text, View, StyleSheet } from 'react-native';
 import { colors } from '../styles/theme';
 
-const Mileage = () => {
-  return (
+const Mileage = ({ user, navigation }) => {
+    return (
     <View style={styles.conatainer}>
         <Text style={styles.inText}>마일리지</Text>
-        <Text style={styles.inText}>1,000p</Text>
+        <Text style={styles.mailageText}>{user.mailage}P</Text>
     </View>
   );
 };
@@ -25,6 +25,10 @@ const styles = StyleSheet.create({
     inText:{
         color: colors.darkGray,
         fontSize: 15,
+    },
+    mailageText:{
+        color: colors.darkGray,
+        fontSize: 17,
     }
 })
 

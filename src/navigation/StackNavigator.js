@@ -11,7 +11,9 @@ import ChatList from '../Page/ChatList';
 import Chat from '../Page/Chat';
 import ProductDetail from '../Page/ProductDetail'; 
 import User from '../Page/User';
-import SellList from '../Page/SellList';
+import ProfileEdit from '../Page/ProfileEdit';
+import MailageCharge from '../Page/MailageCharge';
+import List from '../Page/List';
 
 const Stack = createStackNavigator();
 
@@ -64,13 +66,23 @@ const StackNavigator = () => {
         options={{ headerShown: false }} 
       />
       <Stack.Screen
-        name="SellList"
-        component={SellList}
+        name="List"
+        component={List}
         options={{ headerShown: false }} 
       />
       <Stack.Screen
         name="Chat"
         component={Chat}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="ProfileEdit"
+        component={ProfileEdit}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="MailageCharge"
+        component={MailageCharge}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

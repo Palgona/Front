@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, Image } from 'react-native';
+import { Alert, View, StyleSheet, TouchableOpacity, Text, Image } from 'react-native';
 import { icons, colors } from '../styles/theme';
 import Profile from '../Components/Profile';
 import Mailage from '../Components/Mailage';
@@ -15,8 +15,7 @@ const MyPage = ({ navigation }) => {
   
   const fetchUserData = async () => {
     try {
-      // 임시 사용자 데이터를 가져오는 API 호출
-      const response = await axios.get(`${API_URL}/user`);
+      const response = await axios.get(`${API_URL}/members/my`);
       setUserData(response.data);
     } catch (error) {
       console.error('Error fetching user data:', error);
@@ -25,8 +24,9 @@ const MyPage = ({ navigation }) => {
 
   // 사용자 정보가 없을 때의 기본값
   const defaultUser = {
-    userId: '123',
+    id: '123',
     nickname: '김가룡',
+    mailage: 1000,
     profile_image: 'https://via.placeholder.com/80',
   };
 
@@ -35,22 +35,62 @@ const MyPage = ({ navigation }) => {
 
   const handleEditProfile = () => {
     // 프로필 편집 페이지로 이동
-    // navigation.navigate('EditProfile');
+    navigation.navigate('ProfileEdit');
   };
 
-  const handleSellList = () => {
-    // 판매내역 페이지로 이동
-    navigation.navigate('SellList', { userId });
+  const handleMailage = () => {
+    //마일리지 충전 페이지로 이동
+    navigation.navigate('MailageCharge', {user})
+  }
+
+  const handleList = (listType) =>{
+    //리스트 페이지로 이동
+    navigation.navigate('List', {user, listType})
+  }
+
+  const handleKeyword = () => {
+    // 키워드관리 페이지로 이동 
   };
 
-  const handleReview = () => {
-    // 거래 후기 페이지로 이동
-    // navigation.navigate('Review', { memberId });
+  const handleAsk =() => {
+    //문의사항 페이지로 이동
   };
 
-  const handleManner = () => {
-    // 받은 매너 평가 페이지로 이동
-    // navigation.navigate('UserManner', { memberId });
+  const handleAlarm = () => {
+    //알림 설정 페이지로 이동
+  };
+
+  const handleLogout = async () => {
+    // 확인 메시지를 표시하여 로그아웃 여부를 사용자에게 물어봄
+    Alert.alert(
+      '로그아웃 확인',
+      '정말 로그아웃하시겠습니까?',
+      [
+        {
+          text: '취소',
+          onPress: () => console.log('취소되었습니다.'),
+          style: 'cancel',
+        },
+        {
+          text: '로그아웃',
+          onPress: async () => {
+            try {
+              // 로그아웃 API 호출
+              await axios.post(`${API_URL}/logout`);
+              // 로그아웃 성공 메시지
+              Alert.alert('로그아웃', '로그아웃되었습니다.');
+              // 홈화면으로 이동
+              navigation.navigate('Home');
+            } catch (error) {
+              console.error('Error logging out:', error);
+              // 로그아웃 실패 메시지
+              Alert.alert('로그아웃 실패', '로그아웃을 실패했습니다. 다시 시도해주세요.');
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
   };
 
 
@@ -67,38 +107,41 @@ const MyPage = ({ navigation }) => {
         </TouchableOpacity>
       </View>
         {/* 마일리지 컴포넌트 */}
-        <Mailage/>
+        <TouchableOpacity onPress={handleMailage}>
+          <Mailage user={user}/>
+        </TouchableOpacity>
+
         {/* 기능 목록 */}
         <View style={styles.functionList}>
         <View style={styles.separator} />
         <Text>My</Text>
-        <TouchableOpacity style={styles.functionItem} onPress={handleSellList}>
+        <TouchableOpacity style={styles.functionItem} onPress={() => handleList('bookmark')}>
           <Text style={styles.functionText}>장바구니</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.functionItem} onPress={handleReview}>
+        <TouchableOpacity style={styles.functionItem} onPress={() => handleList('sell')}>
           <Text style={styles.functionText}>판매 내역</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.functionItem} onPress={handleManner}>
+        <TouchableOpacity style={styles.functionItem} onPress={() => handleList('buy')}>
           <Text style={styles.functionText}>구매 내역</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.functionItem} onPress={handleManner}>
+        <TouchableOpacity style={styles.functionItem} onPress={handleKeyword}>
           <Text style={styles.functionText}>키워드 관리</Text>
         </TouchableOpacity>
 
         <View style={styles.separator} />
         <Text>이용안내</Text>
-        <TouchableOpacity style={styles.functionItem} onPress={handleManner}>
+        <TouchableOpacity style={styles.functionItem} onPress={handleAsk}>
           <Text style={styles.functionText}>문의 사항</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.functionItem} onPress={handleManner}>
+        <TouchableOpacity style={styles.functionItem} onPress={handleAlarm}>
           <Text style={styles.functionText}>알림</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.functionItem} onPress={handleManner}>
+        <TouchableOpacity style={styles.functionItem} onPress={handleLogout}>
           <Text style={styles.functionText}>로그아웃</Text>
         </TouchableOpacity>
       </View>
@@ -135,7 +178,7 @@ const styles = StyleSheet.create({
     tintColor: colors.darkGray,
   },
   editProfileText: {
-    color: colors.mainGray,
+    color: colors.darkGray,
     fontSize: 10,
     fontWeight: 'bold',
   },
