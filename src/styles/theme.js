@@ -13,6 +13,8 @@ import close from '../../assets/icons/close.png';
 import camera from '../../assets/icons/camera.png';
 import report from '../../assets/icons/report.png';
 import exit from '../../assets/icons/exit.png';
+import checkbox from '../../assets/icons/checkbox.png';
+import checkboxChecked from '../../assets/icons/checkboxChecked.png';
 
 export const colors = {
     mainYellow: '#FFDE66',
@@ -39,6 +41,8 @@ export const icons = {
     camera: camera,
     report: report,
     exit: exit,
+    checkbox: checkbox,
+    checkboxChecked: checkboxChecked,
   };
   
 export const theme = StyleSheet.create({
