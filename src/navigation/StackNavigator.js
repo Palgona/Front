@@ -14,6 +14,7 @@ import User from '../Page/User';
 import ProfileEdit from '../Page/ProfileEdit';
 import MailageCharge from '../Page/MailageCharge';
 import List from '../Page/List';
+import Ask from '../Page/Ask';
 
 const Stack = createStackNavigator();
 
@@ -83,6 +84,11 @@ const StackNavigator = () => {
       <Stack.Screen
         name="MailageCharge"
         component={MailageCharge}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Ask"
+        component={Ask}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

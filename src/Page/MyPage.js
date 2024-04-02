@@ -54,6 +54,7 @@ const MyPage = ({ navigation }) => {
 
   const handleAsk =() => {
     //문의사항 페이지로 이동
+    navigation.navigate('Ask', {user});
   };
 
   const handleAlarm = () => {
@@ -196,8 +197,8 @@ const styles = StyleSheet.create({
   separator: {
     height: 1,
     backgroundColor: colors.darkGray,
-    marginBottom: 10,
-    marginTop: 10,
+    marginBottom: 15,
+    marginTop: 15,
   },
 });
   
