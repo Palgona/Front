@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, ImageBackground, ScrollView } from 'react-native';
 import axios from 'axios';
 import ProductList from '../Components/ProductList'; 
 import { colors, icons, theme } from '../styles/theme'; // theme에서 container 스타일을 제거하였으므로 colors와 icons만 import
@@ -28,7 +28,7 @@ const Home = ({ navigation }) => {
   };
 
   const handleCategoryPress = () => {
-    navigation.navigate('Category');
+    navigation.openDrawer(); 
   };
 
   const handleProductWritePress = () => {
@@ -77,7 +77,7 @@ const Home = ({ navigation }) => {
           <TouchableOpacity onPress={() => handleOptionPress('price')} style={styles.optionButton}>
             <Text style={styles.optionButtonText}>가격</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleOptionPress('category')} style={styles.optionButton}>
+          <TouchableOpacity onPress={handleCategoryPress} style={styles.optionButton}>
             <Text style={styles.optionButtonText}>카테고리</Text>
           </TouchableOpacity>
         </View>

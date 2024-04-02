@@ -2,6 +2,7 @@ import { Pressable, StyleSheet, View, Image } from "react-native";
 import React, { useState } from "react";
 import { login, getProfile as getKakaoProfile } from "@react-native-seoul/kakao-login";
 import { API_URL } from '../globalVariables.js';
+import { storeAccessToken, getAccessToken, removeAccessToken } from '../token.js';
 
 
 const App = ({ navigation }) => {
@@ -19,7 +20,7 @@ const App = ({ navigation }) => {
       console.log("User Profile:", userProfile);
 
       setResult(JSON.stringify(token)); // 토큰을 문자열로 표시하지 않음
-      console.log("Token:", token);
+      //console.log("Token:", token);
 
       // 로그인 성공 시 Signup 페이지로 이동
       navigation.navigate('Signup');
@@ -45,7 +46,7 @@ const App = ({ navigation }) => {
 
       const headers = {
         'Content-Type': 'application/json',
-        'accessToken': token.accessToken
+        'Authorization': "Bearer "+ accessToken
       };
       const body = JSON.stringify({
         nickName,
@@ -53,6 +54,7 @@ const App = ({ navigation }) => {
       });
 
       // auth/refresh-token에 대한 요청
+      /*
       const responseRefresh = await fetch(API_URL+'/auth/refresh-token', {
         method: 'POST',
         headers: headers
@@ -60,10 +62,10 @@ const App = ({ navigation }) => {
 
       if (!responseRefresh.ok) {
         throw new Error('Failed to refresh token');
-      }
+      } 
 
       console.log('Token refreshed successfully');
-
+*/
       // auth/login에 대한 요청
       const responseLogin = await fetch(API_URL+'/auth/login', {
         method: 'GET',
@@ -71,11 +73,17 @@ const App = ({ navigation }) => {
       });
 
       if (!responseLogin.ok) {
-        throw new Error('Failed to login');
+        throw new Error('로그인 실패!');
       }
 
+      // 서버로부터 받은 응답 헤더에서 Authorization 값을 가져옴
+      const authorizationHeader = responseLogin.headers.get('Authorization');
+      console.log('Authorization Header:', authorizationHeader);
+      storeAccessToken(authorizationHeader);
+      
       const data = await responseLogin.json();
       console.log('User logged in successfully:', data);
+
     } catch (err) {
       console.error('Error signing in:', err);
     }

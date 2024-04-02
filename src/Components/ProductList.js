@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet, ScrollView} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { icons, colors } from '../styles/theme';
 import { API_URL } from '../globalVariables.js';
@@ -23,6 +23,7 @@ const ProductList = () => {
   }, []);
 
   const renderProductItem = ({ item }) => (
+    <ScrollView>
     <TouchableOpacity
       style={styles.productItem}
       onPress={() => navigation.navigate('ProductDetail', { productId: item.id })}
@@ -47,24 +48,20 @@ const ProductList = () => {
       {/* 시간 */}
       <Text style={styles.timeText}>{item.time}</Text>
     </TouchableOpacity>
+    </ScrollView>
   );
 
   return (
-    <View style={styles.container}>
       <FlatList
         data={products} 
         renderItem={renderProductItem}
         keyExtractor={item => item.id.toString()}
         contentContainerStyle={styles.column}
       />
-    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 10,
-  },
   column: {
     flexGrow: 1,
   },
