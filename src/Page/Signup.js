@@ -68,13 +68,13 @@ const Signup = ({navigation}) => {
       } else {
         // 회원 가입 실패
         Alert.alert('회원 가입 실패', '서버 오류로 회원 가입에 실패했습니다.');
-        //navigation.navigate('Home');
+        navigation.navigate('Home');
       }
     } catch (error) {
       // 오류 발생
       console.error('Error signing up:', error);
       Alert.alert('오류', '회원 가입 중 오류가 발생했습니다.');
-      //navigation.navigate('Home');
+      navigation.navigate('Home');
     }
   };
   
