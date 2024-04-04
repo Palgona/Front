@@ -1,10 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React, {useState, useEffect} from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { theme, colors, icons } from '../styles/theme';
-import { buttonStyles } from '../styles/buttonStyles';
-import { API_URL } from '../globalVariables.js';
+import {theme, colors, icons} from '../styles/theme';
+import {buttonStyles} from '../styles/buttonStyles';
 
 const Search = () => {
   const navigation = useNavigation();
@@ -26,10 +32,13 @@ const Search = () => {
     }
   };
 
-  const saveSearchTerm = async (searchTermToAdd) => {
+  const saveSearchTerm = async searchTermToAdd => {
     try {
       const updatedSearches = [...previousSearches, searchTermToAdd];
-      await AsyncStorage.setItem('previousSearches', JSON.stringify(updatedSearches));
+      await AsyncStorage.setItem(
+        'previousSearches',
+        JSON.stringify(updatedSearches),
+      );
       setPreviousSearches(updatedSearches); // Update state after saving
     } catch (error) {
       console.error('Error saving previous searches:', error);
@@ -38,17 +47,20 @@ const Search = () => {
 
   const handleSearch = () => {
     if (searchTerm.trim() !== '') {
-      navigation.navigate('SearchResult', { searchTerm });
+      navigation.navigate('SearchResult', {searchTerm});
       setSearchTerm('');
       saveSearchTerm(searchTerm); // Save the new search term
     }
   };
 
-  const handleDeleteSearch = async (index) => {
+  const handleDeleteSearch = async index => {
     const updatedSearches = previousSearches.filter((_, i) => i !== index);
     setPreviousSearches(updatedSearches); // Update state before saving
     try {
-      await AsyncStorage.setItem('previousSearches', JSON.stringify(updatedSearches));
+      await AsyncStorage.setItem(
+        'previousSearches',
+        JSON.stringify(updatedSearches),
+      );
     } catch (error) {
       console.error('Error saving previous searches:', error);
     }
@@ -69,7 +81,9 @@ const Search = () => {
         {previousSearches.map((prevSearch, index) => (
           <View key={index} style={buttonStyles.previousSearch}>
             <Text style={buttonStyles.previousSearchText}>{prevSearch}</Text>
-            <TouchableOpacity onPress={() => handleDeleteSearch(index)} style={styles.iconContainer}>
+            <TouchableOpacity
+              onPress={() => handleDeleteSearch(index)}
+              style={styles.iconContainer}>
               <Image source={icons.close} style={styles.icon} />
             </TouchableOpacity>
           </View>
@@ -84,7 +98,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 20,
     top: '50%',
-    transform: [{ translateY: -10 }],
+    transform: [{translateY: -10}],
   },
   icon: {
     width: 20,

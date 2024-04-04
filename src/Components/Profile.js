@@ -1,13 +1,13 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
-import { colors } from '../styles/theme';
+import {View, Text, Image, StyleSheet} from 'react-native';
+import {colors} from '../styles/theme';
 
-const Profile = ({ user }) => {
+const Profile = ({user}) => {
   return (
     <View style={styles.container}>
       {/* 사용자 프로필 이미지 */}
-      <Image source={{ uri: user.profile_image }} style={styles.avatar} />
-      
+      <Image source={{uri: user.profile_image}} style={styles.avatar} />
+
       {/* 닉네임과 소개 */}
       <View style={styles.userInfo}>
         <Text style={styles.nickname}>{user.nickname}</Text>

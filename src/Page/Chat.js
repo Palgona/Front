@@ -1,14 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, TouchableOpacity, TextInput, StyleSheet, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React, {useEffect, useState} from 'react';
+import {
+  View,
+  Text,
+  FlatList,
+  Image,
+  TouchableOpacity,
+  TextInput,
+  StyleSheet,
+  Alert,
+} from 'react-native';
 import axios from 'axios';
-import { launchImageLibrary } from 'react-native-image-picker';
-import { colors, theme, icons } from '../styles/theme'; 
-import { API_URL } from '../globalVariables.js';
-import { storeAccessToken, getAccessToken, removeAccessToken } from '../token.js';
+import {launchImageLibrary} from 'react-native-image-picker';
+import {colors, icons} from '../styles/theme';
+import {API_URL} from '../globalVariables.js';
+import {getAccessToken, removeAccessToken} from '../token.js';
 
-const Chat = ({ route, navigation }) => {
-  const { roomId, user } = route.params;
+const Chat = ({route, navigation}) => {
+  const {roomId, user} = route.params;
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
   const [partnerProfile, setPartnerProfile] = useState(user);
@@ -17,15 +25,15 @@ const Chat = ({ route, navigation }) => {
     //fetchChatMessages();
     setMessages(exampleMessages);
   }, []);
-  
+
   const exampleMessages = [
-    { id: 1, text: '달에게 말을 했죠', sender: 'partner' },
-    { id: 2, text: '하늘 위로 올라가', sender: 'me' },
-    { id: 3, text: '네모난 달이 떴죠', sender: 'partner' },
-    { id: 4, text: '나는 꿈을 꾸었죠', sender: 'me' },
+    {id: 1, text: '달에게 말을 했죠', sender: 'partner'},
+    {id: 2, text: '하늘 위로 올라가', sender: 'me'},
+    {id: 3, text: '네모난 달이 떴죠', sender: 'partner'},
+    {id: 4, text: '나는 꿈을 꾸었죠', sender: 'me'},
     // 나머지 채팅 메시지 예시 데이터 추가
   ];
-  
+
   const fetchChatMessages = async () => {
     try {
       const response = await axios.get(API_URL + `/chats/${roomId}`);
@@ -38,7 +46,7 @@ const Chat = ({ route, navigation }) => {
   const handleSend = () => {
     if (text.trim() !== '') {
       sendMessageToServer(text);
-      setMessages([{ id: Date.now(), text, sender: 'me' }, ...messages]);
+      setMessages([{id: Date.now(), text, sender: 'me'}, ...messages]);
       setText('');
     }
   };
@@ -49,9 +57,9 @@ const Chat = ({ route, navigation }) => {
         mediaType: 'photo',
         maxWidth: 512,
         maxHeight: 512,
-        includeBase64: true
-      }, 
-      (response) => {
+        includeBase64: true,
+      },
+      response => {
         if (response.didCancel) {
           console.log('User cancelled image picker');
         } else if (response.errorCode) {
@@ -59,15 +67,15 @@ const Chat = ({ route, navigation }) => {
         } else {
           sendImageToServer(response.assets[0].uri);
         }
-      }
+      },
     );
   };
 
-  const sendMessageToServer = (message) => {
+  const sendMessageToServer = message => {
     // send message to server logic
   };
 
-  const sendImageToServer = async (uri) => {
+  const sendImageToServer = async uri => {
     try {
       const formData = new FormData();
       formData.append('files', {
@@ -88,29 +96,40 @@ const Chat = ({ route, navigation }) => {
       if (!response.ok) {
         throw new Error('Failed to upload image');
       }
-      
     } catch (error) {
       console.error('Error uploading image:', error);
       Alert.alert('Error', 'Failed to upload image');
     }
   };
 
-  const renderItem = ({ item }) => {
+  const renderItem = ({item}) => {
     if (item.text) {
       return (
-        <View style={[styles.messageBubble, item.sender === 'me' ? styles.myMessage : styles.otherMessage]}>
+        <View
+          style={[
+            styles.messageBubble,
+            item.sender === 'me' ? styles.myMessage : styles.otherMessage,
+          ]}>
           <Text style={styles.messageText}>{item.text}</Text>
         </View>
       );
     } else if (item.image) {
       return (
-        <View style={[styles.messageBubble, item.sender === 'me' ? styles.myMessage : styles.otherMessage]}>
-          <Image source={{ uri: item.image }} style={styles.messageImage} resizeMode='contain'/>
+        <View
+          style={[
+            styles.messageBubble,
+            item.sender === 'me' ? styles.myMessage : styles.otherMessage,
+          ]}>
+          <Image
+            source={{uri: item.image}}
+            style={styles.messageImage}
+            resizeMode="contain"
+          />
         </View>
       );
     }
   };
-  
+
   const handleLeaveChat = async () => {
     Alert.alert(
       '채팅방 나가기',
@@ -126,18 +145,21 @@ const Chat = ({ route, navigation }) => {
             try {
               // 채팅방 나가기 API 호출
               const accessToken = await getAccessToken();
-              const exitChatResponse = await fetch(`${API_URL}/chats/${roomId}/exit`, {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'accessToken': accessToken
-                }
-              });
-  
+              const exitChatResponse = await fetch(
+                `${API_URL}/chats/${roomId}/exit`,
+                {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    accessToken: accessToken,
+                  },
+                },
+              );
+
               if (!exitChatResponse.ok) {
                 throw new Error('Failed to exit chat room');
               }
-  
+
               // 채팅방을 나갔으므로 이전 화면으로 이동
               navigation.navigate('ChatList');
             } catch (error) {
@@ -149,7 +171,7 @@ const Chat = ({ route, navigation }) => {
           style: 'destructive',
         },
       ],
-      { cancelable: false }
+      {cancelable: false},
     );
   };
 
@@ -157,21 +179,28 @@ const Chat = ({ route, navigation }) => {
     <View style={styles.container}>
       <View style={styles.partnerProfileContainer}>
         <View style={styles.userInfoContainer}>
-          <Image source={{ uri: partnerProfile.profileImage }} style={styles.partnerProfileImage} />
+          <Image
+            source={{uri: partnerProfile.profileImage}}
+            style={styles.partnerProfileImage}
+          />
           <Text style={styles.partnerName}>{partnerProfile.nickname}</Text>
         </View>
-        <TouchableOpacity onPress={handleLeaveChat} style={styles.leaveButtonContainer}>
+        <TouchableOpacity
+          onPress={handleLeaveChat}
+          style={styles.leaveButtonContainer}>
           <Image source={icons.exit} style={styles.leaveButtonIcon} />
         </TouchableOpacity>
       </View>
       <FlatList
         data={messages}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={item => item.id.toString()}
         inverted
       />
       <View style={styles.inputContainer}>
-        <TouchableOpacity onPress={handleImageSend} style={styles.imageContainer}>
+        <TouchableOpacity
+          onPress={handleImageSend}
+          style={styles.imageContainer}>
           <Image source={icons.camera} style={styles.imageIcon} />
         </TouchableOpacity>
         <TextInput

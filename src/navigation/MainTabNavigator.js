@@ -1,19 +1,19 @@
 import React from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Image } from 'react-native';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {Image} from 'react-native';
 import ChatList from '../Page/ChatList';
 import MainHome from '../Page/Home';
 import MyPage from '../Page/MyPage';
-import { icons, colors } from '../styles/theme'; 
+import {icons, colors} from '../styles/theme';
 
 const Tab = createBottomTabNavigator();
 
 function MainTabNavigator() {
   return (
     <Tab.Navigator
-      screenOptions={({ route }) => ({
+      screenOptions={({route}) => ({
         headerShown: false,
-        tabBarIcon: ({ color, size }) => {
+        tabBarIcon: ({color, size}) => {
           let iconName;
 
           if (route.name === 'MainHome') {
@@ -24,16 +24,20 @@ function MainTabNavigator() {
             iconName = icons.myPage;
           }
 
-          return <Image source={iconName} style={{ tintColor: color, width: size, height: size }} />;
+          return (
+            <Image
+              source={iconName}
+              style={{tintColor: color, width: size, height: size}}
+            />
+          );
         },
         tabBarActiveTintColor: colors.mainYellow,
         tabBarInactiveTintColor: colors.mainGray,
-        tabBarLabelStyle: { display: 'none' },
+        tabBarLabelStyle: {display: 'none'},
         tabBarStyle: {
           display: 'flex',
         },
-      })}
-    >
+      })}>
       <Tab.Screen name="ChatList" component={ChatList} />
       <Tab.Screen name="MainHome" component={MainHome} />
       <Tab.Screen name="MyPage" component={MyPage} />

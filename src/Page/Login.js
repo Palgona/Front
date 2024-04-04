@@ -1,12 +1,14 @@
-import { Pressable, StyleSheet, View, Image } from "react-native";
-import React, { useState } from "react";
-import { login, getProfile as getKakaoProfile } from "@react-native-seoul/kakao-login";
-import { API_URL } from '../globalVariables.js';
-import { storeAccessToken, getAccessToken, removeAccessToken } from '../token.js';
+import {Pressable, StyleSheet, View, Image} from 'react-native';
+import React, {useState} from 'react';
+import {
+  login,
+  getProfile as getKakaoProfile,
+} from '@react-native-seoul/kakao-login';
+import {API_URL} from '../globalVariables.js';
+import {storeAccessToken, getAccessToken, removeAccessToken} from '../token.js';
 
-
-const App = ({ navigation }) => {
-  const [result, setResult] = useState("");
+const App = ({navigation}) => {
+  const [result, setResult] = useState('');
 
   const signInWithKakao = async () => {
     try {
@@ -17,7 +19,7 @@ const App = ({ navigation }) => {
 
       // 사용자 정보 가져오기
       const userProfile = await getKakaoProfile();
-      console.log("User Profile:", userProfile);
+      console.log('User Profile:', userProfile);
 
       setResult(JSON.stringify(token)); // 토큰을 문자열로 표시하지 않음
       //console.log("Token:", token);
@@ -25,15 +27,15 @@ const App = ({ navigation }) => {
       // 로그인 성공 시 Signup 페이지로 이동
       navigation.navigate('Signup');
     } catch (err) {
-      console.error("login err", err);
+      console.error('login err', err);
     }
   };
 
-  const sendTokenToBackend = async (token) => {
+  const sendTokenToBackend = async token => {
     try {
       // 사용자 정보 토큰을 가져와서 accessToken 헤더에 설정
       const userProfile = await getKakaoProfile();
-      const { nickName, profileImage } = userProfile;
+      const {nickName, profileImage} = userProfile;
       const accessToken = token.accessToken;
 
       // 액세스 토큰이 만료되었는지 확인
@@ -46,11 +48,11 @@ const App = ({ navigation }) => {
 
       const headers = {
         'Content-Type': 'application/json',
-        'Authorization': "Bearer "+ accessToken
+        Authorization: 'Bearer ' + accessToken,
       };
       const body = JSON.stringify({
         nickName,
-        profileImage
+        profileImage,
       });
 
       // auth/refresh-token에 대한 요청
@@ -62,14 +64,14 @@ const App = ({ navigation }) => {
 
       if (!responseRefresh.ok) {
         throw new Error('Failed to refresh token');
-      } 
+      }
 
       console.log('Token refreshed successfully');
 */
       // auth/login에 대한 요청
-      const responseLogin = await fetch(API_URL+'/auth/login', {
+      const responseLogin = await fetch(API_URL + '/auth/login', {
         method: 'GET',
-        headers: headers
+        headers: headers,
       });
 
       if (!responseLogin.ok) {
@@ -79,17 +81,16 @@ const App = ({ navigation }) => {
       // 서버로부터 받은 응답 헤더에서 Authorization 값을 가져옴
       const authorizationHeader = responseLogin.headers.get('Authorization');
       console.log('Authorization Header:', authorizationHeader);
-      storeAccessToken(authorizationHeader);
-      
+      await storeAccessToken(authorizationHeader);
+
       const data = await responseLogin.json();
       console.log('User logged in successfully:', data);
-
     } catch (err) {
       console.error('Error signing in:', err);
     }
   };
 
-  const isAccessTokenExpired = (token) => {
+  const isAccessTokenExpired = token => {
     // 액세스 토큰의 만료 시간을 가져옵니다.
     const expirationTime = new Date(token.expirationTime);
 
@@ -100,16 +101,16 @@ const App = ({ navigation }) => {
     return expirationTime <= currentTime;
   };
 
-  const refreshAccessToken = async (refreshToken) => {
+  const refreshAccessToken = async refreshToken => {
     try {
-      const response = await fetch(API_URL+'/auth/refresh-token', {
+      const response = await fetch(API_URL + '/auth/refresh-token', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          refreshToken: refreshToken
-        })
+          refreshToken: refreshToken,
+        }),
       });
 
       if (!response.ok) {
@@ -126,15 +127,20 @@ const App = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Image source={require('../../assets/logologin.png')} style={styles.image} />
+      <Image
+        source={require('../../assets/logologin.png')}
+        style={styles.image}
+      />
       <View style={styles.spacing} />
       <Pressable
         style={styles.button}
         onPress={() => {
           signInWithKakao();
-        }}
-      >
-        <Image source={require('../../assets/kakao_login_large_wide.png')} style={styles.imageButton} />
+        }}>
+        <Image
+          source={require('../../assets/kakao_login_large_wide.png')}
+          style={styles.imageButton}
+        />
       </Pressable>
     </View>
   );
@@ -145,22 +151,22 @@ export default App;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: 'white',
   },
   button: {
     marginTop: 20,
     alignItems: 'center',
   },
-  image:{
+  image: {
     width: 100, // 이미지의 너비를 200으로 설정
     height: 130, // 이미지의 높이를 200으로 설정
   },
   imageButton: {
     width: '80%',
     height: undefined,
-    aspectRatio: 7/1,
+    aspectRatio: 7 / 1,
     resizeMode: 'cover',
   },
   spacing: {

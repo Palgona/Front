@@ -1,12 +1,12 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Dimensions } from 'react-native';
-import { colors } from '../styles/theme';
+import {View, Text, TouchableOpacity, Dimensions} from 'react-native';
+import {colors} from '../styles/theme';
 
-const { height } = Dimensions.get('window');
+const {height} = Dimensions.get('window');
 
-const ProductModal = ({ onClose, currentPrice, bidPrice }) => {
+const ProductModal = ({onClose, currentPrice, bidPrice}) => {
   return (
-    <View style={[styles.modal, { height: height / 4 }]}>
+    <View style={[styles.modal, {height: height / 4}]}>
       <View style={styles.modalContent}>
         <View style={styles.priceContainer}>
           <View style={styles.priceRow}>
@@ -22,7 +22,9 @@ const ProductModal = ({ onClose, currentPrice, bidPrice }) => {
           <TouchableOpacity style={styles.button} onPress={onClose}>
             <Text style={styles.buttonText}>취소</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => console.log('입찰하기')}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => console.log('입찰하기')}>
             <Text style={styles.buttonText}>입찰하기</Text>
           </TouchableOpacity>
         </View>
@@ -41,7 +43,7 @@ const styles = {
     paddingTop: 50,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
-    flex: 1, 
+    flex: 1,
   },
   closeButton: {
     position: 'absolute',

@@ -1,7 +1,5 @@
 import React from 'react';
-import { View, Text } from 'react-native';
-import { theme } from './styles/theme';
-import { API_URL } from '../globalVariables.js';
+import {View, Text} from 'react-native';
 
 const ProductWrite = () => {
   return (
@@ -9,6 +7,6 @@ const ProductWrite = () => {
       <Text>This is the ProductWrite screen</Text>
     </View>
   );
-}
+};
 
 export default ProductWrite;

@@ -1,10 +1,18 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Image, TextInput, StyleSheet, Alert } from 'react-native';
-import { launchImageLibrary } from 'react-native-image-picker';
+import React, {useState} from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  TextInput,
+  StyleSheet,
+  Alert,
+} from 'react-native';
+import {launchImageLibrary} from 'react-native-image-picker';
 import axios from 'axios';
-import { API_URL } from '../globalVariables.js';
-import { colors } from '../styles/theme'; 
-import { getAccessToken } from '../token.js';
+import {API_URL} from '../globalVariables.js';
+import {colors} from '../styles/theme';
+import {getAccessToken} from '../token.js';
 
 const Signup = ({navigation}) => {
   const [nickName, setNickName] = useState('');
@@ -16,9 +24,9 @@ const Signup = ({navigation}) => {
         mediaType: 'photo',
         maxWidth: 512,
         maxHeight: 512,
-        includeBase64: false
-      }, 
-      (response) => {
+        includeBase64: false,
+      },
+      response => {
         if (response.didCancel) {
           console.log('User cancelled image picker');
           setImageFile(null);
@@ -27,7 +35,7 @@ const Signup = ({navigation}) => {
         } else {
           setImageFile(response.assets[0]);
         }
-      }
+      },
     );
   };
 
@@ -35,32 +43,32 @@ const Signup = ({navigation}) => {
     try {
       const formData = new FormData();
       const requestData = {
-        nickName: nickName
+        nickName: nickName,
       };
       formData.append('request', JSON.stringify(requestData));
-  
+
       if (imageFile && imageFile.uri) {
         const fileName = imageFile.fileName || 'profileImage.jpg'; // 파일명이 없는 경우 기본 파일명으로 설정
         //const imageType = fileName.split('.').pop(); // 파일명에서 확장자 추출
-        
+
         formData.append('image', fileName);
       }
-      console.log('Request Data:', formData );
+      console.log('Request Data:', formData);
       //console.log('aaa');
       //console.log('Image File:', imageFile);
 
       const token = await getAccessToken();
-  
-      const response = await axios.post(API_URL+'/auth/signup', formData, {
+
+      const response = await axios.post(API_URL + '/auth/signup', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          'Authorization': `${token}`,
+          Authorization: `${token}`,
         },
       });
-  
+
       // 처리된 응답 확인
       console.log('Response Data:', response.data);
-  
+
       if (response.status === 200) {
         // 회원 가입 성공
         Alert.alert('회원 가입 성공', '회원 가입이 완료되었습니다.');
@@ -77,13 +85,14 @@ const Signup = ({navigation}) => {
       //navigation.navigate('Home');
     }
   };
-  
-  
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={onSelectImage} style={styles.profileImageContainer}>
+      <TouchableOpacity
+        onPress={onSelectImage}
+        style={styles.profileImageContainer}>
         {imageFile ? (
-          <Image source={{ uri: imageFile.uri }} style={styles.profileImage} />
+          <Image source={{uri: imageFile.uri}} style={styles.profileImage} />
         ) : (
           <View style={styles.defaultProfileImage} />
         )}

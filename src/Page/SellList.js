@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import {View, Text, StyleSheet} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import ProductList from '../Components/ProductList';
 
 const Bookmark = () => {
@@ -8,17 +8,16 @@ const Bookmark = () => {
 
   const handleSellList = () => {
     // 판매내역 페이지로 이동
-    navigation.navigate('SellList', { memberId });
+    navigation.navigate('SellList', {memberId});
   };
 
   return (
     <View style={styles.container}>
       {/* 페이지 상단에 장바구니 텍스트 표시 */}
       <Text style={styles.title}>판매내역</Text>
-      
+
       {/* 상품 리스트를 보여주는 ProductList 컴포넌트 */}
       <ProductList />
-
     </View>
   );
 };
