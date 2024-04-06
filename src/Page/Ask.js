@@ -25,7 +25,6 @@ const Ask = ({user, navigation}) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>문의사항</Text>
       <Text style={styles.guide}>답변은 신속하게 회원가입된 이메일로 보내드리겠습니다.</Text>
       <TextInput
         style={styles.input}
@@ -46,9 +45,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 5,
+    paddingTop: '10%',
     backgroundColor: colors.background,
     alignItems: 'center',
-    justifyContent: 'center',
+    //justifyContent: 'center',
   },
   title: {
     fontSize: 20,

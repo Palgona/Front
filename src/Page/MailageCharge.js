@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { icons, colors } from '../styles/theme';
+import Mailage from '../Components/Mailage';
 
-const MailageCharge = () => {
+const MailageCharge = ({user}) => {
   // 충전할 마일리지를 관리하는 state
   const [chargeAmount, setChargeAmount] = useState('');
   
   // 선택한 마일리지 옵션을 관리하는 state
   const [selectedOption, setSelectedOption] = useState(null);
+  console.log('Received user in ProfileEdit:', user);
 
   // 마일리지 옵션 선택 핸들러
   const handleOptionSelect = (amount) => {
@@ -27,25 +29,25 @@ const MailageCharge = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>마일리지 충전</Text>
+      <Mailage user={user}/>
       <View style={styles.optionsContainer}>
         <OptionItem style={styles.option}
-          label="1000p"
+          label="1,000p"
           selected={selectedOption === '1000p'}
           onPress={() => handleOptionSelect('1000p')}
         />
         <OptionItem style={styles.option}
-          label="5000p"
+          label="5,000p"
           selected={selectedOption === '5000p'}
           onPress={() => handleOptionSelect('5000p')}
         />
         <OptionItem style={styles.option}
-          label="10000p" 
+          label="10,000p" 
           selected={selectedOption === '10000p'}
           onPress={() => handleOptionSelect('10000p')}
         />
         <OptionItem style={styles.option}
-          label="50000p"
+          label="50,000p"
           selected={selectedOption === '50000p'}
           onPress={() => handleOptionSelect('50000p')}
         />
@@ -95,7 +97,7 @@ const styles = StyleSheet.create({
     width: 23,
     height: 23,
     tintColor: colors.darkGray,
-    marginRight: 10,
+    marginRight: 5,
   },
   submitButton:{
     backgroundColor: colors.mainYellow,

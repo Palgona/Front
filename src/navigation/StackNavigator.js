@@ -84,12 +84,14 @@ const StackNavigator = () => {
       <Stack.Screen
         name="MailageCharge"
         component={MailageCharge}
-        options={{ headerShown: false }}
+        options={{
+          title: '마일리지 충전',
+        }}
       />
       <Stack.Screen
         name="Ask"
         component={Ask}
-        options={{ headerShown: false }}
+        options={{ title: '문의사항' }}
       />
     </Stack.Navigator>
   );

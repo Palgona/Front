@@ -2,9 +2,11 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import ProductList from '../Components/ProductList';
 
-const List = ({ route }) => {
+const List = ({ route, user}) => {
   // route.params에서 리스트 유형을 가져옴
   const { listType } = route.params;
+  console.log('Received user in ProfileEdit:', user);
+
 
   // 해당 리스트 유형에 따른 제목 설정
   let title = '';
