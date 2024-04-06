@@ -1,19 +1,24 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { buttonStyles } from '../styles/buttonStyles'; 
-import { theme } from '../styles/theme';
+import React, {useState} from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import {buttonStyles} from '../styles/buttonStyles';
+import {theme} from '../styles/theme';
 import ProductList from '../Components/ProductList';
-import { API_URL } from '../globalVariables.js';
 
-const SearchResult = ({ route }) => {
-  const { searchTerm } = route.params;
+const SearchResult = ({route}) => {
+  const {searchTerm} = route.params;
   const [searchTermInResult, setSearchTermInResult] = useState(searchTerm);
   const navigation = useNavigation();
 
   const handleSearch = () => {
     if (searchTermInResult.trim() !== '') {
-      navigation.navigate('SearchResult', { searchTerm: searchTermInResult });
+      navigation.navigate('SearchResult', {searchTerm: searchTermInResult});
     }
   };
 
@@ -25,10 +30,9 @@ const SearchResult = ({ route }) => {
         value={searchTermInResult}
         onSubmitEditing={handleSearch}
       />
-      <ProductList/>
+      <ProductList />
     </View>
   );
 };
-
 
 export default SearchResult;

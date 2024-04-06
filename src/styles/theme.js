@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import {StyleSheet} from 'react-native';
 
 import alarmIcon from '../../assets/icons/alarm.png';
 import categoryIcon from '../../assets/icons/category.png';
@@ -15,35 +15,35 @@ import report from '../../assets/icons/report.png';
 import exit from '../../assets/icons/exit.png';
 
 export const colors = {
-    mainYellow: '#FFDE66',
-    secondYellow: '#FFF1BC',
-    mainGreen: '#6A9C78',
-    secondGreen: '#C3E0B2',
-    mainGray: '#807D73',
-    darkGray: '#55503E',
-    background: '#FCFCFA',
-    point: '#ED2B2A',
-  };
+  mainYellow: '#FFDE66',
+  secondYellow: '#FFF1BC',
+  mainGreen: '#6A9C78',
+  secondGreen: '#C3E0B2',
+  mainGray: '#807D73',
+  darkGray: '#55503E',
+  background: '#FCFCFA',
+  point: '#ED2B2A',
+};
 
 export const icons = {
-    alarm: alarmIcon,
-    category: categoryIcon,
-    chat: chatRoom,
-    myPage: myPageIcon,
-    search: searchIcon,
-    home: homeIcon,
-    heart: heart,
-    heartClick: heartClick,
-    chat: chat,
-    close: close,
-    camera: camera,
-    report: report,
-    exit: exit,
-  };
-  
+  alarm: alarmIcon,
+  category: categoryIcon,
+  chatRoom: chatRoom,
+  myPage: myPageIcon,
+  search: searchIcon,
+  home: homeIcon,
+  heart: heart,
+  heartClick: heartClick,
+  chat: chat,
+  close: close,
+  camera: camera,
+  report: report,
+  exit: exit,
+};
+
 export const theme = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white', 
+    backgroundColor: 'white',
   },
 });

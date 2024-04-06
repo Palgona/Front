@@ -54,16 +54,6 @@ const ProductWrite = () => {
         value={price}
         keyboardType="numeric"
       />
-      {/* <DateTimePicker
-        value={date}
-        mode={'date'}
-        display="default"
-        onChange={(event, selectedDate) => {
-          const currentDate = selectedDate || date;
-          setDate(currentDate);
-        }}
-      /> 
-      <Button title="상품 등록" onPress={submitProduct} /> */}
     </View>
   );
 };

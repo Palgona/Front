@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import ProductList from '../Components/ProductList';
 
 const Bookmark = () => {
@@ -10,12 +10,14 @@ const Bookmark = () => {
     <View style={styles.container}>
       {/* 페이지 상단에 장바구니 텍스트 표시 */}
       <Text style={styles.title}>장바구니</Text>
-      
+
       {/* 상품 리스트를 보여주는 ProductList 컴포넌트 */}
       <ProductList />
 
       {/* 뒤로가기 버튼 */}
-      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+      <TouchableOpacity
+        onPress={() => navigation.goBack()}
+        style={styles.backButton}>
         <Text style={styles.backButtonText}>{'< 뒤로가기'}</Text>
       </TouchableOpacity>
     </View>

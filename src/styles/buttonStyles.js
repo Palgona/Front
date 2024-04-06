@@ -1,5 +1,5 @@
-import { StyleSheet } from 'react-native';
-import { colors } from './theme';
+import {StyleSheet} from 'react-native';
+import {colors} from './theme';
 
 export const buttonStyles = StyleSheet.create({
   input: {
@@ -17,11 +17,11 @@ export const buttonStyles = StyleSheet.create({
     marginBottom: 10,
   },
   previousSearchText: {
-    fontSize: 15, 
+    fontSize: 15,
     marginRight: 5, // 간격 조정
     color: colors.mainGray,
   },
-  smallButton:{
+  smallButton: {
     borderRadius: 100,
     paddingVertical: 8,
     paddingHorizontal: 8,
@@ -30,10 +30,9 @@ export const buttonStyles = StyleSheet.create({
     marginLeft: 5,
     backgroundColor: 'white',
   },
-  iconimage:{
+  iconimage: {
     width: 24,
     height: 24,
     tintColor: colors.darkGray,
-  }
-  
+  },
 });

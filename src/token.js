@@ -1,12 +1,15 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // 액세스 토큰을 AsyncStorage에 저장하는 함수
-export const storeAccessToken = async (accessToken) => {
+export const storeAccessToken = async accessToken => {
   try {
     await AsyncStorage.setItem('accessToken', accessToken);
     console.log('액세스 토큰이 AsyncStorage에 저장되었습니다.', accessToken);
   } catch (error) {
-    console.error('액세스 토큰을 AsyncStorage에 저장하는 중에 오류가 발생했습니다:', error);
+    console.error(
+      '액세스 토큰을 AsyncStorage에 저장하는 중에 오류가 발생했습니다:',
+      error,
+    );
   }
 };
 
@@ -22,7 +25,10 @@ export const getAccessToken = async () => {
       return null;
     }
   } catch (error) {
-    console.error('액세스 토큰을 AsyncStorage에서 불러오는 중에 오류가 발생했습니다:', error);
+    console.error(
+      '액세스 토큰을 AsyncStorage에서 불러오는 중에 오류가 발생했습니다:',
+      error,
+    );
     return null;
   }
 };
@@ -33,6 +39,9 @@ export const removeAccessToken = async () => {
     await AsyncStorage.removeItem('accessToken');
     console.log('AsyncStorage에서 액세스 토큰을 성공적으로 삭제했습니다.');
   } catch (error) {
-    console.error('액세스 토큰을 AsyncStorage에서 삭제하는 중에 오류가 발생했습니다:', error);
+    console.error(
+      '액세스 토큰을 AsyncStorage에서 삭제하는 중에 오류가 발생했습니다:',
+      error,
+    );
   }
 };
