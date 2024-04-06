@@ -24,8 +24,9 @@ const Chat = ({route, navigation}) => {
   useEffect(() => {
     //fetchChatMessages();
     setMessages(exampleMessages);
-  }, []);
+  }, [exampleMessages]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const exampleMessages = [
     {id: 1, text: '달에게 말을 했죠', sender: 'partner'},
     {id: 2, text: '하늘 위로 올라가', sender: 'me'},
