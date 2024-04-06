@@ -4,6 +4,7 @@ import {login} from '@react-native-seoul/kakao-login';
 import {API_URL} from '../globalVariables.js';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {storeAccessToken} from '../token';
 
 const App = ({navigation}) => {
   const signInWithKakao = async () => {
@@ -51,7 +52,8 @@ const App = ({navigation}) => {
 
       // 서버로부터 받은 응답 헤더에서 Authorization 값을 가져옴
       const authorizationHeader = responseLogin.headers.get('Authorization');
-      await AsyncStorage.setItem('token', authorizationHeader);
+      storeAccessToken(authorizationHeader);
+      // await AsyncStorage.setItem('token', authorizationHeader);
       console.log('User logged in successfully:', authorizationHeader);
     } catch (err) {
       console.error('Error signing in:', err);
