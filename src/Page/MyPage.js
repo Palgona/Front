@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useState, useEffect } from 'react';
 import { Alert, View, StyleSheet, TouchableOpacity, Text, Image } from 'react-native';
 import { icons, colors } from '../styles/theme';
@@ -94,6 +95,10 @@ const MyPage = ({ navigation }) => {
     );
   };
 
+=======
+import React from 'react';
+import {View, Text} from 'react-native';
+>>>>>>> origin/feat/#20
 
   return (
     <View style={styles.container}>

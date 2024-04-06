@@ -1,11 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import axios from 'axios';
-import { colors, theme } from '../styles/theme';
-import { API_URL } from '../globalVariables.js';
+import React, {useEffect, useState} from 'react';
+import {
+  View,
+  Text,
+  FlatList,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import {colors, theme} from '../styles/theme';
 
-const ChatList = ({ user }) => { // 사용자 정보를 prop으로 받음
+const ChatList = ({user}) => {
+  // 사용자 정보를 prop으로 받음
   const navigation = useNavigation();
   const [chats, setChats] = useState([]);
 
@@ -41,14 +47,22 @@ const ChatList = ({ user }) => { // 사용자 정보를 prop으로 받음
     }
   };
 
-  const handleChatPress = (chatRoomId, user) => { // user 객체를 전달
-    navigation.navigate('Chat', { chatRoomId, user });
+  const handleChatPress = (chatRoomId, user) => {
+    // user 객체를 전달
+    navigation.navigate('Chat', {chatRoomId, user});
   };
 
-  const renderItem = ({ item }) => {
+  const renderItem = ({item}) => {
     return (
-      <TouchableOpacity style={styles.chatItem} onPress={() => handleChatPress(item.chatRoomId, { profileImage: item.profileImage, nickname: item.nickname })}>
-        <Image source={{ uri: item.profileImage }} style={styles.profileImage} />
+      <TouchableOpacity
+        style={styles.chatItem}
+        onPress={() =>
+          handleChatPress(item.chatRoomId, {
+            profileImage: item.profileImage,
+            nickname: item.nickname,
+          })
+        }>
+        <Image source={{uri: item.profileImage}} style={styles.profileImage} />
         <View style={styles.chatContent}>
           <View style={styles.header}>
             <Text style={styles.nickname}>{item.nickname}</Text>
@@ -56,9 +70,11 @@ const ChatList = ({ user }) => { // 사용자 정보를 prop으로 받음
           </View>
           <Text>{item.lastMessage}</Text>
         </View>
-        {item.newMessages > 0 && <View style={styles.newMessagesBadge}>
-          <Text style={styles.newMessagesCount}>{item.newMessages}</Text>
-        </View>}
+        {item.newMessages > 0 && (
+          <View style={styles.newMessagesBadge}>
+            <Text style={styles.newMessagesCount}>{item.newMessages}</Text>
+          </View>
+        )}
       </TouchableOpacity>
     );
   };
@@ -71,7 +87,7 @@ const ChatList = ({ user }) => { // 사용자 정보를 prop으로 받음
       <FlatList
         data={chats}
         renderItem={renderItem}
-        keyExtractor={(item) => item.chatRoomId.toString()}
+        keyExtractor={item => item.chatRoomId.toString()}
         ListEmptyComponent={() => (
           <View style={styles.emptyListComponent}>
             <Text style={styles.emptyListText}>채팅 목록이 없습니다.</Text>
