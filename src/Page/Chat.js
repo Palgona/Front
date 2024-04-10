@@ -84,16 +84,16 @@ const Chat = ({route, navigation}) => {
         type: 'image/jpeg',
         name: 'chatImage.jpg',
       });
-
       // 채팅방 이미지 업로드 API 호출
-      const response = await fetch(`${API_URL}/chats/${roomId}/image`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'multipart/form-data',
+      const response = await axios.post(
+        `${API_URL}/chats/${roomId}/image`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
         },
-        body: formData,
-      });
-
+      );
       if (!response.ok) {
         throw new Error('Failed to upload image');
       }
