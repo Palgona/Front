@@ -9,12 +9,13 @@ export const buttonStyles = StyleSheet.create({
     paddingHorizontal: 20,
     margin: 15,
     marginTop: 30,
+    fontSize: 16,
   },
   previousSearch: {
     flexDirection: 'row',
     alignItems: 'center',
     marginLeft: 20, // 간격 조정
-    marginBottom: 10,
+    marginBottom: 20,
   },
   previousSearchText: {
     fontSize: 15,

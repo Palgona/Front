@@ -66,6 +66,11 @@ const Search = () => {
     }
   };
 
+  // 클릭한 이전 검색어를 검색 바에 작성하기
+  const handlePreviousSearchPress = searchWord => {
+    setSearchTerm(searchWord);
+  };
+
   return (
     <View style={theme.container}>
       {/* 검색 입력란 */}
@@ -79,14 +84,18 @@ const Search = () => {
       {/* 이전 검색어 목록 */}
       <View>
         {previousSearches.map((prevSearch, index) => (
-          <View key={index} style={buttonStyles.previousSearch}>
-            <Text style={buttonStyles.previousSearchText}>{prevSearch}</Text>
-            <TouchableOpacity
-              onPress={() => handleDeleteSearch(index)}
-              style={styles.iconContainer}>
-              <Image source={icons.close} style={styles.icon} />
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity
+            key={index}
+            onPress={() => handlePreviousSearchPress(prevSearch)}>
+            <View style={buttonStyles.previousSearch}>
+              <Text style={buttonStyles.previousSearchText}>{prevSearch}</Text>
+              <TouchableOpacity
+                onPress={() => handleDeleteSearch(index)}
+                style={styles.iconContainer}>
+                <Image source={icons.close} style={styles.icon} />
+              </TouchableOpacity>
+            </View>
+          </TouchableOpacity>
         ))}
       </View>
     </View>
