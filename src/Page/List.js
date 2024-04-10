@@ -1,12 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import {View, Text, StyleSheet} from 'react-native';
 import ProductList from '../Components/ProductList';
 
-const List = ({ route, user}) => {
+const List = ({route, user}) => {
   // route.params에서 리스트 유형을 가져옴
-  const { listType } = route.params;
+  const {listType} = route.params;
   console.log('Received user in ProfileEdit:', user);
-
 
   // 해당 리스트 유형에 따른 제목 설정
   let title = '';
@@ -28,10 +27,9 @@ const List = ({ route, user}) => {
     <View style={styles.container}>
       {/* 페이지 상단에 리스트 제목 표시 */}
       <Text style={styles.title}>{title}</Text>
-      
+
       {/* 상품 리스트를 보여주는 ProductList 컴포넌트 */}
       <ProductList />
-
     </View>
   );
 };

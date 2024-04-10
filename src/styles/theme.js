@@ -28,41 +28,23 @@ export const colors = {
 };
 
 export const icons = {
-<<<<<<< HEAD
-    alarm: alarmIcon,
-    category: categoryIcon,
-    chat: chatRoom,
-    myPage: myPageIcon,
-    search: searchIcon,
-    home: homeIcon,
-    heart: heart,
-    heartClick: heartClick,
-    chat: chat,
-    close: close,
-    camera: camera,
-    report: report,
-    exit: exit,
-    checkbox: checkbox,
-    checkboxChecked: checkboxChecked,
-  };
-  
-=======
   alarm: alarmIcon,
   category: categoryIcon,
-  chatRoom: chatRoom,
+  chat: chatRoom,
   myPage: myPageIcon,
   search: searchIcon,
   home: homeIcon,
   heart: heart,
   heartClick: heartClick,
+  // eslint-disable-next-line no-dupe-keys
   chat: chat,
   close: close,
   camera: camera,
   report: report,
   exit: exit,
+  checkbox: checkbox,
+  checkboxChecked: checkboxChecked,
 };
-
->>>>>>> origin/feat/#20
 export const theme = StyleSheet.create({
   container: {
     flex: 1,

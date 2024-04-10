@@ -67,15 +67,9 @@ const StackNavigator = () => {
         options={{headerShown: false}}
       />
       <Stack.Screen
-<<<<<<< HEAD
         name="List"
         component={List}
-        options={{ headerShown: false }} 
-=======
-        name="SellList"
-        component={SellList}
         options={{headerShown: false}}
->>>>>>> origin/feat/#20
       />
       <Stack.Screen
         name="Chat"
@@ -85,7 +79,7 @@ const StackNavigator = () => {
       <Stack.Screen
         name="ProfileEdit"
         component={ProfileEdit}
-        options={{ headerShown: false }}
+        options={{headerShown: false}}
       />
       <Stack.Screen
         name="MailageCharge"
@@ -94,11 +88,7 @@ const StackNavigator = () => {
           title: '마일리지 충전',
         }}
       />
-      <Stack.Screen
-        name="Ask"
-        component={Ask}
-        options={{ title: '문의사항' }}
-      />
+      <Stack.Screen name="Ask" component={Ask} options={{title: '문의사항'}} />
     </Stack.Navigator>
   );
 };

@@ -1,19 +1,17 @@
-<<<<<<< HEAD
-import React, { useState, useEffect } from 'react';
-import { Alert, View, StyleSheet, TouchableOpacity, Text, Image } from 'react-native';
-import { icons, colors } from '../styles/theme';
+import React, {useState, useEffect} from 'react';
+import {Alert, View, StyleSheet, TouchableOpacity, Text} from 'react-native';
+import {colors} from '../styles/theme';
 import Profile from '../Components/Profile';
 import Mailage from '../Components/Mailage';
-import { API_URL } from '../globalVariables.js';
+import {API_URL} from '../globalVariables.js';
 import axios from 'axios';
 
-const MyPage = ({ navigation }) => {
+const MyPage = ({navigation}) => {
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
     fetchUserData();
   }, []);
-  
   const fetchUserData = async () => {
     try {
       const response = await axios.get(`${API_URL}/members/my`);
@@ -41,19 +39,19 @@ const MyPage = ({ navigation }) => {
 
   const handleMailage = () => {
     //마일리지 충전 페이지로 이동
-    navigation.navigate('MailageCharge', {user})
-  }
-
-  const handleList = (listType) =>{
-    //리스트 페이지로 이동
-    navigation.navigate('List', {user, listType})
-  }
-
-  const handleKeyword = () => {
-    // 키워드관리 페이지로 이동 
+    navigation.navigate('MailageCharge', {user});
   };
 
-  const handleAsk =() => {
+  const handleList = listType => {
+    //리스트 페이지로 이동
+    navigation.navigate('List', {user, listType});
+  };
+
+  const handleKeyword = () => {
+    // 키워드관리 페이지로 이동
+  };
+
+  const handleAsk = () => {
     //문의사항 페이지로 이동
     navigation.navigate('Ask', {user});
   };
@@ -86,19 +84,17 @@ const MyPage = ({ navigation }) => {
             } catch (error) {
               console.error('Error logging out:', error);
               // 로그아웃 실패 메시지
-              Alert.alert('로그아웃 실패', '로그아웃을 실패했습니다. 다시 시도해주세요.');
+              Alert.alert(
+                '로그아웃 실패',
+                '로그아웃을 실패했습니다. 다시 시도해주세요.',
+              );
             }
           },
         },
       ],
-      { cancelable: false }
+      {cancelable: false},
     );
   };
-
-=======
-import React from 'react';
-import {View, Text} from 'react-native';
->>>>>>> origin/feat/#20
 
   return (
     <View style={styles.container}>
@@ -108,28 +104,36 @@ import {View, Text} from 'react-native';
         <Profile user={user} />
 
         {/* 프로필 편집 버튼 */}
-        <TouchableOpacity style={styles.editProfileButton} onPress={handleEditProfile}>
+        <TouchableOpacity
+          style={styles.editProfileButton}
+          onPress={handleEditProfile}>
           <Text style={styles.editProfileText}>프로필 편집</Text>
         </TouchableOpacity>
       </View>
-        {/* 마일리지 컴포넌트 */}
-        <TouchableOpacity onPress={handleMailage}>
-          <Mailage user={user}/>
-        </TouchableOpacity>
+      {/* 마일리지 컴포넌트 */}
+      <TouchableOpacity onPress={handleMailage}>
+        <Mailage user={user} />
+      </TouchableOpacity>
 
-        {/* 기능 목록 */}
-        <View style={styles.functionList}>
+      {/* 기능 목록 */}
+      <View style={styles.functionList}>
         <View style={styles.separator} />
         <Text>My</Text>
-        <TouchableOpacity style={styles.functionItem} onPress={() => handleList('bookmark')}>
+        <TouchableOpacity
+          style={styles.functionItem}
+          onPress={() => handleList('bookmark')}>
           <Text style={styles.functionText}>장바구니</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.functionItem} onPress={() => handleList('sell')}>
+        <TouchableOpacity
+          style={styles.functionItem}
+          onPress={() => handleList('sell')}>
           <Text style={styles.functionText}>판매 내역</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.functionItem} onPress={() => handleList('buy')}>
+        <TouchableOpacity
+          style={styles.functionItem}
+          onPress={() => handleList('buy')}>
           <Text style={styles.functionText}>구매 내역</Text>
         </TouchableOpacity>
 
@@ -163,7 +167,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   profileContainer: {
-    flexDirection: 'row', 
+    flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
     marginVertical: 20,
@@ -175,7 +179,7 @@ const styles = StyleSheet.create({
     marginLeft: 'auto',
     padding: 10,
     borderRadius: 50,
-    backgroundColor: colors.secondGreen
+    backgroundColor: colors.secondGreen,
   },
   editProfileIcon: {
     width: 25,
@@ -206,5 +210,4 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
 });
-  
 export default MyPage;

@@ -8,6 +8,7 @@ const Bookmark = () => {
 
   const handleSellList = () => {
     // 판매내역 페이지로 이동
+    // eslint-disable-next-line no-undef
     navigation.navigate('SellList', {memberId});
   };
 

@@ -13,7 +13,7 @@ import axios from 'axios';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {colors, icons} from '../styles/theme';
 import {API_URL} from '../globalVariables.js';
-import {getAccessToken, removeAccessToken} from '../token.js';
+import {getAccessToken} from '../token.js';
 
 const Chat = ({route, navigation}) => {
   const {roomId, user} = route.params;

@@ -23,6 +23,7 @@ const ProductDetail = ({route, navigation}) => {
   const [liked, setLiked] = useState(false);
 
   // 예시 데이터
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const exampleProduct = {
     productId: 0,
     productName: '나의 아이폰14',
@@ -52,8 +53,9 @@ const ProductDetail = ({route, navigation}) => {
 
     // 예시 데이터를 사용하여 상품 정보를 설정합니다.
     setProduct(exampleProduct);
-  }, []);
+  }, [exampleProduct, fetchProduct]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchProduct = async () => {
     try {
       const accessToken = await getAccessToken();

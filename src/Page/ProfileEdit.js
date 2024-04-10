@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import React, {useState} from 'react';
+import {View, Text, TextInput, Button, StyleSheet} from 'react-native';
 
 const ProfileEdit = () => {
   // 사용자 정보를 관리하는 state
@@ -30,20 +30,20 @@ const ProfileEdit = () => {
         style={styles.input}
         placeholder="이름"
         value={userInfo.name}
-        onChangeText={(text) => handleInputChange('name', text)}
+        onChangeText={text => handleInputChange('name', text)}
       />
       <TextInput
         style={styles.input}
         placeholder="이메일"
         value={userInfo.email}
-        onChangeText={(text) => handleInputChange('email', text)}
+        onChangeText={text => handleInputChange('email', text)}
       />
       <TextInput
         style={styles.input}
         placeholder="비밀번호"
         secureTextEntry={true}
         value={userInfo.password}
-        onChangeText={(text) => handleInputChange('password', text)}
+        onChangeText={text => handleInputChange('password', text)}
       />
       <Button title="저장" onPress={handleSubmit} />
     </View>
