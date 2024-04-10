@@ -15,6 +15,7 @@ import ProfileEdit from '../Page/ProfileEdit';
 import MailageCharge from '../Page/MailageCharge';
 import List from '../Page/List';
 import Ask from '../Page/Ask';
+import Notifications from '../Page/Notifications';
 
 const Stack = createStackNavigator();
 
@@ -40,6 +41,13 @@ const StackNavigator = () => {
         name="Search"
         component={Search}
         options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="Notifications"
+        component={Notifications}
+        options={{
+          title: '알림',
+        }}
       />
       <Stack.Screen
         name="ProductWrite"

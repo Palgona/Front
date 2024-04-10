@@ -13,6 +13,7 @@ function MainTabNavigator() {
     <Tab.Navigator
       screenOptions={({route}) => ({
         headerShown: false,
+        // eslint-disable-next-line react/no-unstable-nested-components
         tabBarIcon: ({color, size}) => {
           let iconName;
 

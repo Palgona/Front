@@ -54,7 +54,7 @@ const ProductDetail = ({route, navigation}) => {
 
     // 예시 데이터를 사용하여 상품 정보를 설정합니다.
     setProduct(exampleProduct);
-  }, [exampleProduct, getProductData]);
+  }, []);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const getProductData = async () => {
