@@ -1,51 +1,68 @@
 import React, {useState} from 'react';
-import {View, Text, TextInput, Button, StyleSheet} from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
+import {launchImageLibrary} from 'react-native-image-picker';
+import {colors, icons} from '../styles/theme';
 
-const ProfileEdit = () => {
-  // 사용자 정보를 관리하는 state
-  const [userInfo, setUserInfo] = useState({
-    name: '',
-    email: '',
-    password: '',
-  });
+const ProfileEdit = ({route}) => {
+  const {user} = route.params;
+  const [name, setName] = useState(user ? user.nickName : '');
+  const [image, setImage] = useState(user ? user.profileImage : '');
 
-  // 입력 필드 값 변경 이벤트 핸들러
-  const handleInputChange = (key, value) => {
-    setUserInfo({
-      ...userInfo,
-      [key]: value,
-    });
+  if (!user) {
+    return (
+      <View>
+        <Text>사용자 정보가 없습니다.</Text>
+      </View>
+    );
+  }
+
+  const handleSave = () => {
+    // 사용자 정보 저장 처리
   };
 
-  // 프로필 정보 수정 제출 핸들러
-  const handleSubmit = () => {
-    // 사용자 정보 업데이트 요청 등의 작업 수행
-    console.log('Updated user info:', userInfo);
+  const onSelectImage = () => {
+    launchImageLibrary(
+      {
+        mediaType: 'photo',
+        maxWidth: 512,
+        maxHeight: 512,
+        includeBase64: false,
+      },
+      response => {
+        if (response.didCancel) {
+          console.log('User cancelled image picker');
+        } else if (response.errorCode) {
+          console.log('Image Error: ', response.errorCode);
+        } else {
+          setImage(response.assets[0].uri);
+        }
+      },
+    );
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>프로필 편집</Text>
+      <View style={styles.profileContainer}>
+        <TouchableOpacity onPress={onSelectImage}>
+          <Image source={{uri: image}} style={styles.profileImage} />
+        </TouchableOpacity>
+      </View>
       <TextInput
         style={styles.input}
-        placeholder="이름"
-        value={userInfo.name}
-        onChangeText={text => handleInputChange('name', text)}
+        placeholder="닉네임"
+        value={name}
+        onChangeText={setName}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="이메일"
-        value={userInfo.email}
-        onChangeText={text => handleInputChange('email', text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="비밀번호"
-        secureTextEntry={true}
-        value={userInfo.password}
-        onChangeText={text => handleInputChange('password', text)}
-      />
-      <Button title="저장" onPress={handleSubmit} />
+      <TouchableOpacity style={styles.saveButton}>
+        <Text style={styles.saveButtonText}>프로필 수정</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -53,20 +70,46 @@ const ProfileEdit = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding: 30,
     justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.background,
   },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 20,
   },
+  profileContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  profileImage: {
+    width: 200,
+    height: 200,
+    borderRadius: 500,
+    marginRight: 20,
+  },
   input: {
+    width: '100%',
     borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 5,
+    borderRadius: 50,
     padding: 10,
     marginBottom: 20,
+  },
+  saveButton: {
+    width: '100%',
+    backgroundColor: colors.secondGreen,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 50,
+    alignItems: 'center',
+  },
+  saveButtonText: {
+    color: 'black',
+    fontSize: 16,
   },
 });
 

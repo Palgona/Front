@@ -1,29 +1,46 @@
 import React, {useState} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
-import {icons, colors} from '../styles/theme';
-import Mailage from '../Components/Mailage';
+import {icons, colors} from '../styles/theme.js';
+import Mailage from '../Components/Mailage.js';
+import {API_URL} from '../globalVariables.js';
+import axios from 'axios';
 
-const MailageCharge = ({user}) => {
+const MaileageCharge = ({user}) => {
+  const [accessToken] = useState(
+    'eyJhbGciOiJIUzI1NiJ9.eyJzb2NpYWxJZCI6IjEyMzE3MjM3IiwiaWF0IjoxNzEzNjAxNjg1LCJleHAiOjEwMDAxNzEzNjAxNjg1fQ.NhIHmTyMvh_rDaugZRV0xB353OXuW-1qwI1MWKwldps',
+  );
+
   // 충전할 마일리지를 관리하는 state
   const [chargeAmount, setChargeAmount] = useState('');
   // 선택한 마일리지 옵션을 관리하는 state
   const [selectedOption, setSelectedOption] = useState(null);
-  console.log('Received user in ProfileEdit:', user);
 
   // 마일리지 옵션 선택 핸들러
   const handleOptionSelect = amount => {
-    if (selectedOption === amount) {
-      setSelectedOption(null); // 이미 선택된 옵션을 다시 선택하면 선택 해제
-    } else {
-      setChargeAmount(amount);
-      setSelectedOption(amount);
-    }
+    // "p"를 제거하고 숫자만 추출하여 chargeAmount로 설정
+    const amountValue = parseInt(amount.replace('p', ''), 10);
+    setChargeAmount(amountValue);
+    setSelectedOption(amount);
   };
 
   // 마일리지 충전 제출 핸들러
-  const handleSubmit = () => {
-    // 충전할 마일리지 정보를 서버로 전송하는 등의 작업 수행
-    console.log('Charge amount:', chargeAmount);
+  const handleSubmit = async () => {
+    try {
+      const response = await axios.post(
+        `${API_URL}/maileages`,
+        {amount: chargeAmount},
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      console.log('Mailage charge response:', response.data);
+      // 여기서 필요한 추가 작업 수행
+    } catch (error) {
+      console.error('Error charging mailage:', error);
+      // 여기서 오류 처리
+    }
   };
 
   return (
@@ -37,7 +54,7 @@ const MailageCharge = ({user}) => {
           onPress={() => handleOptionSelect('1000p')}
         />
         <OptionItem
-          tyle={styles.option}
+          style={styles.option}
           label="5,000p"
           selected={selectedOption === '5000p'}
           onPress={() => handleOptionSelect('5000p')}
@@ -65,7 +82,7 @@ const MailageCharge = ({user}) => {
 const OptionItem = ({label, selected, onPress}) => (
   <TouchableOpacity style={styles.optionItem} onPress={onPress}>
     <Image
-      source={selected ? icons.checkboxChecked : icons.checkbox} // 테마 파일에서 가져온 아이콘 사용
+      source={selected ? icons.checkboxChecked : icons.checkbox}
       style={styles.checkboxIcon}
     />
     <Text style={styles.optionLabel}>{label}</Text>
@@ -78,11 +95,6 @@ const styles = StyleSheet.create({
     padding: 30,
     justifyContent: 'center',
     backgroundColor: colors.background,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 20,
   },
   optionsContainer: {
     marginBottom: 20,
@@ -114,4 +126,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MailageCharge;
+export default MaileageCharge;

@@ -43,12 +43,11 @@ const Signup = ({navigation}) => {
     try {
       const formData = new FormData();
       formData.append('nickName', nickName);
-      if (imageFile) {
-        // `fetch`를 사용하여 파일 데이터를 직접 Blob으로 변환하고 FormData에 추가
-        const fileResponse = await fetch(imageFile.uri);
-        const fileBlob = await fileResponse.blob();
-        formData.append('image', fileBlob, imageFile.fileName || 'upload.jpg');
-      }
+      formData.append('image', {
+        uri: imageFile.uri,
+        name: imageFile.name,
+        type: 'image/jpeg',
+      });
       const token = await getAccessToken();
       const response = await axios
         .post(API_URL + '/auth/signup', formData, {
@@ -120,8 +119,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   profileImageContainer: {
-    width: 200,
-    height: 200,
     borderRadius: 100,
     backgroundColor: colors.secondYellow,
     justifyContent: 'center',

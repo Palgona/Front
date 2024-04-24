@@ -8,114 +8,92 @@ import axios from 'axios';
 
 const MyPage = ({navigation}) => {
   const [userData, setUserData] = useState(null);
+  const [accessToken] = useState(
+    'eyJhbGciOiJIUzI1NiJ9.eyJzb2NpYWxJZCI6IjEyMzE3MjM3IiwiaWF0IjoxNzEzNjAxNjg1LCJleHAiOjEwMDAxNzEzNjAxNjg1fQ.NhIHmTyMvh_rDaugZRV0xB353OXuW-1qwI1MWKwldps',
+  );
+  const [refreshToken] = useState(
+    'eyJhbGciOiJIUzI1NiJ9.eyJzb2NpYWxJZCI6IjEyMzE3MjM3IiwiaWF0IjoxNzEzNjAxNjg1LCJleHAiOjEwMDAxNzEzNjAxNjg1fQ.NhIHmTyMvh_rDaugZRV0xB353OXuW-1qwI1MWKwldps',
+  );
 
   useEffect(() => {
     fetchUserData();
-  }, []);
+  }, []); // useEffect 의존성 배열 수정
+
   const fetchUserData = async () => {
     try {
-      const response = await axios.get(`${API_URL}/members/my`);
-      setUserData(response.data);
+      const response = await axios.get(`${API_URL}/members/my`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      const {id, nickName, mileage, profileImage} = response.data;
+      setUserData({id, nickName, mileage, profileImage});
     } catch (error) {
       console.error('Error fetching user data:', error);
     }
   };
 
-  // 사용자 정보가 없을 때의 기본값
-  const defaultUser = {
-    id: '123',
-    nickname: '김가룡',
-    mailage: 1000,
-    profile_image: 'https://via.placeholder.com/80',
-  };
-
-  // 사용자 정보가 없을 경우 기본값 사용
-  const user = userData || defaultUser;
+  const user = userData;
 
   const handleEditProfile = () => {
-    // 프로필 편집 페이지로 이동
-    navigation.navigate('ProfileEdit');
+    navigation.navigate('ProfileEdit', {user: userData});
   };
 
   const handleMailage = () => {
-    //마일리지 충전 페이지로 이동
-    navigation.navigate('MailageCharge', {user});
+    navigation.navigate('MaileageCharge', {user});
   };
 
   const handleList = listType => {
-    //리스트 페이지로 이동
     navigation.navigate('List', {user, listType});
   };
 
   const handleKeyword = () => {
-    // 키워드관리 페이지로 이동
+    // 키워드 관리 페이지로 이동
   };
 
   const handleAsk = () => {
-    //문의사항 페이지로 이동
     navigation.navigate('Ask', {user});
   };
 
   const handleAlarm = () => {
-    //알림 설정 페이지로 이동
+    // 알림 설정 페이지로 이동
   };
 
   const handleLogout = async () => {
-    // 확인 메시지를 표시하여 로그아웃 여부를 사용자에게 물어봄
-    Alert.alert(
-      '로그아웃 확인',
-      '정말 로그아웃하시겠습니까?',
-      [
-        {
-          text: '취소',
-          onPress: () => console.log('취소되었습니다.'),
-          style: 'cancel',
+    try {
+      // 유효한 경우 로그아웃 요청 보내기
+      const response = await axios.post(`${API_URL}/auth/logout`, null, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'refresh-token': `Bearer ${refreshToken}`,
         },
-        {
-          text: '로그아웃',
-          onPress: async () => {
-            try {
-              // 로그아웃 API 호출
-              await axios.post(`${API_URL}/logout`);
-              // 로그아웃 성공 메시지
-              Alert.alert('로그아웃', '로그아웃되었습니다.');
-              // 홈화면으로 이동
-              navigation.navigate('Home');
-            } catch (error) {
-              console.error('Error logging out:', error);
-              // 로그아웃 실패 메시지
-              Alert.alert(
-                '로그아웃 실패',
-                '로그아웃을 실패했습니다. 다시 시도해주세요.',
-              );
-            }
-          },
-        },
-      ],
-      {cancelable: false},
-    );
+      });
+      if (response.status === 204) {
+        Alert.alert('로그아웃', '로그아웃되었습니다.');
+        navigation.navigate('Login'); // 로그인 페이지로 이동
+      } else {
+        throw new Error('로그아웃 실패');
+      }
+    } catch (error) {
+      console.error('로그아웃 에러:', error.message);
+      // 로그아웃 실패시 추가 처리
+    }
   };
 
   return (
     <View style={styles.container}>
-      {/* 프로필과 프로필 편집 버튼을 감싸는 컨테이너 */}
       <View style={styles.profileContainer}>
-        {/* Profile 컴포넌트 */}
         <Profile user={user} />
-
-        {/* 프로필 편집 버튼 */}
         <TouchableOpacity
           style={styles.editProfileButton}
           onPress={handleEditProfile}>
           <Text style={styles.editProfileText}>프로필 편집</Text>
         </TouchableOpacity>
       </View>
-      {/* 마일리지 컴포넌트 */}
       <TouchableOpacity onPress={handleMailage}>
         <Mailage user={user} />
       </TouchableOpacity>
 
-      {/* 기능 목록 */}
       <View style={styles.functionList}>
         <View style={styles.separator} />
         <Text>My</Text>
@@ -210,4 +188,5 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
 });
+
 export default MyPage;

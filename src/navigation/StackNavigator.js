@@ -12,7 +12,7 @@ import Chat from '../Page/Chat';
 import ProductDetail from '../Page/ProductDetail';
 import User from '../Page/User';
 import ProfileEdit from '../Page/ProfileEdit';
-import MailageCharge from '../Page/MailageCharge';
+import MaileageCharge from '../Page/MaileageCharge';
 import List from '../Page/List';
 import Ask from '../Page/Ask';
 import Notifications from '../Page/Notifications';
@@ -87,11 +87,13 @@ const StackNavigator = () => {
       <Stack.Screen
         name="ProfileEdit"
         component={ProfileEdit}
-        options={{headerShown: false}}
+        options={{
+          title: '프로필 편집',
+        }}
       />
       <Stack.Screen
-        name="MailageCharge"
-        component={MailageCharge}
+        name="MaileageCharge"
+        component={MaileageCharge}
         options={{
           title: '마일리지 충전',
         }}
