@@ -52,7 +52,9 @@ const StackNavigator = () => {
       <Stack.Screen
         name="ProductWrite"
         component={ProductWrite}
-        options={{headerShown: false}}
+        options={{
+          title: '상품 등록 페이지',
+        }}
       />
       <Stack.Screen
         name="SearchResult"

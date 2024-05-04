@@ -21,7 +21,7 @@ export const colors = {
   secondYellow: '#FFF1BC',
   mainGreen: '#6A9C78',
   secondGreen: '#C3E0B2',
-  mainGray: '#7f7f7f',
+  mainGray: '#808080',
   darkGray: '#55503E',
   background: '#FCFCFA',
   point: '#ED2B2A',

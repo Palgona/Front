@@ -1,82 +1,334 @@
 import React, {useState} from 'react';
-import {View, Text, TextInput, Button, StyleSheet} from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Alert,
+} from 'react-native';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import {colors, icons} from '../styles/theme';
+import {buttonStyles} from '../styles/buttonStyles';
 import {Picker} from '@react-native-picker/picker';
+import {launchImageLibrary} from 'react-native-image-picker';
 
 const ProductWrite = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [category, setCategory] = useState('');
+  const [imageFiles, setImageFiles] = useState([]); // 변경: 이미지 파일 배열로 변경
+  const [category, setCategory] = useState('Digital Devices');
   const [price, setPrice] = useState('');
-  const [date, setDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [isStartDatePickerVisible, setIsStartDatePickerVisible] =
+    useState(false);
+  const [isEndDatePickerVisible, setIsEndDatePickerVisible] = useState(false);
+  const [startButtonText, setStartButtonText] = useState('시작 시간 설정');
+  const [endButtonText, setEndButtonText] = useState('종료 시간 설정');
 
-  // Function to handle product submission
-  const submitProduct = () => {
-    // Logic to submit the product
-    console.log('Title:', title);
-    console.log('Description:', description);
-    console.log('Category:', category);
-    console.log('Price:', price);
-    console.log('Date:', date);
+  const onSelectImage = () => {
+    if (imageFiles.length >= 10) {
+      Alert.alert('이미지는 최대 10장까지 선택할 수 있습니다.');
+      return;
+    }
+    launchImageLibrary(
+      {
+        mediaType: 'photo',
+        maxWidth: 512,
+        maxHeight: 512,
+        includeBase64: false,
+        selectionLimit: 10,
+      },
+      response => {
+        if (response.didCancel) {
+          console.log('User cancelled image picker');
+        } else if (response.errorCode) {
+          console.log('Image Error: ', response.errorCode);
+        } else {
+          if (response.assets.length > 10) {
+            Alert.alert('이미지는 최대 10장까지 선택할 수 있습니다.');
+            return;
+          }
+          setImageFiles([...imageFiles, ...response.assets]);
+        }
+      },
+    );
+  };
+
+  const handleDeleteImage = index => {
+    const newImageFiles = [...imageFiles];
+    newImageFiles.splice(index, 1);
+    setImageFiles(newImageFiles);
+  };
+
+  const handleSubmit = () => {
+    if (
+      !title ||
+      !description ||
+      !category ||
+      !price ||
+      !startDate ||
+      !endDate
+    ) {
+      Alert.alert('내용을 모두 작성해주세요.');
+      return;
+    }
+
+    // 폼 제출 로직
+  };
+
+  const handleStartDatePicker = date => {
+    setStartDate(date);
+    setStartButtonText(date.toLocaleString('ko-KR'));
+    setIsStartDatePickerVisible(false);
+  };
+
+  const handleEndDatePicker = date => {
+    setEndDate(date);
+    setEndButtonText(date.toLocaleString('ko-KR'));
+    setIsEndDatePickerVisible(false);
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.imageContainer}>
-        {/* Image upload functionality can be added here */}
-      </View>
-      <TextInput
-        style={styles.input}
-        placeholder="제품명을 입력해주세요"
-        onChangeText={text => setTitle(text)}
-        value={title}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="상품 소개를 입력해주세요"
-        onChangeText={text => setDescription(text)}
-        value={description}
-      />
-      <Picker
-        selectedValue={category}
-        style={styles.picker}
-        onValueChange={(itemValue, itemIndex) => setCategory(itemValue)}>
-        {/* Add Picker.Item components to provide category options */}
-        <Picker.Item label="Category 1" value="category1" />
-        <Picker.Item label="Category 2" value="category2" />
-        <Picker.Item label="Category 3" value="category3" />
-      </Picker>
-      <TextInput
-        style={styles.input}
-        placeholder="가격을 입력해주세요"
-        onChangeText={text => setPrice(text)}
-        value={price}
-        keyboardType="numeric"
-      />
-    </View>
+    <KeyboardAvoidingView
+      style={{flex: 1}}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <ScrollView>
+        <View style={styles.container}>
+          <View style={styles.imageContainer}>
+            <TouchableOpacity
+              style={styles.ImageSelect}
+              onPress={onSelectImage}>
+              <Image source={icons.camera} style={styles.cameraIcon} />
+              <Text style={styles.counterText}>
+                {`(${imageFiles.length}/10)`}
+              </Text>
+            </TouchableOpacity>
+            <ScrollView horizontal>
+              <View style={styles.imagePreviewContainer}>
+                {imageFiles.map((imageFile, index) => (
+                  <View key={index}>
+                    <Image
+                      source={{uri: imageFile.uri}}
+                      style={styles.imagePreview}
+                    />
+                    <TouchableOpacity
+                      style={styles.deleteButton}
+                      onPress={() => handleDeleteImage(index)}>
+                      <Image
+                        source={icons.close}
+                        style={styles.deleteButtonIcons}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </View>
+            </ScrollView>
+          </View>
+          <View style={styles.inputContainer}>
+            <Text style={[styles.label, {color: colors.darkGray}]}>
+              게시글 제목
+            </Text>
+            <TextInput
+              placeholder="제목"
+              value={title}
+              onChangeText={setTitle}
+              style={styles.textInput}
+            />
+          </View>
+          <Text style={[styles.label, {color: colors.darkGray}]}>
+            상품 소개
+          </Text>
+          <TextInput
+            placeholder={
+              '올릴 게시글 내용을 작성해 주세요.\n신뢰할 수 있는 거래를 위해 자세히 적어주세요.'
+            }
+            value={description}
+            onChangeText={setDescription}
+            style={styles.textInputArea}
+            textAlignVertical="top"
+            multiline
+          />
+          <Text style={[styles.label, {color: colors.darkGray}]}>
+            카테고리 선택
+          </Text>
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={category}
+              onValueChange={(itemValue, itemIndex) => setCategory(itemValue)}
+              style={styles.picker}>
+              <Picker.Item label="디지털기기" value="Digital Devices" />
+              <Picker.Item label="의류" value="Clothing" />
+              <Picker.Item label="식품" value="Food" />
+              <Picker.Item label="도서" value="Books" />
+              <Picker.Item label="기타" value="Other" />
+            </Picker>
+          </View>
+          <Text style={[styles.label, {color: colors.darkGray}]}>
+            초기 마일리지
+          </Text>
+          <TextInput
+            placeholder="₩초기가격을 입력해주세요."
+            value={price}
+            onChangeText={setPrice}
+            style={styles.textInput}
+            keyboardType="numeric"
+          />
+          <Text style={[styles.label, {color: colors.darkGray}]}>
+            마감기한 설정
+          </Text>
+          <View style={styles.datePickerContainer}>
+            <TouchableOpacity
+              style={buttonStyles.button}
+              onPress={() => setIsStartDatePickerVisible(true)}>
+              <Text>{startButtonText}부터</Text>
+              <DateTimePickerModal
+                isVisible={isStartDatePickerVisible}
+                mode="datetime"
+                onConfirm={handleStartDatePicker}
+                onCancel={() => setIsStartDatePickerVisible(false)}
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={buttonStyles.button}
+              onPress={() => setIsEndDatePickerVisible(true)}>
+              <Text>{endButtonText}까지</Text>
+              <DateTimePickerModal
+                isVisible={isEndDatePickerVisible}
+                mode="datetime"
+                onConfirm={handleEndDatePicker}
+                onCancel={() => setIsEndDatePickerVisible(false)}
+              />
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+            <Text style={[styles.submitButtonText, {color: colors.darkGray}]}>
+              등록
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
+  scrollViewContainer: {
+    flexGrow: 1,
+  },
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 16,
+    padding: 20,
+    backgroundColor: colors.background,
   },
   imageContainer: {
-    // Style for the image upload section
+    flexDirection: 'row',
+    marginBottom: 10,
+    alignItems: 'center',
   },
-  input: {
-    height: 40,
-    margin: 12,
-    borderWidth: 1,
+  ImageSelect: {
+    width: 100,
+    height: 100,
+    marginRight: 10,
     padding: 10,
-    width: '100%',
+    borderColor: colors.mainGray,
+    borderWidth: 1,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cameraIcon: {
+    width: 30,
+    height: 30,
+    tintColor: colors.mainGray,
+  },
+  imagePreviewContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  imagePreview: {
+    width: 100,
+    height: 100,
+    marginHorizontal: 5,
+  },
+  deleteButton: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  deleteButtonIcons: {
+    tintColor: colors.background,
+    fontWeight: 'bold',
+    width: 10,
+    height: 10,
+  },
+  inputContainer: {
+    marginBottom: 10,
+  },
+  label: {
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  textInput: {
+    marginBottom: 10,
+    padding: 10,
+    borderColor: colors.mainGray,
+    borderWidth: 1,
+    borderRadius: 10,
+  },
+  textInputArea: {
+    marginBottom: 10,
+    height: 200,
+    padding: 10,
+    borderColor: colors.mainGray,
+    borderWidth: 1,
+    borderRadius: 10,
+  },
+  pickerContainer: {
+    marginBottom: 10,
+    borderColor: colors.mainGray,
+    borderWidth: 1,
+    borderRadius: 10,
   },
   picker: {
-    height: 50,
-    width: '100%',
+    padding: 10,
+    borderColor: colors.mainGray, // 테두리 색 설정
+    borderWidth: 1, // 테두리 두께 설정
+    borderRadius: 50,
+  },
+  datePickerContainer: {
+    borderColor: colors.mainGray,
+    borderWidth: 1,
+    padding: 10,
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  deadline: {
+    marginTop: 10,
+  },
+  submitButton: {
+    backgroundColor: colors.mainYellow,
+    marginTop: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 50,
+    alignItems: 'center',
+  },
+  submitButtonText: {
+    color: colors.darkGray,
   },
 });
 
