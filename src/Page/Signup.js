@@ -43,9 +43,9 @@ const Signup = ({navigation}) => {
     try {
       const formData = new FormData();
       formData.append('nickName', nickName);
-      formData.append('image', {
+      formData.append('file', {
         uri: imageFile.uri,
-        name: imageFile.name,
+        name: 'image.jpg',
         type: 'image/jpeg',
       });
       const token = await getAccessToken();
@@ -72,7 +72,7 @@ const Signup = ({navigation}) => {
       // 처리된 응답 확인
       console.log('Response Data:', response.data);
 
-      if (response.status === 200) {
+      if (response.status === 201) {
         // 회원 가입 성공
         Alert.alert('회원 가입 성공', '회원 가입이 완료되었습니다.');
         navigation.navigate('Home');
