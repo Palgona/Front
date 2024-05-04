@@ -35,6 +35,10 @@ const Home = ({navigation}) => {
     navigation.navigate('Search');
   };
 
+  const handleNotificationsPress = () => {
+    navigation.navigate('Notifications');
+  };
+
   const handleCategoryPress = () => {
     navigation.openDrawer();
   };
@@ -88,7 +92,7 @@ const Home = ({navigation}) => {
             />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={handleSearchPress}
+            onPress={handleNotificationsPress}
             style={buttonStyles.smallButton}>
             <Image
               source={icons.alarm}

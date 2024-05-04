@@ -11,8 +11,9 @@ const User = ({route, navigation}) => {
 
   useEffect(() => {
     fetchMemberData();
-  }, []);
+  }, [fetchMemberData]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchMemberData = async () => {
     try {
       const response = await axios.get(`${API_URL}/members/${userId}`);

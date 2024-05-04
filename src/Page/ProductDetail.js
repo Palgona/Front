@@ -9,10 +9,11 @@ import {
   ScrollView,
 } from 'react-native';
 import {icons, colors, theme} from '../styles/theme';
+import axios from 'axios';
 import {API_URL} from '../globalVariables.js';
 import ProductModal from '../Components/ProductModal';
 import Swiper from 'react-native-swiper';
-import {getAccessToken} from '../token.js';
+//import {getAccessToken} from '../token.js';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -21,8 +22,15 @@ const ProductDetail = ({route, navigation}) => {
   const [product, setProduct] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [liked, setLiked] = useState(false);
+  const [accessToken] = useState(
+    'eyJhbGciOiJIUzI1NiJ9.eyJzb2NpYWxJZCI6IjEyMzE3MjM3IiwiaWF0IjoxNzEzNjAxNjg1LCJleHAiOjEwMDAxNzEzNjAxNjg1fQ.NhIHmTyMvh_rDaugZRV0xB353OXuW-1qwI1MWKwldps',
+  );
+  const [refreshToken] = useState(
+    'eyJhbGciOiJIUzI1NiJ9.eyJzb2NpYWxJZCI6IjEyMzE3MjM3IiwiaWF0IjoxNzEzNjAxNjg1LCJleHAiOjEwMDAxNzEzNjAxNjg1fQ.NhIHmTyMvh_rDaugZRV0xB353OXuW-1qwI1MWKwldps',
+  );
 
   // 예시 데이터
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const exampleProduct = {
     productId: 0,
     productName: '나의 아이폰14',
@@ -48,16 +56,17 @@ const ProductDetail = ({route, navigation}) => {
 
   useEffect(() => {
     // 데이터 가져오는 로직
-    fetchProduct();
+    getProductData();
 
     // 예시 데이터를 사용하여 상품 정보를 설정합니다.
     setProduct(exampleProduct);
   }, []);
 
-  const fetchProduct = async () => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const getProductData = async () => {
     try {
-      const accessToken = await getAccessToken();
-      const response = await fetch(`${API_URL}/products/${productId}`, {
+      //const accessToken = await getAccessToken();
+      const response = await axios.get(`${API_URL}/products/${productId}`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${accessToken}`,
@@ -66,7 +75,7 @@ const ProductDetail = ({route, navigation}) => {
       if (!response.ok) {
         throw new Error('Failed to fetch product');
       }
-      const data = await response.json();
+      const data = response.data;
       const productData = {
         productId: data.productId,
         productName: data.productName,
@@ -88,31 +97,23 @@ const ProductDetail = ({route, navigation}) => {
     }
   };
 
-  const handleChatPress = async () => {
+  const createChatRoom = async () => {
     try {
-      const accessToken = await getAccessToken();
-
+      //const accessToken = await getAccessToken();
       // 채팅방 생성 API 호출
-      const createChatResponse = await fetch(`${API_URL}/chats`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          accessToken: accessToken,
+      const response = await axios.post(
+        `${API_URL}/chats`,
+        {visitorId: 0},
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`,
+          },
         },
-        body: JSON.stringify({
-          visitorId: 0,
-        }),
-      });
-
-      if (!createChatResponse.ok) {
-        throw new Error('Failed to create chat room');
-      }
-
-      const createChatData = await createChatResponse.json();
-
+      );
+      const chatRoomId = response.data.chatRoomId;
       // 생성된 채팅방으로 넘어가기
-      const chatRoomId = createChatData.chatRoomId;
-      navigation.navigate('Chat', {chatRoomId: chatRoomId}); // Chat 컴포넌트로 이동 및 chatRoomId 전달
+      navigation.navigate('Chat', {chatRoomId});
     } catch (error) {
       console.error('Error creating chat room:', error);
     }
@@ -126,34 +127,30 @@ const ProductDetail = ({route, navigation}) => {
   const handleLikePress = async () => {
     // 좋아요(like) 버튼을 누르면 liked 상태를 반전시킴
     setLiked(!liked);
-
     // 서버와 통신하여 북마크를 추가하거나 삭제합니다.
     const url = `${API_URL}/bookmarks/${productId}`;
     const method = liked ? 'DELETE' : 'POST';
-    const accessToken = await getAccessToken(); // 여기에 액세스 토큰을 넣어주세요.
-    console.log('Access Token:', accessToken); // 반환된 액세스 토큰을 콘솔에 출력
-    fetch(url, {
-      method: method,
-      headers: {
-        'Content-Type': 'application/json',
-        accessToken: accessToken,
-      },
-      body: JSON.stringify({
-        productId: productId,
-        bookmark: liked, // liked가 true면 찜 추가, false면 찜 삭제
-      }),
-    })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        // 서버에서 성공적인 응답을 받은 경우, 필요한 작업을 수행할 수 있습니다.
-        // 예: 사용자에게 메시지 표시 등
-      })
-      .catch(error => {
-        console.error('Error updating bookmark:', error);
-        // 오류 처리를 수행합니다. 예: 사용자에게 오류 메시지 표시
+    try {
+      const response = await axios({
+        method: method,
+        url: url,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+        data: {
+          productId: productId,
+        },
       });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      // 서버에서 성공적인 응답을 받은 경우, 필요한 작업을 수행할 수 있습니다.
+      // 예: 사용자에게 메시지 표시 등
+    } catch (error) {
+      console.error('Error updating bookmark:', error);
+      // 오류 처리를 수행합니다. 예: 사용자에게 오류 메시지 표시
+    }
   };
 
   if (!product) {
@@ -222,7 +219,7 @@ const ProductDetail = ({route, navigation}) => {
       {/* 하단 버튼 */}
       <View style={styles.buttonContainer}>
         {/* 채팅하기 버튼 */}
-        <TouchableOpacity style={styles.Button} onPress={handleChatPress}>
+        <TouchableOpacity style={styles.Button} onPress={createChatRoom}>
           <Text style={styles.buttonText}>채팅하기</Text>
         </TouchableOpacity>
         {/* 참여하기 버튼 */}

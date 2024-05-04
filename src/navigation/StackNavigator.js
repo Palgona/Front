@@ -11,7 +11,11 @@ import ChatList from '../Page/ChatList';
 import Chat from '../Page/Chat';
 import ProductDetail from '../Page/ProductDetail';
 import User from '../Page/User';
-import SellList from '../Page/SellList';
+import ProfileEdit from '../Page/ProfileEdit';
+import MaileageCharge from '../Page/MaileageCharge';
+import List from '../Page/List';
+import Ask from '../Page/Ask';
+import Notifications from '../Page/Notifications';
 
 const Stack = createStackNavigator();
 
@@ -39,9 +43,18 @@ const StackNavigator = () => {
         options={{headerShown: false}}
       />
       <Stack.Screen
+        name="Notifications"
+        component={Notifications}
+        options={{
+          title: '알림',
+        }}
+      />
+      <Stack.Screen
         name="ProductWrite"
         component={ProductWrite}
-        options={{headerShown: false}}
+        options={{
+          title: '상품 등록 페이지',
+        }}
       />
       <Stack.Screen
         name="SearchResult"
@@ -64,8 +77,8 @@ const StackNavigator = () => {
         options={{headerShown: false}}
       />
       <Stack.Screen
-        name="SellList"
-        component={SellList}
+        name="List"
+        component={List}
         options={{headerShown: false}}
       />
       <Stack.Screen
@@ -73,6 +86,21 @@ const StackNavigator = () => {
         component={Chat}
         options={{headerShown: false}}
       />
+      <Stack.Screen
+        name="ProfileEdit"
+        component={ProfileEdit}
+        options={{
+          title: '프로필 편집',
+        }}
+      />
+      <Stack.Screen
+        name="MaileageCharge"
+        component={MaileageCharge}
+        options={{
+          title: '마일리지 충전',
+        }}
+      />
+      <Stack.Screen name="Ask" component={Ask} options={{title: '문의사항'}} />
     </Stack.Navigator>
   );
 };

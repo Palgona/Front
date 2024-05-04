@@ -79,12 +79,12 @@ const Signup = ({navigation}) => {
       } else {
         // 회원 가입 실패
         Alert.alert('회원 가입 실패', '서버 오류로 회원 가입에 실패했습니다.');
-        //navigation.navigate('Home');
+        navigation.navigate('Home');
       }
     } catch (error) {
       // 오류 발생
       Alert.alert('오류', '회원 가입 중 오류가 발생했습니다.');
-      //navigation.navigate('Home');
+      navigation.navigate('Home');
     }
   };
   return (
@@ -119,8 +119,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   profileImageContainer: {
-    width: 200,
-    height: 200,
     borderRadius: 100,
     backgroundColor: colors.secondYellow,
     justifyContent: 'center',

@@ -13,7 +13,7 @@ import axios from 'axios';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {colors, icons} from '../styles/theme';
 import {API_URL} from '../globalVariables.js';
-import {getAccessToken, removeAccessToken} from '../token.js';
+import {getAccessToken} from '../token.js';
 
 const Chat = ({route, navigation}) => {
   const {roomId, user} = route.params;
@@ -24,8 +24,9 @@ const Chat = ({route, navigation}) => {
   useEffect(() => {
     //fetchChatMessages();
     setMessages(exampleMessages);
-  }, []);
+  }, [exampleMessages]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const exampleMessages = [
     {id: 1, text: '달에게 말을 했죠', sender: 'partner'},
     {id: 2, text: '하늘 위로 올라가', sender: 'me'},
@@ -83,16 +84,16 @@ const Chat = ({route, navigation}) => {
         type: 'image/jpeg',
         name: 'chatImage.jpg',
       });
-
       // 채팅방 이미지 업로드 API 호출
-      const response = await fetch(`${API_URL}/chats/${roomId}/image`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'multipart/form-data',
+      const response = await axios.post(
+        `${API_URL}/chats/${roomId}/image`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
         },
-        body: formData,
-      });
-
+      );
       if (!response.ok) {
         throw new Error('Failed to upload image');
       }
