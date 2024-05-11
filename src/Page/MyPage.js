@@ -1,19 +1,21 @@
 import React, {useState, useEffect} from 'react';
-import {Alert, View, StyleSheet, TouchableOpacity, Text} from 'react-native';
+import {
+  Alert,
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+  Linking,
+} from 'react-native';
 import {colors} from '../styles/theme';
 import Profile from '../Components/Profile';
 import Mailage from '../Components/Mailage';
 import {API_URL} from '../globalVariables.js';
 import axios from 'axios';
+import {getAccessToken} from '../token.js';
 
 const MyPage = ({navigation}) => {
   const [userData, setUserData] = useState(null);
-  const [accessToken] = useState(
-    'eyJhbGciOiJIUzI1NiJ9.eyJzb2NpYWxJZCI6IjEyMzE3MjM3IiwiaWF0IjoxNzEzNjAxNjg1LCJleHAiOjEwMDAxNzEzNjAxNjg1fQ.NhIHmTyMvh_rDaugZRV0xB353OXuW-1qwI1MWKwldps',
-  );
-  const [refreshToken] = useState(
-    'eyJhbGciOiJIUzI1NiJ9.eyJzb2NpYWxJZCI6IjEyMzE3MjM3IiwiaWF0IjoxNzEzNjAxNjg1LCJleHAiOjEwMDAxNzEzNjAxNjg1fQ.NhIHmTyMvh_rDaugZRV0xB353OXuW-1qwI1MWKwldps',
-  );
 
   useEffect(() => {
     fetchUserData();
@@ -23,7 +25,7 @@ const MyPage = ({navigation}) => {
     try {
       const response = await axios.get(`${API_URL}/members/my`, {
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer ${getAccessToken}`,
         },
       });
       const {id, nickName, mileage, profileImage} = response.data;
@@ -56,7 +58,7 @@ const MyPage = ({navigation}) => {
   };
 
   const handleAlarm = () => {
-    // 알림 설정 페이지로 이동
+    Linking.openSettings();
   };
 
   const handleLogout = async () => {

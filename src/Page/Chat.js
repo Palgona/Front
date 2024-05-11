@@ -22,22 +22,12 @@ const Chat = ({route, navigation}) => {
   const [partnerProfile, setPartnerProfile] = useState(user);
 
   useEffect(() => {
-    //fetchChatMessages();
-    setMessages(exampleMessages);
-  }, [exampleMessages]);
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const exampleMessages = [
-    {id: 1, text: '달에게 말을 했죠', sender: 'partner'},
-    {id: 2, text: '하늘 위로 올라가', sender: 'me'},
-    {id: 3, text: '네모난 달이 떴죠', sender: 'partner'},
-    {id: 4, text: '나는 꿈을 꾸었죠', sender: 'me'},
-    // 나머지 채팅 메시지 예시 데이터 추가
-  ];
+    fetchChatMessages();
+  }, []);
 
   const fetchChatMessages = async () => {
     try {
-      const response = await axios.get(API_URL + `/chats/${roomId}`);
+      const response = await axios.get(`${API_URL}/chats/${roomId}`);
       setMessages(response.data.messages);
     } catch (error) {
       console.error('Error fetching chat messages:', error);
@@ -84,7 +74,6 @@ const Chat = ({route, navigation}) => {
         type: 'image/jpeg',
         name: 'chatImage.jpg',
       });
-      // 채팅방 이미지 업로드 API 호출
       const response = await axios.post(
         `${API_URL}/chats/${roomId}/image`,
         formData,
@@ -144,7 +133,6 @@ const Chat = ({route, navigation}) => {
           text: '나가기',
           onPress: async () => {
             try {
-              // 채팅방 나가기 API 호출
               const accessToken = await getAccessToken();
               const exitChatResponse = await fetch(
                 `${API_URL}/chats/${roomId}/exit`,
@@ -156,17 +144,13 @@ const Chat = ({route, navigation}) => {
                   },
                 },
               );
-
               if (!exitChatResponse.ok) {
                 throw new Error('Failed to exit chat room');
               }
-
-              // 채팅방을 나갔으므로 이전 화면으로 이동
               navigation.navigate('ChatList');
             } catch (error) {
               console.error('Error leaving chat room:', error);
-              // 에러가 발생한 경우에 대한 처리
-              navigation.navigate('ChatList'); //나중에 지우기
+              navigation.navigate('ChatList');
             }
           },
           style: 'destructive',

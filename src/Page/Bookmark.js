@@ -1,10 +1,30 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+import axios from 'axios';
+import {API_URL} from '../globalVariables.js';
 import ProductList from '../Components/ProductList';
+import {getAccessToken} from '../token.js';
 
 const Bookmark = () => {
   const navigation = useNavigation();
+  const [bookmarkList, setBookmarkList] = useState([]);
+
+  useEffect(() => {
+    fetchBookmarkList();
+  }, []);
+
+  const fetchBookmarkList = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/bookmarks`, {
+        'Content-Type': 'application/json',
+        Authorization: 'BEARER ' + getAccessToken,
+      });
+      setBookmarkList(response.data);
+    } catch (error) {
+      console.error('Error fetching bookmark list:', error);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -12,7 +32,7 @@ const Bookmark = () => {
       <Text style={styles.title}>장바구니</Text>
 
       {/* 상품 리스트를 보여주는 ProductList 컴포넌트 */}
-      <ProductList />
+      <ProductList products={bookmarkList} />
 
       {/* 뒤로가기 버튼 */}
       <TouchableOpacity
