@@ -13,7 +13,7 @@ import axios from 'axios';
 import {API_URL} from '../globalVariables.js';
 import ProductModal from '../Components/ProductModal';
 import Swiper from 'react-native-swiper';
-//import {getAccessToken} from '../token.js';
+import {getAccessToken} from '../token.js';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -22,44 +22,11 @@ const ProductDetail = ({route, navigation}) => {
   const [product, setProduct] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [liked, setLiked] = useState(false);
-  const [accessToken] = useState(
-    'eyJhbGciOiJIUzI1NiJ9.eyJzb2NpYWxJZCI6IjEyMzE3MjM3IiwiaWF0IjoxNzEzNjAxNjg1LCJleHAiOjEwMDAxNzEzNjAxNjg1fQ.NhIHmTyMvh_rDaugZRV0xB353OXuW-1qwI1MWKwldps',
-  );
-  const [refreshToken] = useState(
-    'eyJhbGciOiJIUzI1NiJ9.eyJzb2NpYWxJZCI6IjEyMzE3MjM3IiwiaWF0IjoxNzEzNjAxNjg1LCJleHAiOjEwMDAxNzEzNjAxNjg1fQ.NhIHmTyMvh_rDaugZRV0xB353OXuW-1qwI1MWKwldps',
-  );
-
-  // 예시 데이터
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const exampleProduct = {
-    productId: 0,
-    productName: '나의 아이폰14',
-    content: '아이폰14 화이트 깨끗해요 잘썼어요'.repeat(50), // 긴 설명을 위해 반복
-    category: '스마트폰',
-    productState: '중고',
-    deadline: '2024-03-27T08:24:43.012Z',
-    created_at: '2024-03-27T08:24:43.012Z',
-    ownerId: 123, // 판매자의 고유 ID
-    ownerName: '김가룡',
-    ownerImgUrl: 'https://via.placeholder.com/150',
-    highestPrice: 100,
-    bookmarkCount: 20,
-    imageUrls: [
-      'https://via.placeholder.com/300/aabbcc/FFFFFF?text=Image+1',
-      'https://via.placeholder.com/300/3498DB/FFFFFF?text=Image+2',
-      'https://via.placeholder.com/300/2ECC71/FFFFFF?text=Image+3',
-      'https://via.placeholder.com/300/ccbbff/FFFFFF?text=Image+4',
-    ],
-    chatCount: 10, // 채팅 수
-    likeCount: 20, // 찜 수
   };
 
   useEffect(() => {
     // 데이터 가져오는 로직
     getProductData();
-
-    // 예시 데이터를 사용하여 상품 정보를 설정합니다.
-    setProduct(exampleProduct);
   }, []);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps

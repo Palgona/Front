@@ -4,12 +4,9 @@ import {icons, colors} from '../styles/theme.js';
 import Mailage from '../Components/Mailage.js';
 import {API_URL} from '../globalVariables.js';
 import axios from 'axios';
+import {getAccessToken} from '../token.js';
 
 const MaileageCharge = ({user}) => {
-  const [accessToken] = useState(
-    'eyJhbGciOiJIUzI1NiJ9.eyJzb2NpYWxJZCI6IjEyMzE3MjM3IiwiaWF0IjoxNzEzNjAxNjg1LCJleHAiOjEwMDAxNzEzNjAxNjg1fQ.NhIHmTyMvh_rDaugZRV0xB353OXuW-1qwI1MWKwldps',
-  );
-
   // 충전할 마일리지를 관리하는 state
   const [chargeAmount, setChargeAmount] = useState('');
   // 선택한 마일리지 옵션을 관리하는 state
@@ -31,7 +28,7 @@ const MaileageCharge = ({user}) => {
         {amount: chargeAmount},
         {
           headers: {
-            Authorization: `Bearer ${accessToken}`,
+            Authorization: `Bearer ${getAccessToken}`,
           },
         },
       );
