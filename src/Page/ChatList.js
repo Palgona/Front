@@ -11,6 +11,7 @@ import {useNavigation} from '@react-navigation/native';
 import axios from 'axios';
 import {colors, theme} from '../styles/theme';
 import {API_URL} from '../globalVariables.js';
+import {getAccessToken} from '../token.js';
 
 const ChatList = ({user}) => {
   const navigation = useNavigation();
@@ -19,20 +20,34 @@ const ChatList = ({user}) => {
   useEffect(() => {
     fetchChats();
   }, []);
+
   const fetchChats = async () => {
     try {
-      const response = await axios.get(`${API_URL}/chat/{chatRoomId}/messages`);
-      setChats(response.data);
+      const accessToken = await getAccessToken(); // 여기에 액세스 토큰을 가져오는 코드를 추가해야 합니다.
+      const response = await axios.get(`${API_URL}/chats`, {
+        headers: {
+          Authorization: `${accessToken}`,
+        },
+      });
+      const chatData = response.data.map(chat => ({
+        chatRoomId: chat.id,
+        profileImage: "", // 상대방 프로필 이미지는 API 응답에 포함되지 않았으므로 빈 문자열로 설정하거나 별도 로직 필요
+        nickname: "", // 상대방 닉네임도 API 응답에 포함되지 않았으므로 별도 로직 필요
+        lastMessage: "", // 마지막 메시지도 포함되지 않았으므로 빈 문자열로 설정
+        lastMessageTime: "", // 마지막 메시지 시간도 포함되지 않았으므로 빈 문자열로 설정
+        newMessages: chat.unreadMessageCount, // 안읽은 메시지 수
+      }));
+      setChats(chatData);
     } catch (error) {
-      console.error('Error fetching chat list:', error);
+      console.error("Error fetching chat list:", error);
     }
   };
 
   const handleChatPress = (chatRoomId, user) => {
-    navigation.navigate('Chat', {chatRoomId, user});
+    navigation.navigate("Chat", { chatRoomId, user });
   };
 
-  const renderItem = ({item}) => {
+  const renderItem = ({ item }) => {
     return (
       <TouchableOpacity
         style={styles.chatItem}
@@ -41,8 +56,12 @@ const ChatList = ({user}) => {
             profileImage: item.profileImage,
             nickname: item.nickname,
           })
-        }>
-        <Image source={{uri: item.profileImage}} style={styles.profileImage} />
+        }
+      >
+        <Image
+          source={{ uri: item.profileImage }}
+          style={styles.profileImage}
+        />
         <View style={styles.chatContent}>
           <View style={styles.header}>
             <Text style={styles.nickname}>{item.nickname}</Text>
@@ -67,7 +86,7 @@ const ChatList = ({user}) => {
       <FlatList
         data={chats}
         renderItem={renderItem}
-        keyExtractor={item => item.chatRoomId.toString()}
+        keyExtractor={(item) => item.chatRoomId.toString()}
         ListEmptyComponent={() => (
           <View style={styles.emptyListComponent}>
             <Text style={styles.emptyListText}>채팅 목록이 없습니다.</Text>
@@ -85,12 +104,12 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginLeft: 10,
   },
   chatItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     padding: 15,
   },
   profileImage: {
@@ -103,39 +122,39 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   nickname: {
     fontSize: 16,
     color: colors.darkGray,
   },
   lastMessageTime: {
-    position: 'absolute',
+    position: "absolute",
     right: 0,
     top: 0,
     fontSize: 12,
     color: colors.mainGray,
   },
   newMessagesBadge: {
-    position: 'absolute',
-    right: '4%',
-    top: '77%',
+    position: "absolute",
+    right: "4%",
+    top: "77%",
     backgroundColor: colors.point,
     borderRadius: 15,
     width: 25,
     height: 25,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   newMessagesCount: {
-    color: 'white',
+    color: "white",
   },
   emptyListComponent: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   emptyListText: {
     fontSize: 15,

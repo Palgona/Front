@@ -8,11 +8,11 @@ import Search from '../Page/Search';
 import ProductWrite from '../Page/ProductWrite';
 import SearchResult from '../Page/SearchResult';
 import ChatList from '../Page/ChatList';
-import Chat from '../Page/Chat';
+import ChatRoom from '../Page/ChatRoom';
 import ProductDetail from '../Page/ProductDetail';
 import User from '../Page/User';
 import ProfileEdit from '../Page/ProfileEdit';
-import MaileageCharge from '../Page/MaileageCharge';
+import MileageCharge from '../Page/MileageCharge';
 import List from '../Page/List';
 import Ask from '../Page/Ask';
 import Notifications from '../Page/Notifications';
@@ -82,8 +82,8 @@ const StackNavigator = () => {
         options={{headerShown: false}}
       />
       <Stack.Screen
-        name="Chat"
-        component={Chat}
+        name="ChatRoom"
+        component={ChatRoom}
         options={{headerShown: false}}
       />
       <Stack.Screen
@@ -94,8 +94,8 @@ const StackNavigator = () => {
         }}
       />
       <Stack.Screen
-        name="MaileageCharge"
-        component={MaileageCharge}
+        name="MileageCharge"
+        component={MileageCharge}
         options={{
           title: '마일리지 충전',
         }}

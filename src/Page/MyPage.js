@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Alert,
   View,
@@ -6,55 +6,68 @@ import {
   TouchableOpacity,
   Text,
   Linking,
-} from 'react-native';
-import {colors} from '../styles/theme';
-import Profile from '../Components/Profile';
-import Mailage from '../Components/Mailage';
-import {API_URL} from '../globalVariables.js';
-import axios from 'axios';
-import {getAccessToken} from '../token.js';
+} from "react-native";
+import { colors } from "../styles/theme";
+import Profile from "../Components/Profile";
+import Mileage from "../Components/Mileage.js";
+import { API_URL } from "../globalVariables.js";
+import axios from "axios";
+import { getAccessToken, getRefreshToken } from "../token.js";
 
-const MyPage = ({navigation}) => {
+const MyPage = ({ navigation }) => {
   const [userData, setUserData] = useState(null);
+  const [mileage, setMileage] = useState(0);
 
   useEffect(() => {
     fetchUserData();
-  }, []); // useEffect 의존성 배열 수정
+    fetchMileage();
+  }, []);
 
   const fetchUserData = async () => {
     try {
+      const accessToken = await getAccessToken();
       const response = await axios.get(`${API_URL}/members/my`, {
         headers: {
-          Authorization: `Bearer ${getAccessToken}`,
+          Authorization: `${accessToken}`,
         },
       });
-      const {id, nickName, mileage, profileImage} = response.data;
-      setUserData({id, nickName, mileage, profileImage});
+      const { id, nickName, mileage, profileImage } = response.data;
+      setUserData({ id, nickName, mileage, profileImage });
     } catch (error) {
-      console.error('Error fetching user data:', error);
+      console.error("Error fetching user data:", error);
+    }
+  };
+
+  const fetchMileage = async () => {
+    const accessToken = await getAccessToken();
+    try {
+      const response = await axios.get(`${API_URL}/mileages`, {
+        headers: {
+          Authorization: `${accessToken}`,
+        },
+      });
+      setMileage(response.data);
+    } catch (error) {
+      console.error("Error fetching mileage:", error);
     }
   };
 
   const user = userData;
 
   const handleEditProfile = () => {
-    navigation.navigate('ProfileEdit', {user: userData});
+    navigation.navigate("ProfileEdit", { user: userData });
   };
 
-  const handleMailage = () => {
-    navigation.navigate('MaileageCharge', {user});
+  const handleMileage = () => {
+    navigation.navigate("MileageCharge", { user });
   };
 
-  const handleList = listType => {
-    navigation.navigate('List', {user, listType});
-  };
-
-  const handleKeyword = () => {
-    // 키워드 관리 페이지로 이동
+  const handleList = (listType) => {
+    navigation.navigate("List", { user, listType });
   };
 
   const handleAsk = () => {
-    navigation.navigate('Ask', {user});
+    navigation.navigate("Ask", { user });
   };
 
   const handleAlarm = () => {
@@ -63,21 +76,22 @@ const MyPage = ({navigation}) => {
 
   const handleLogout = async () => {
     try {
-      // 유효한 경우 로그아웃 요청 보내기
+      const accessToken = await getAccessToken();
+      const refreshToken = await getRefreshToken();
       const response = await axios.post(`${API_URL}/auth/logout`, null, {
         headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'refresh-token': `Bearer ${refreshToken}`,
+          Authorization: `${accessToken}`,
+          "refresh-token": `${refreshToken}`,
         },
       });
       if (response.status === 204) {
-        Alert.alert('로그아웃', '로그아웃되었습니다.');
-        navigation.navigate('Login'); // 로그인 페이지로 이동
+        Alert.alert("로그아웃", "로그아웃되었습니다.");
+        navigation.navigate("Login"); // 로그인 페이지로 이동
       } else {
-        throw new Error('로그아웃 실패');
+        throw new Error("로그아웃 실패");
       }
     } catch (error) {
-      console.error('로그아웃 에러:', error.message);
+      console.error("로그아웃 에러:", error.message);
       // 로그아웃 실패시 추가 처리
     }
   };
@@ -88,12 +102,13 @@ const MyPage = ({navigation}) => {
         <Profile user={user} />
         <TouchableOpacity
           style={styles.editProfileButton}
-          onPress={handleEditProfile}>
+          onPress={handleEditProfile}
+        >
           <Text style={styles.editProfileText}>프로필 편집</Text>
         </TouchableOpacity>
       </View>
-      <TouchableOpacity onPress={handleMailage}>
-        <Mailage user={user} />
+      <TouchableOpacity onPress={handleMileage}>
+        <Mileage user={user} />
       </TouchableOpacity>
 
       <View style={styles.functionList}>
@@ -101,26 +116,24 @@ const MyPage = ({navigation}) => {
         <Text>My</Text>
         <TouchableOpacity
           style={styles.functionItem}
-          onPress={() => handleList('bookmark')}>
+          onPress={() => handleList("bookmark")}
+        >
           <Text style={styles.functionText}>장바구니</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.functionItem}
-          onPress={() => handleList('sell')}>
+          onPress={() => handleList("sell")}
+        >
           <Text style={styles.functionText}>판매 내역</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.functionItem}
-          onPress={() => handleList('buy')}>
+          onPress={() => handleList("buy")}
+        >
           <Text style={styles.functionText}>구매 내역</Text>
         </TouchableOpacity>
-
-        <TouchableOpacity style={styles.functionItem} onPress={handleKeyword}>
-          <Text style={styles.functionText}>키워드 관리</Text>
-        </TouchableOpacity>
-
         <View style={styles.separator} />
         <Text>이용안내</Text>
         <TouchableOpacity style={styles.functionItem} onPress={handleAsk}>
@@ -143,20 +156,20 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    paddingTop: '10%',
+    paddingTop: "10%",
     backgroundColor: colors.background,
   },
   profileContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     padding: 10,
     marginVertical: 20,
     borderRadius: 10,
   },
   editProfileButton: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    marginLeft: 'auto',
+    flexDirection: "column",
+    alignItems: "center",
+    marginLeft: "auto",
     padding: 10,
     borderRadius: 50,
     backgroundColor: colors.secondGreen,
@@ -170,10 +183,10 @@ const styles = StyleSheet.create({
   editProfileText: {
     color: colors.darkGray,
     fontSize: 10,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   functionList: {
-    width: '100%',
+    width: "100%",
   },
   functionItem: {
     marginVertical: 15,

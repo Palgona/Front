@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -10,65 +10,60 @@ import {
   Platform,
   ScrollView,
   Alert,
-} from 'react-native';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import {colors, icons} from '../styles/theme';
-import {buttonStyles} from '../styles/buttonStyles';
-import {Picker} from '@react-native-picker/picker';
-import {launchImageLibrary} from 'react-native-image-picker';
-import {API_URL} from '../globalVariables.js';
-import axios from 'axios';
+} from "react-native";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { colors, icons } from "../styles/theme";
+import { buttonStyles } from "../styles/buttonStyles";
+import { Picker } from "@react-native-picker/picker";
+import { launchImageLibrary } from "react-native-image-picker";
+import { API_URL } from "../globalVariables.js";
+import axios from "axios";
+import { getAccessToken } from "../token.js";
 
 const ProductWrite = () => {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [imageFiles, setImageFiles] = useState([]);
-  const [category, setCategory] = useState('Digital Devices');
-  const [price, setPrice] = useState('');
+  const [category, setCategory] = useState("Digital Devices");
+  const [price, setPrice] = useState("");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [isStartDatePickerVisible, setIsStartDatePickerVisible] =
     useState(false);
   const [isEndDatePickerVisible, setIsEndDatePickerVisible] = useState(false);
-  const [startButtonText, setStartButtonText] = useState('시작 시간 설정');
-  const [endButtonText, setEndButtonText] = useState('종료 시간 설정');
-  const [accessToken] = useState(
-    'eyJhbGciOiJIUzI1NiJ9.eyJzb2NpYWxJZCI6IjEyMzE3MjM3IiwiaWF0IjoxNzEzNjAxNjg1LCJleHAiOjEwMDAxNzEzNjAxNjg1fQ.NhIHmTyMvh_rDaugZRV0xB353OXuW-1qwI1MWKwldps',
-  );
-  const [refreshToken] = useState(
-    'eyJhbGciOiJIUzI1NiJ9.eyJzb2NpYWxJZCI6IjEyMzE3MjM3IiwiaWF0IjoxNzEzNjAxNjg1LCJleHAiOjEwMDAxNzEzNjAxNjg1fQ.NhIHmTyMvh_rDaugZRV0xB353OXuW-1qwI1MWKwldps',
-  );
+  const [startButtonText, setStartButtonText] = useState("시작 시간 설정");
+  const [endButtonText, setEndButtonText] = useState("종료 시간 설정");
 
   const onSelectImage = () => {
     if (imageFiles.length >= 10) {
-      Alert.alert('이미지는 최대 10장까지 선택할 수 있습니다.');
+      Alert.alert("이미지는 최대 10장까지 선택할 수 있습니다.");
       return;
     }
     launchImageLibrary(
       {
-        mediaType: 'photo',
+        mediaType: "photo",
         maxWidth: 512,
         maxHeight: 512,
         includeBase64: false,
         selectionLimit: 10,
       },
-      response => {
+      (response) => {
         if (response.didCancel) {
-          console.log('User cancelled image picker');
+          console.log("User cancelled image picker");
         } else if (response.errorCode) {
-          console.log('Image Error: ', response.errorCode);
+          console.log("Image Error: ", response.errorCode);
         } else {
           if (response.assets.length > 10) {
-            Alert.alert('이미지는 최대 10장까지 선택할 수 있습니다.');
+            Alert.alert("이미지는 최대 10장까지 선택할 수 있습니다.");
             return;
           }
           setImageFiles([...imageFiles, ...response.assets]);
         }
-      },
+      }
     );
   };
 
-  const handleDeleteImage = index => {
+  const handleDeleteImage = (index) => {
     const newImageFiles = [...imageFiles];
     newImageFiles.splice(index, 1);
     setImageFiles(newImageFiles);
@@ -83,11 +78,13 @@ const ProductWrite = () => {
       !startDate ||
       !endDate
     ) {
-      Alert.alert('내용을 모두 작성해주세요.');
+      Alert.alert("내용을 모두 작성해주세요.");
       return;
     }
 
     try {
+      const accessToken = await getAccessToken();
+
       const formData = new FormData();
       const productReq = {
         name: title,
@@ -96,7 +93,7 @@ const ProductWrite = () => {
         category: category,
         deadline: endDate.toISOString(),
       };
-      formData.append('productReq', JSON.stringify(productReq));
+      formData.append("productReq", JSON.stringify(productReq));
 
       imageFiles.forEach((file, index) => {
         formData.append(`files`, {
@@ -108,45 +105,48 @@ const ProductWrite = () => {
 
       const response = await axios.post(`${API_URL}/products`, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "multipart/form-data",
+          Authorization: `${accessToken}`,
         },
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to submit product');
+      if (response.status !== 201) {
+        // Check the status code
+        throw new Error("Failed to submit product");
       }
 
-      Alert.alert('제품이 성공적으로 등록되었습니다.');
+      Alert.alert("제품이 성공적으로 등록되었습니다.");
       // 등록 후 필요한 작업 수행 (예: 화면 전환 등)
     } catch (error) {
-      console.error('Error submitting product:', error);
-      Alert.alert('제품 등록에 실패했습니다. 다시 시도해주세요.');
+      console.error("Error submitting product:", error);
+      Alert.alert("제품 등록에 실패했습니다. 다시 시도해주세요.");
     }
   };
 
-  const handleStartDatePicker = date => {
+  const handleStartDatePicker = (date) => {
     setStartDate(date);
-    setStartButtonText(date.toLocaleString('ko-KR'));
+    setStartButtonText(date.toLocaleString("ko-KR"));
     setIsStartDatePickerVisible(false);
   };
 
-  const handleEndDatePicker = date => {
+  const handleEndDatePicker = (date) => {
     setEndDate(date);
-    setEndButtonText(date.toLocaleString('ko-KR'));
+    setEndButtonText(date.toLocaleString("ko-KR"));
     setIsEndDatePickerVisible(false);
   };
 
   return (
     <KeyboardAvoidingView
-      style={{flex: 1}}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
       <ScrollView>
         <View style={styles.container}>
           <View style={styles.imageContainer}>
             <TouchableOpacity
               style={styles.ImageSelect}
-              onPress={onSelectImage}>
+              onPress={onSelectImage}
+            >
               <Image source={icons.camera} style={styles.cameraIcon} />
               <Text style={styles.counterText}>
                 {`(${imageFiles.length}/10)`}
@@ -157,12 +157,13 @@ const ProductWrite = () => {
                 {imageFiles.map((imageFile, index) => (
                   <View key={index}>
                     <Image
-                      source={{uri: imageFile.uri}}
+                      source={{ uri: imageFile.uri }}
                       style={styles.imagePreview}
                     />
                     <TouchableOpacity
                       style={styles.deleteButton}
-                      onPress={() => handleDeleteImage(index)}>
+                      onPress={() => handleDeleteImage(index)}
+                    >
                       <Image
                         source={icons.close}
                         style={styles.deleteButtonIcons}
@@ -174,7 +175,7 @@ const ProductWrite = () => {
             </ScrollView>
           </View>
           <View style={styles.inputContainer}>
-            <Text style={[styles.label, {color: colors.darkGray}]}>
+            <Text style={[styles.label, { color: colors.darkGray }]}>
               게시글 제목
             </Text>
             <TextInput
@@ -184,12 +185,12 @@ const ProductWrite = () => {
               style={styles.textInput}
             />
           </View>
-          <Text style={[styles.label, {color: colors.darkGray}]}>
+          <Text style={[styles.label, { color: colors.darkGray }]}>
             상품 소개
           </Text>
           <TextInput
             placeholder={
-              '올릴 게시글 내용을 작성해 주세요.\n신뢰할 수 있는 거래를 위해 자세히 적어주세요.'
+              "올릴 게시글 내용을 작성해 주세요.\n신뢰할 수 있는 거래를 위해 자세히 적어주세요."
             }
             value={description}
             onChangeText={setDescription}
@@ -197,14 +198,15 @@ const ProductWrite = () => {
             textAlignVertical="top"
             multiline
           />
-          <Text style={[styles.label, {color: colors.darkGray}]}>
+          <Text style={[styles.label, { color: colors.darkGray }]}>
             카테고리 선택
           </Text>
           <View style={styles.pickerContainer}>
             <Picker
               selectedValue={category}
               onValueChange={(itemValue, itemIndex) => setCategory(itemValue)}
-              style={styles.picker}>
+              style={styles.picker}
+            >
               <Picker.Item label="디지털기기" value="Digital Devices" />
               <Picker.Item label="의류" value="Clothing" />
               <Picker.Item label="식품" value="Food" />
@@ -212,7 +214,7 @@ const ProductWrite = () => {
               <Picker.Item label="기타" value="Other" />
             </Picker>
           </View>
-          <Text style={[styles.label, {color: colors.darkGray}]}>
+          <Text style={[styles.label, { color: colors.darkGray }]}>
             초기 마일리지
           </Text>
           <TextInput
@@ -222,13 +224,14 @@ const ProductWrite = () => {
             style={styles.textInput}
             keyboardType="numeric"
           />
-          <Text style={[styles.label, {color: colors.darkGray}]}>
+          <Text style={[styles.label, { color: colors.darkGray }]}>
             마감기한 설정
           </Text>
           <View style={styles.datePickerContainer}>
             <TouchableOpacity
               style={buttonStyles.button}
-              onPress={() => setIsStartDatePickerVisible(true)}>
+              onPress={() => setIsStartDatePickerVisible(true)}
+            >
               <Text>{startButtonText}부터</Text>
               <DateTimePickerModal
                 isVisible={isStartDatePickerVisible}
@@ -240,7 +243,8 @@ const ProductWrite = () => {
 
             <TouchableOpacity
               style={buttonStyles.button}
-              onPress={() => setIsEndDatePickerVisible(true)}>
+              onPress={() => setIsEndDatePickerVisible(true)}
+            >
               <Text>{endButtonText}까지</Text>
               <DateTimePickerModal
                 isVisible={isEndDatePickerVisible}
@@ -251,7 +255,7 @@ const ProductWrite = () => {
             </TouchableOpacity>
           </View>
           <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-            <Text style={[styles.submitButtonText, {color: colors.darkGray}]}>
+            <Text style={[styles.submitButtonText, { color: colors.darkGray }]}>
               등록
             </Text>
           </TouchableOpacity>
@@ -271,9 +275,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   imageContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginBottom: 10,
-    alignItems: 'center',
+    alignItems: "center",
   },
   ImageSelect: {
     width: 100,
@@ -283,8 +287,8 @@ const styles = StyleSheet.create({
     borderColor: colors.mainGray,
     borderWidth: 1,
     borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   cameraIcon: {
     width: 30,
@@ -292,9 +296,9 @@ const styles = StyleSheet.create({
     tintColor: colors.mainGray,
   },
   imagePreviewContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
   },
   imagePreview: {
     width: 100,
@@ -302,19 +306,19 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   deleteButton: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     right: 0,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: "rgba(0,0,0,0.5)",
     width: 20,
     height: 20,
     borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   deleteButtonIcons: {
     tintColor: colors.background,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     width: 10,
     height: 10,
   },
@@ -322,7 +326,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   label: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 5,
   },
   textInput: {
@@ -368,7 +372,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 50,
-    alignItems: 'center',
+    alignItems: "center",
   },
   submitButtonText: {
     color: colors.darkGray,

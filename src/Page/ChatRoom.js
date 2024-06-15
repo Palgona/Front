@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -8,17 +8,17 @@ import {
   TextInput,
   StyleSheet,
   Alert,
-} from 'react-native';
-import axios from 'axios';
-import {launchImageLibrary} from 'react-native-image-picker';
-import {colors, icons} from '../styles/theme';
-import {API_URL} from '../globalVariables.js';
-import {getAccessToken} from '../token.js';
+} from "react-native";
+import axios from "axios";
+import { launchImageLibrary } from "react-native-image-picker";
+import { colors, icons } from "../styles/theme.js";
+import { API_URL } from "../globalVariables.js";
+import { getAccessToken } from "../token.js";
 
-const Chat = ({route, navigation}) => {
-  const {roomId, user} = route.params;
+const ChatRoom = ({ route, navigation }) => {
+  const { roomId, user } = route.params;
   const [messages, setMessages] = useState([]);
-  const [text, setText] = useState('');
+  const [text, setText] = useState("");
   const [partnerProfile, setPartnerProfile] = useState(user);
 
   useEffect(() => {
@@ -30,76 +30,77 @@ const Chat = ({route, navigation}) => {
       const response = await axios.get(`${API_URL}/chats/${roomId}`);
       setMessages(response.data.messages);
     } catch (error) {
-      console.error('Error fetching chat messages:', error);
+      console.error("Error fetching chat messages:", error);
     }
   };
 
   const handleSend = () => {
-    if (text.trim() !== '') {
+    if (text.trim() !== "") {
       sendMessageToServer(text);
-      setMessages([{id: Date.now(), text, sender: 'me'}, ...messages]);
-      setText('');
+      setMessages([{ id: Date.now(), text, sender: "me" }, ...messages]);
+      setText("");
     }
   };
 
   const handleImageSend = () => {
     launchImageLibrary(
       {
-        mediaType: 'photo',
+        mediaType: "photo",
         maxWidth: 512,
         maxHeight: 512,
         includeBase64: true,
       },
-      response => {
+      (response) => {
         if (response.didCancel) {
-          console.log('User cancelled image picker');
+          console.log("User cancelled image picker");
         } else if (response.errorCode) {
-          console.log('Image Error: ', response.errorCode);
+          console.log("Image Error: ", response.errorCode);
         } else {
           sendImageToServer(response.assets[0].uri);
         }
-      },
+      }
     );
   };
 
-  const sendMessageToServer = message => {
+  const sendMessageToServer = (message) => {
     // send message to server logic
   };
 
-  const sendImageToServer = async uri => {
+  const sendImageToServer = async (uri) => {
     try {
       const formData = new FormData();
-      formData.append('files', {
+      formData.append("files", {
         uri: uri,
-        type: 'image/jpeg',
-        name: 'chatImage.jpg',
+        type: "image/jpeg",
+        name: "chatImage.jpg",
       });
       const response = await axios.post(
         `${API_URL}/chats/${roomId}/image`,
         formData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            "Content-Type": "multipart/form-data",
           },
-        },
+        }
       );
       if (!response.ok) {
-        throw new Error('Failed to upload image');
+        throw new Error("Failed to upload image");
       }
     } catch (error) {
-      console.error('Error uploading image:', error);
-      Alert.alert('Error', 'Failed to upload image');
+      console.error("Error uploading image:", error);
+      Alert.alert("Error", "Failed to upload image");
     }
   };
 
-  const renderItem = ({item}) => {
+  const renderItem = ({ item }) => {
     if (item.text) {
       return (
         <View
           style={[
             styles.messageBubble,
-            item.sender === 'me' ? styles.myMessage : styles.otherMessage,
-          ]}>
+            item.sender === "me" ? styles.myMessage : styles.otherMessage,
+          ]}
+        >
           <Text style={styles.messageText}>{item.text}</Text>
         </View>
       );
@@ -108,10 +109,11 @@ const Chat = ({route, navigation}) => {
         <View
           style={[
             styles.messageBubble,
-            item.sender === 'me' ? styles.myMessage : styles.otherMessage,
-          ]}>
+            item.sender === "me" ? styles.myMessage : styles.otherMessage,
+          ]}
+        >
           <Image
-            source={{uri: item.image}}
+            source={{ uri: item.image }}
             style={styles.messageImage}
             resizeMode="contain"
           />
@@ -122,41 +124,41 @@ const Chat = ({route, navigation}) => {
 
   const handleLeaveChat = async () => {
     Alert.alert(
-      '채팅방 나가기',
-      '이 채팅방에서 나가면 모든 대화가 삭제됩니다. 정말로 나가시겠습니까?',
+      "채팅방 나가기",
+      "이 채팅방에서 나가면 모든 대화가 삭제됩니다. 정말로 나가시겠습니까?",
       [
         {
-          text: '취소',
-          style: 'cancel',
+          text: "취소",
+          style: "cancel",
         },
         {
-          text: '나가기',
+          text: "나가기",
           onPress: async () => {
             try {
               const accessToken = await getAccessToken();
               const exitChatResponse = await fetch(
                 `${API_URL}/chats/${roomId}/exit`,
                 {
-                  method: 'POST',
+                  method: "POST",
                   headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                     accessToken: accessToken,
                   },
-                },
+                }
               );
               if (!exitChatResponse.ok) {
-                throw new Error('Failed to exit chat room');
+                throw new Error("Failed to exit chat room");
               }
-              navigation.navigate('ChatList');
+              navigation.navigate("ChatList");
             } catch (error) {
-              console.error('Error leaving chat room:', error);
-              navigation.navigate('ChatList');
+              console.error("Error leaving chat room:", error);
+              navigation.navigate("ChatList");
             }
           },
-          style: 'destructive',
+          style: "destructive",
         },
       ],
-      {cancelable: false},
+      { cancelable: false }
     );
   };
 
@@ -165,27 +167,31 @@ const Chat = ({route, navigation}) => {
       <View style={styles.partnerProfileContainer}>
         <View style={styles.userInfoContainer}>
           <Image
-            source={{uri: partnerProfile.profileImage}}
+            source={{
+              uri: partnerProfile.profileImage || 'https://via.placeholder.com/40',
+            }}
             style={styles.partnerProfileImage}
           />
           <Text style={styles.partnerName}>{partnerProfile.nickname}</Text>
         </View>
         <TouchableOpacity
           onPress={handleLeaveChat}
-          style={styles.leaveButtonContainer}>
+          style={styles.leaveButtonContainer}
+        >
           <Image source={icons.exit} style={styles.leaveButtonIcon} />
         </TouchableOpacity>
       </View>
       <FlatList
         data={messages}
         renderItem={renderItem}
-        keyExtractor={item => item.id.toString()}
+        keyExtractor={(item) => item.id.toString()}
         inverted
       />
       <View style={styles.inputContainer}>
         <TouchableOpacity
           onPress={handleImageSend}
-          style={styles.imageContainer}>
+          style={styles.imageContainer}
+        >
           <Image source={icons.camera} style={styles.imageIcon} />
         </TouchableOpacity>
         <TextInput
@@ -209,18 +215,18 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderTopWidth: 1,
-    borderTopColor: '#cccccc',
+    borderTopColor: "#cccccc",
   },
   input: {
     flex: 1,
     height: 40,
     borderWidth: 1,
-    borderColor: '#CCCCCC',
+    borderColor: "#CCCCCC",
     borderRadius: 20,
     paddingHorizontal: 10,
     marginRight: 10,
@@ -232,44 +238,44 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   sendButtonText: {
-    color: '#FFFFFF',
-    fontWeight: 'bold',
+    color: "#FFFFFF",
+    fontWeight: "bold",
   },
   messageBubble: {
-    maxWidth: '70%',
+    maxWidth: "70%",
     padding: 10,
     borderRadius: 10,
     marginVertical: 2,
   },
   myMessage: {
-    alignSelf: 'flex-end',
+    alignSelf: "flex-end",
     borderRadius: 10,
     backgroundColor: colors.secondYellow,
   },
   otherMessage: {
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
     backgroundColor: colors.secondGreen,
   },
   messageText: {
     fontSize: 16,
-    color: 'black',
+    color: "black",
   },
   messageImage: {
-    width: '70%',
+    width: "70%",
     aspectRatio: 1,
     borderRadius: 10,
   },
   partnerProfileContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     padding: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#CCCCCC',
+    borderBottomColor: "#CCCCCC",
   },
   userInfoContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   partnerProfileImage: {
     width: 40,
@@ -279,7 +285,7 @@ const styles = StyleSheet.create({
   },
   partnerName: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   leaveButtonContainer: {
     paddingHorizontal: 10,
@@ -299,4 +305,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Chat;
+export default ChatRoom;

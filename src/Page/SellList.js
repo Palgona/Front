@@ -1,7 +1,7 @@
-import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
-import ProductList from '../Components/ProductList';
+import React from "react";
+import { View, Text, StyleSheet } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import ProductList from "../Components/ProductList";
 
 const Bookmark = () => {
   const navigation = useNavigation();
@@ -9,7 +9,7 @@ const Bookmark = () => {
   const handleSellList = () => {
     // 판매내역 페이지로 이동
     // eslint-disable-next-line no-undef
-    navigation.navigate('SellList', {memberId});
+    navigation.navigate("SellList", { memberId });
   };
 
   return (
@@ -28,17 +28,17 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 10,
     paddingTop: 30,
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
   title: {
     fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
     marginBottom: 20,
   },
   backButton: {
     marginTop: 20,
-    alignSelf: 'center',
+    alignSelf: "center",
   },
 });
 

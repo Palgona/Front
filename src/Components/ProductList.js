@@ -11,20 +11,31 @@ import {useNavigation} from '@react-navigation/native';
 import {icons, colors} from '../styles/theme';
 
 const ProductList = ({products}) => {
-  // 부모 컴포넌트로부터 products props를 받음
   const navigation = useNavigation();
+
+  const formatDate = dateString => {
+    const date = new Date(dateString);
+    const options = {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    };
+    return new Intl.DateTimeFormat('ko-KR', options).format(date);
+  };
 
   const renderProductItem = ({item}) => (
     <TouchableOpacity
       style={styles.productItem}
-      onPress={() =>
-        navigation.navigate('ProductDetail', {productId: item.id})
-      }>
+      onPress={() => navigation.navigate('ProductDetail', {productId: item.id})}
+    >
       {/* 이미지 */}
-      <Image source={{uri: item.image}} style={styles.productImage} />
+      <Image source={{uri: item.imageUrl}} style={styles.productImage} />
       <View style={styles.productInfo}>
         <Text style={styles.productName}>{item.name}</Text>
-        <Text style={styles.productPrice}>{item.price}00원</Text>
+        <Text style={styles.productPrice}>{item.currentBid}원</Text>
         {/* 채팅수, 찜수 */}
         <View style={styles.chatAndLike}>
           <View style={styles.iconTextContainer}>
@@ -33,18 +44,18 @@ const ProductList = ({products}) => {
           </View>
           <View style={styles.iconTextContainer}>
             <Image source={icons.heart} style={styles.icon} />
-            <Text style={styles.chatAndLikeText}>{item.likeCount}</Text>
+            <Text style={styles.chatAndLikeText}>{item.bookmarkCount}</Text>
           </View>
         </View>
       </View>
       {/* 시간 */}
-      <Text style={styles.timeText}>{item.time}</Text>
+      <Text style={styles.timeText}>{formatDate(item.deadline)}</Text>
     </TouchableOpacity>
   );
 
   return (
     <FlatList
-      data={products} // 부모 컴포넌트로부터 받은 products props를 사용
+      data={products}
       renderItem={renderProductItem}
       keyExtractor={item => item.id.toString()}
       contentContainerStyle={styles.column}
@@ -91,11 +102,12 @@ const styles = StyleSheet.create({
   iconTextContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginRight: 10,
   },
   icon: {
     width: 15,
     height: 15,
-    marginRight: '4%',
+    marginRight: 4,
     tintColor: colors.mainGray,
   },
   chatAndLikeText: {

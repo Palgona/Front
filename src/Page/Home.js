@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {
   Image,
   ImageBackground,
@@ -12,20 +12,56 @@ import ProductList from '../Components/ProductList';
 import {colors, icons} from '../styles/theme';
 import {buttonStyles} from '../styles/buttonStyles';
 import {API_URL} from '../globalVariables.js';
+import {getAccessToken} from '../token.js';
 
 const Home = ({navigation}) => {
   const [products, setProducts] = useState([]);
+  const [sortType, setSortType] = useState('LATEST'); // 기본값
+  const [category, setCategory] = useState('');
+  const [searchWord, setSearchWord] = useState('');
+  const [cursor, setCursor] = useState('');
+  const [pageSize, setPageSize] = useState(20); // 기본값
+  const [hasNext, setHasNext] = useState(true);
+
+  const fetchData = useCallback(
+    async (reset = false) => {
+      if (!hasNext && !reset) return;
+
+      try {
+        const accessToken = await getAccessToken(); // 액세스 토큰 가져오기
+        const params = {
+          sortType,
+          category,
+          searchWord,
+          pageSize,
+        };
+        if (!reset && cursor) {
+          params.cursor = cursor;
+        }
+
+        const response = await axios.get(`${API_URL}/products`, {
+          headers: {
+            Authorization: `${accessToken}`,
+          },
+          params,
+        });
+
+        const newProducts = response.data.values;
+        setProducts(prevProducts =>
+          reset ? newProducts : [...prevProducts, ...newProducts],
+        );
+        setHasNext(response.data.hasNext);
+        setCursor(response.data.hasNext ? response.data.cursor : '');
+      } catch (error) {
+        console.error('상품을 불러오는 중 에러 발생:', error);
+      }
+    },
+    [sortType, category, searchWord, cursor, pageSize, hasNext],
+  );
 
   useEffect(() => {
-    axios
-      .get(`${API_URL}/products`)
-      .then(response => {
-        setProducts(response.data.products);
-      })
-      .catch(error => {
-        console.error('상품을 불러오는 중 에러 발생:', error);
-      });
-  }, []);
+    fetchData(true); // 첫 로드 시에는 reset으로 새로운 데이터를 불러옴
+  }, [sortType, category, searchWord, pageSize, fetchData]);
 
   const handleSearchPress = () => {
     navigation.navigate('Search');
@@ -43,10 +79,21 @@ const Home = ({navigation}) => {
     navigation.navigate('ProductWrite');
   };
 
+  const handleOptionPress = option => {
+    if (option === 'price') {
+      setSortType(
+        sortType === 'LOWEST_PRICE' ? 'HIGHEST_PRICE' : 'LOWEST_PRICE',
+      );
+    } else if (option === 'category') {
+      handleCategoryPress();
+    }
+  };
+
   return (
     <ImageBackground
       source={require('../../assets/homeBack.png')}
-      style={styles.backgroundImage}>
+      style={styles.backgroundImage}
+    >
       <View style={styles.container}>
         <View
           style={[styles.buttonContainer, {justifyContent: 'space-between'}]}>
@@ -88,10 +135,11 @@ const Home = ({navigation}) => {
 
         <View style={styles.optionButtonsContainer}>
           <TouchableOpacity
-            // eslint-disable-next-line no-undef
             onPress={() => handleOptionPress('price')}
             style={styles.optionButton}>
-            <Text style={styles.optionButtonText}>가격</Text>
+            <Text style={styles.optionButtonText}>
+              {sortType === 'LOWEST_PRICE' ? '최고가' : '최저가'}
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={handleCategoryPress}
