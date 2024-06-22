@@ -1,24 +1,24 @@
-import React, {useState} from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
   StyleSheet,
-} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
-import {buttonStyles} from '../styles/buttonStyles';
-import {theme} from '../styles/theme';
-import ProductList from '../Components/ProductList';
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { buttonStyles } from "../styles/buttonStyles";
+import { theme } from "../styles/theme";
+import ProductList from "../Components/ProductList";
 
-const SearchResult = ({route}) => {
-  const {searchTerm} = route.params;
+const SearchResult = ({ route }) => {
+  const { searchTerm } = route.params;
   const [searchTermInResult, setSearchTermInResult] = useState(searchTerm);
   const navigation = useNavigation();
 
   const handleSearch = () => {
-    if (searchTermInResult.trim() !== '') {
-      navigation.navigate('SearchResult', {searchTerm: searchTermInResult});
+    if (searchTermInResult.trim() !== "") {
+      navigation.navigate("SearchResult", { searchTerm: searchTermInResult });
     }
   };
 
@@ -26,7 +26,7 @@ const SearchResult = ({route}) => {
     <View style={theme.container}>
       <TextInput
         style={buttonStyles.input}
-        onChangeText={text => setSearchTermInResult(text)}
+        onChangeText={(text) => setSearchTermInResult(text)}
         value={searchTermInResult}
         onSubmitEditing={handleSearch}
       />

@@ -45,3 +45,49 @@ export const removeAccessToken = async () => {
     );
   }
 };
+
+// 리프레시 토큰을 AsyncStorage에 저장하는 함수
+export const storeRefreshToken = async refreshToken => {
+  try {
+    await AsyncStorage.setItem('refreshToken', refreshToken);
+    console.log('리프레시 토큰이 AsyncStorage에 저장되었습니다.', refreshToken);
+  } catch (error) {
+    console.error(
+      '리프레시 토큰을 AsyncStorage에 저장하는 중에 오류가 발생했습니다:',
+      error,
+    );
+  }
+};
+
+// AsyncStorage에서 리프레시 토큰을 불러오는 함수
+export const getRefreshToken = async () => {
+  try {
+    const refreshToken = await AsyncStorage.getItem('refreshToken');
+    if (refreshToken !== null) {
+      console.log('AsyncStorage에서 리프레시 토큰을 성공적으로 불러왔습니다.');
+      return refreshToken;
+    } else {
+      console.log('AsyncStorage에 저장된 리프레시 토큰이 없습니다.');
+      return null;
+    }
+  } catch (error) {
+    console.error(
+      '리프레시 토큰을 AsyncStorage에서 불러오는 중에 오류가 발생했습니다:',
+      error,
+    );
+    return null;
+  }
+};
+
+// 리프레시 토큰을 삭제하는 함수
+export const removeRefreshToken = async () => {
+  try {
+    await AsyncStorage.removeItem('refreshToken');
+    console.log('AsyncStorage에서 리프레시 토큰을 성공적으로 삭제했습니다.');
+  } catch (error) {
+    console.error(
+      '리프레시 토큰을 AsyncStorage에서 삭제하는 중에 오류가 발생했습니다:',
+      error,
+    );
+  }
+};

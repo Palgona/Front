@@ -1,6 +1,7 @@
 import {StyleSheet} from 'react-native';
 
-import alarmIcon from '../../assets/icons/alarm.png';
+import alarm from '../../assets/icons/alarm.png';
+import alarmChecked from '../../assets/icons/alarm_color.png';
 import categoryIcon from '../../assets/icons/category.png';
 import chatRoom from '../../assets/icons/chating.png';
 import myPageIcon from '../../assets/icons/mypage.png';
@@ -15,6 +16,7 @@ import report from '../../assets/icons/report.png';
 import exit from '../../assets/icons/exit.png';
 import checkbox from '../../assets/icons/checkbox.png';
 import checkboxChecked from '../../assets/icons/checkboxChecked.png';
+import etc from '../../assets/icons/etc.png';
 
 export const colors = {
   mainYellow: '#FFDE66',
@@ -28,7 +30,8 @@ export const colors = {
 };
 
 export const icons = {
-  alarm: alarmIcon,
+  alarm: alarm,
+  alarmChecked: alarmChecked,
   category: categoryIcon,
   chat: chatRoom,
   myPage: myPageIcon,
@@ -44,6 +47,7 @@ export const icons = {
   exit: exit,
   checkbox: checkbox,
   checkboxChecked: checkboxChecked,
+  etc: etc,
 };
 export const theme = StyleSheet.create({
   container: {

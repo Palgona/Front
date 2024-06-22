@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,15 +6,15 @@ import {
   TouchableOpacity,
   Image,
   StyleSheet,
-} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {theme, colors, icons} from '../styles/theme';
-import {buttonStyles} from '../styles/buttonStyles';
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { theme, colors, icons } from "../styles/theme";
+import { buttonStyles } from "../styles/buttonStyles";
 
 const Search = () => {
   const navigation = useNavigation();
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [previousSearches, setPreviousSearches] = useState([]);
 
   useEffect(() => {
@@ -23,51 +23,51 @@ const Search = () => {
 
   const loadPreviousSearches = async () => {
     try {
-      const searches = await AsyncStorage.getItem('previousSearches');
+      const searches = await AsyncStorage.getItem("previousSearches");
       if (searches !== null) {
         setPreviousSearches(JSON.parse(searches));
       }
     } catch (error) {
-      console.error('Error loading previous searches:', error);
+      console.error("Error loading previous searches:", error);
     }
   };
 
-  const saveSearchTerm = async searchTermToAdd => {
+  const saveSearchTerm = async (searchTermToAdd) => {
     try {
       const updatedSearches = [...previousSearches, searchTermToAdd];
       await AsyncStorage.setItem(
-        'previousSearches',
-        JSON.stringify(updatedSearches),
+        "previousSearches",
+        JSON.stringify(updatedSearches)
       );
       setPreviousSearches(updatedSearches); // Update state after saving
     } catch (error) {
-      console.error('Error saving previous searches:', error);
+      console.error("Error saving previous searches:", error);
     }
   };
 
   const handleSearch = () => {
-    if (searchTerm.trim() !== '') {
-      navigation.navigate('SearchResult', {searchTerm});
-      setSearchTerm('');
+    if (searchTerm.trim() !== "") {
+      navigation.navigate("SearchResult", { searchTerm });
+      setSearchTerm("");
       saveSearchTerm(searchTerm); // Save the new search term
     }
   };
 
-  const handleDeleteSearch = async index => {
+  const handleDeleteSearch = async (index) => {
     const updatedSearches = previousSearches.filter((_, i) => i !== index);
     setPreviousSearches(updatedSearches); // Update state before saving
     try {
       await AsyncStorage.setItem(
-        'previousSearches',
-        JSON.stringify(updatedSearches),
+        "previousSearches",
+        JSON.stringify(updatedSearches)
       );
     } catch (error) {
-      console.error('Error saving previous searches:', error);
+      console.error("Error saving previous searches:", error);
     }
   };
 
   // 클릭한 이전 검색어를 검색 바에 작성하기
-  const handlePreviousSearchPress = searchWord => {
+  const handlePreviousSearchPress = (searchWord) => {
     setSearchTerm(searchWord);
   };
 
@@ -76,7 +76,7 @@ const Search = () => {
       {/* 검색 입력란 */}
       <TextInput
         style={buttonStyles.input}
-        onChangeText={text => setSearchTerm(text)}
+        onChangeText={(text) => setSearchTerm(text)}
         value={searchTerm}
         onSubmitEditing={handleSearch}
       />
@@ -86,12 +86,14 @@ const Search = () => {
         {previousSearches.map((prevSearch, index) => (
           <TouchableOpacity
             key={index}
-            onPress={() => handlePreviousSearchPress(prevSearch)}>
+            onPress={() => handlePreviousSearchPress(prevSearch)}
+          >
             <View style={buttonStyles.previousSearch}>
               <Text style={buttonStyles.previousSearchText}>{prevSearch}</Text>
               <TouchableOpacity
                 onPress={() => handleDeleteSearch(index)}
-                style={styles.iconContainer}>
+                style={styles.iconContainer}
+              >
                 <Image source={icons.close} style={styles.icon} />
               </TouchableOpacity>
             </View>
@@ -104,10 +106,10 @@ const Search = () => {
 
 const styles = StyleSheet.create({
   iconContainer: {
-    position: 'absolute',
+    position: "absolute",
     right: 20,
-    top: '50%',
-    transform: [{translateY: -10}],
+    top: "50%",
+    transform: [{ translateY: -10 }],
   },
   icon: {
     width: 20,

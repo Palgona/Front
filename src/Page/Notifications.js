@@ -1,9 +1,16 @@
-import React, {useState, useEffect} from 'react';
-import {View, Text, FlatList, TouchableOpacity, StyleSheet} from 'react-native';
-import {Swipeable} from 'react-native-gesture-handler';
-import axios from 'axios';
-import {colors} from '../styles/theme';
-import {API_URL} from '../globalVariables.js';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  StyleSheet,
+} from "react-native";
+import { Swipeable } from "react-native-gesture-handler";
+import axios from "axios";
+import { colors } from "../styles/theme";
+import { API_URL } from "../globalVariables.js";
+import { getAccessToken, getRefreshToken } from "../token.js";
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
@@ -14,29 +21,35 @@ const Notifications = () => {
 
   const fetchNotifications = async () => {
     try {
-      const response = await axios.get(API_URL + '/notifications'); // axios.get 사용
-      setNotifications(response.data);
+      const accessToken = await getAccessToken(); // 액세스 토큰 가져오기
+      const response = await axios.get(`${API_URL}/notifications`, {
+        headers: {
+          Authorization: `${accessToken}`, // 헤더에 액세스 토큰 추가
+        },
+      });
+      setNotifications(response.data.values);
     } catch (error) {
-      console.error('Error fetching notifications:', error);
+      console.error("Error fetching notifications:", error);
     }
   };
 
-  const deleteNotification = async id => {
+  const deleteNotification = async (id) => {
     try {
-      await axios.delete(API_URL + `/notifications/${id}`); // axios.delete 사용
+      await axios.delete(`${API_URL}/api/v1/notifications/${id}`);
       setNotifications(
-        notifications.filter(notification => notification.id !== id),
+        notifications.filter((notification) => notification.id !== id)
       );
     } catch (error) {
-      console.error('Error deleting notification:', error);
+      console.error("Error deleting notification:", error);
     }
   };
 
-  const renderNotificationItem = ({item}) => {
+  const renderNotificationItem = ({ item }) => {
     const rightSwipeActions = () => (
       <TouchableOpacity
         onPress={() => deleteNotification(item.id)}
-        style={styles.deleteButton}>
+        style={styles.deleteButton}
+      >
         <Text style={styles.deleteButtonText}>삭제</Text>
       </TouchableOpacity>
     );
@@ -46,6 +59,7 @@ const Notifications = () => {
         <View style={styles.notificationContainer}>
           <View>
             <Text style={styles.notificationText}>{item.body}</Text>
+            {/* 아마도 시간 정보는 "time" 대신 "createdAt" 또는 "updatedAt" 일 것으로 추정됩니다. */}
             <Text style={styles.timeText}>
               {formatTime(new Date(item.time))}
             </Text>
@@ -55,7 +69,7 @@ const Notifications = () => {
     );
   };
 
-  const formatTime = time => {
+  const formatTime = (time) => {
     const hours = time.getHours();
     const minutes = time.getMinutes();
     const formattedHours = hours < 10 ? `0${hours}` : hours;
@@ -68,7 +82,7 @@ const Notifications = () => {
       <FlatList
         data={notifications}
         renderItem={renderNotificationItem}
-        keyExtractor={item => item.id.toString()}
+        keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={styles.listContainer}
       />
     </View>
@@ -85,9 +99,9 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   notificationContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingVertical: 30,
   },
   notificationText: {
@@ -103,7 +117,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     marginVertical: 10,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   deleteButtonText: {
     color: colors.background,

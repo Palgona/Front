@@ -1,10 +1,10 @@
-import React, {useEffect, useState} from 'react';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
-import axios from 'axios';
-import {API_URL} from '../globalVariables.js';
-import ProductList from '../Components/ProductList';
-import {getAccessToken} from '../token.js';
+import React, { useEffect, useState } from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
+import { API_URL } from "../globalVariables.js";
+import ProductList from "../Components/ProductList";
+import { getAccessToken } from "../token.js";
 
 const Bookmark = () => {
   const navigation = useNavigation();
@@ -17,12 +17,12 @@ const Bookmark = () => {
   const fetchBookmarkList = async () => {
     try {
       const response = await axios.get(`${API_URL}/bookmarks`, {
-        'Content-Type': 'application/json',
-        Authorization: 'BEARER ' + getAccessToken,
+        "Content-Type": "application/json",
+        Authorization: "BEARER " + getAccessToken,
       });
       setBookmarkList(response.data);
     } catch (error) {
-      console.error('Error fetching bookmark list:', error);
+      console.error("Error fetching bookmark list:", error);
     }
   };
 
@@ -37,8 +37,9 @@ const Bookmark = () => {
       {/* 뒤로가기 버튼 */}
       <TouchableOpacity
         onPress={() => navigation.goBack()}
-        style={styles.backButton}>
-        <Text style={styles.backButtonText}>{'< 뒤로가기'}</Text>
+        style={styles.backButton}
+      >
+        <Text style={styles.backButtonText}>{"< 뒤로가기"}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -52,17 +53,17 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
     marginBottom: 10,
   },
   backButton: {
     marginTop: 20,
-    alignSelf: 'center',
+    alignSelf: "center",
   },
   backButtonText: {
     fontSize: 16,
-    color: 'blue',
+    color: "blue",
   },
 });
 

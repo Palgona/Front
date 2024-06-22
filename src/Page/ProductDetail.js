@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import {
   Dimensions,
   View,
@@ -7,41 +7,85 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-} from 'react-native';
-import {icons, colors, theme} from '../styles/theme';
-import axios from 'axios';
-import {API_URL} from '../globalVariables.js';
-import ProductModal from '../Components/ProductModal';
-import Swiper from 'react-native-swiper';
-import {getAccessToken} from '../token.js';
+  Alert,
+} from "react-native";
+import Popover from "react-native-popover-view";
+import { icons, colors, theme } from "../styles/theme";
+import { API_URL } from "../globalVariables.js";
+import ProductModal from "../Components/ProductModal";
+import Swiper from "react-native-swiper";
+import { getAccessToken } from "../token.js";
+import axios from "axios";
 
-const windowWidth = Dimensions.get('window').width;
+const windowWidth = Dimensions.get("window").width;
 
-const ProductDetail = ({route, navigation}) => {
-  const {productId} = route.params;
+const ProductDetail = ({ route, navigation }) => {
+  const { productId } = route.params;
   const [product, setProduct] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [popoverVisible, setPopoverVisible] = useState(false);
   const [liked, setLiked] = useState(false);
+  const [alarmEnabled, setAlarmEnabled] = useState(false);
+  const [user, setUser] = useState(null);
+  const etcButtonRef = useRef();
+  const [etcButtonLayout, setEtcButtonLayout] = useState(null);
+
+  useLayoutEffect(() => {
+    if (etcButtonRef.current) {
+      etcButtonRef.current.measure((x, y, width, height, pageX, pageY) => {
+        setEtcButtonLayout({ x: pageX, y: pageY, width, height });
+      });
+    }
+  }, []);
+
+  const exampleProduct = {
+    productId: 0,
+    productName: "나의 아이폰14",
+    content: "아이폰14 화이트 깨끗해요 잘썼어요".repeat(50), // 긴 설명을 위해 반복
+    category: "스마트폰",
+    productState: "중고",
+    deadline: "2024-03-27T08:24:43.012Z",
+    created_at: "2024-03-27T08:24:43.012Z",
+    ownerId: 123, // 판매자의 고유 ID
+    ownerName: "김가룡",
+    ownerImgUrl: "https://via.placeholder.com/150",
+    highestPrice: 100,
+    bookmarkCount: 20,
+    imageUrls: [
+      "https://via.placeholder.com/300/aabbcc/FFFFFF?text=Image+1",
+      "https://via.placeholder.com/300/3498DB/FFFFFF?text=Image+2",
+      "https://via.placeholder.com/300/2ECC71/FFFFFF?text=Image+3",
+      "https://via.placeholder.com/300/ccbbff/FFFFFF?text=Image+4",
+    ],
+    chatCount: 10, // 채팅 수
+    likeCount: 20, // 찜 수
   };
 
   useEffect(() => {
-    // 데이터 가져오는 로직
-    getProductData();
+    setUser({
+      userId: 123,
+      userName: "임시 사용자",
+      // 다른 사용자 정보들...
+    });
   }, []);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const getProductData = async () => {
+  useEffect(() => {
+    // 데이터 가져오는 로직
+    fetchProduct();
+
+    // 예시 데이터를 사용하여 상품 정보를 설정합니다.
+    setProduct(exampleProduct);
+  }, []);
+
+  const fetchProduct = async () => {
     try {
-      //const accessToken = await getAccessToken();
+      const accessToken = await getAccessToken();
       const response = await axios.get(`${API_URL}/products/${productId}`, {
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+          Authorization: `${accessToken}`,
         },
       });
-      if (!response.ok) {
-        throw new Error('Failed to fetch product');
-      }
       const data = response.data;
       const productData = {
         productId: data.productId,
@@ -60,65 +104,168 @@ const ProductDetail = ({route, navigation}) => {
       };
       setProduct(productData);
     } catch (error) {
-      console.error('Error fetching product:', error);
+      console.error("Error fetching product:", error);
     }
   };
 
-  const createChatRoom = async () => {
+  const handleAlarm = () => {
+    setAlarmEnabled(!alarmEnabled);
+    Alert.alert("알림", "게시물 알림이 설정되었습니다.");
+  };
+
+  const handleEtc = () => {
+    setPopoverVisible(true);
+  };
+
+  const handleChatPress = async () => {
     try {
-      //const accessToken = await getAccessToken();
+      const accessToken = await getAccessToken();
+
       // 채팅방 생성 API 호출
-      const response = await axios.post(
+      const createChatResponse = await axios.post(
         `${API_URL}/chats`,
-        {visitorId: 0},
+        {
+          visitorId: 0,
+        },
         {
           headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+            Authorization: `${accessToken}`,
           },
-        },
+        }
       );
-      const chatRoomId = response.data.chatRoomId;
+
+      const createChatData = createChatResponse.data;
+
       // 생성된 채팅방으로 넘어가기
-      navigation.navigate('Chat', {chatRoomId});
+      const chatRoomId = createChatData.chatRoomId;
+
+      // 필요한 정보만 추출
+      const senderId = createChatData.senderId || 0;
+      const receiverId = createChatData.receiverId || 0;
+      const isLeaveSender =
+        createChatData.isLeaveSender !== undefined
+          ? createChatData.isLeaveSender
+          : true;
+      const isLeaveReceiver =
+        createChatData.isLeaveReceiver !== undefined
+          ? createChatData.isLeaveReceiver
+          : true;
+
+      // 네비게이션으로 채팅방으로 이동하며 필요한 데이터 전달
+      navigation.navigate("ChatRoom", {
+        chatRoomId,
+        senderId,
+        receiverId,
+        isLeaveSender,
+        isLeaveReceiver,
+      });
     } catch (error) {
-      console.error('Error creating chat room:', error);
+      console.error("Error creating chat room:", error);
     }
+  };
+
+  const handleEdit = () => {
+    setPopoverVisible(false);
+    // 수정하기 기능 구현
+  };
+
+  const handleDelete = async () => {
+    setPopoverVisible(false);
+    try {
+      const accessToken = await getAccessToken();
+      const response = await axios.delete(`${API_URL}/products/${productId}`, {
+        headers: {
+          Authorization: `${accessToken}`,
+        },
+      });
+      if (response.status === 200) {
+        console.log("Product deleted successfully");
+        Alert.alert("알림", "상품이 삭제되었습니다.", [
+          {
+            text: "확인",
+            onPress: () => navigation.navigate("MainScreen"), // 메인 화면으로 이동
+          },
+        ]);
+      } else {
+        console.error("Failed to delete product:", response.data);
+        Alert.alert("오류", "상품 삭제에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      Alert.alert("오류", "상품 삭제 중 오류가 발생했습니다.");
+    }
+  };
+
+  const handleReport = () => {
+    setPopoverVisible(false);
+    // 신고하기 기능 구현
+  };
+
+  const handleShare = () => {
+    setPopoverVisible(false);
+    // 공유하기 기능 구현
   };
 
   const handleBidPress = () => {
-    // 참여하기 클릭 시 동작
-    setModalVisible(true); // 모달 열기
+    //참여하기 버튼
   };
 
   const handleLikePress = async () => {
-    // 좋아요(like) 버튼을 누르면 liked 상태를 반전시킴
-    setLiked(!liked);
-    // 서버와 통신하여 북마크를 추가하거나 삭제합니다.
-    const url = `${API_URL}/bookmarks/${productId}`;
-    const method = liked ? 'DELETE' : 'POST';
     try {
-      const response = await axios({
-        method: method,
-        url: url,
+      const accessToken = await getAccessToken();
+      const response = await axios.post(`${API_URL}/bookmarks/${productId}`, {
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`,
-        },
-        data: {
-          productId: productId,
+          Authorization: `${accessToken}`,
         },
       });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
+      if (response.status === 200) {
+        // 성공적으로 북마크가 추가되면 liked 상태를 토글하고 북마크 수를 업데이트
+        setLiked(!liked);
+        setProduct((prevProduct) => ({
+          ...prevProduct,
+          bookmarkCount: liked
+            ? prevProduct.bookmarkCount - 1
+            : prevProduct.bookmarkCount + 1,
+        }));
+      } else {
+        // API 요청 실패 처리
+        console.error("Failed to bookmark product.");
       }
-      // 서버에서 성공적인 응답을 받은 경우, 필요한 작업을 수행할 수 있습니다.
-      // 예: 사용자에게 메시지 표시 등
     } catch (error) {
-      console.error('Error updating bookmark:', error);
-      // 오류 처리를 수행합니다. 예: 사용자에게 오류 메시지 표시
+      console.error("Error while bookmarking product:", error);
     }
   };
+
+  const currentUserId = user ? user.userId : null;
+
+  // 팝오버에 표시할 내용을 담을 변수를 초기화합니다.
+  let popoverContent;
+
+  if (currentUserId === exampleProduct.ownerId) {
+    popoverContent = (
+      <View style={styles.popoverContent}>
+        <TouchableOpacity style={styles.popoverOption} onPress={handleEdit}>
+          <Text style={styles.popoverText}>수정하기</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.popoverOption} onPress={handleDelete}>
+          <Text style={styles.popoverText}>삭제하기</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  } else {
+    // 현재 사용자와 게시글을 올린 사용자가 다른 경우
+    popoverContent = (
+      <View style={styles.popoverContent}>
+        <TouchableOpacity style={styles.popoverOption} onPress={handleReport}>
+          <Text style={styles.popoverText}>신고하기</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.popoverOption} onPress={handleShare}>
+          <Text style={styles.popoverText}>공유하기</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   if (!product) {
     return <Text>Loading...</Text>; // 데이터가 로드되지 않은 경우 로딩 메시지를 표시합니다.
@@ -127,16 +274,33 @@ const ProductDetail = ({route, navigation}) => {
   return (
     <View style={theme.container}>
       {/* 상품 이미지 및 정보 */}
+      <View style={styles.header}>
+        {/* 알림 버튼 */}
+        <TouchableOpacity style={styles.headerButton} onPress={handleAlarm}>
+          <Image
+            source={alarmEnabled ? icons.alarmChecked : icons.alarm}
+            style={styles.headerIcon}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.headerButton}
+          ref={etcButtonRef}
+          onPress={handleEtc}
+        >
+          <Image source={icons.etc} style={styles.headerIcon} />
+        </TouchableOpacity>
+      </View>
       <ScrollView>
         <View style={styles.scrollContainer}>
           <Swiper
             style={styles.Swiper}
-            dotStyle={{backgroundColor: colors.mainGray}}
-            activeDotStyle={{backgroundColor: colors.mainYellow}}>
+            dotStyle={{ backgroundColor: colors.mainGray }}
+            activeDotStyle={{ backgroundColor: colors.mainYellow }}
+          >
             {product.imageUrls.map((imageUrl, index) => (
               <Image
                 key={index}
-                source={{uri: imageUrl}}
+                source={{ uri: imageUrl }}
                 style={styles.productImage}
               />
             ))}
@@ -147,11 +311,12 @@ const ProductDetail = ({route, navigation}) => {
               <Text style={styles.productName}>{product.productName}</Text>
               <TouchableOpacity
                 onPress={() =>
-                  navigation.navigate('User', {userId: product.ownerId})
-                }>
+                  navigation.navigate("User", { userId: product.ownerId })
+                }
+              >
                 <View style={styles.userInfo}>
                   <Image
-                    source={{uri: product.ownerImgUrl}}
+                    source={{ uri: product.ownerImgUrl }}
                     style={styles.userImage}
                   />
                   <Text style={styles.userName}>{product.ownerName}</Text>
@@ -168,7 +333,8 @@ const ProductDetail = ({route, navigation}) => {
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={handleLikePress}
-                  style={styles.iconContainer}>
+                  style={styles.iconContainer}
+                >
                   <Image
                     source={liked ? icons.heartClick : icons.heart}
                     style={[styles.icon, liked && styles.likedIcon]}
@@ -186,7 +352,7 @@ const ProductDetail = ({route, navigation}) => {
       {/* 하단 버튼 */}
       <View style={styles.buttonContainer}>
         {/* 채팅하기 버튼 */}
-        <TouchableOpacity style={styles.Button} onPress={createChatRoom}>
+        <TouchableOpacity style={styles.Button} onPress={handleChatPress}>
           <Text style={styles.buttonText}>채팅하기</Text>
         </TouchableOpacity>
         {/* 참여하기 버튼 */}
@@ -202,25 +368,47 @@ const ProductDetail = ({route, navigation}) => {
           onClose={() => setModalVisible(false)}
         />
       )}
+      <Popover
+        isVisible={popoverVisible}
+        from={etcButtonLayout}
+        onRequestClose={() => setPopoverVisible(false)}
+        placement="bottom"
+      >
+        {popoverContent}
+      </Popover>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  header: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 1)",
+  },
+  headerButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 5,
+  },
+  headerIcon: {
+    width: 25,
+    height: 25,
+    tintColor: colors.mainGray,
+  },
   scrollContainer: {
     marginBottom: 55,
     padding: 20,
+    paddingTop: 10,
   },
   Swiper: {
-    //width: '100%',
-    //aspectRatio: 1,
     marginBottom: 5,
     height: windowWidth,
   },
   productImage: {
-    width: '100%',
+    width: "100%",
     aspectRatio: 1,
-    resizeMode: 'contain',
+    resizeMode: "contain",
     borderRadius: 10,
   },
   productInfo: {
@@ -228,18 +416,18 @@ const styles = StyleSheet.create({
     color: colors.darkGray,
   },
   nameAndUser: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   productName: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: colors.darkGray,
   },
   userInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   userImage: {
     width: 30,
@@ -251,23 +439,23 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   details: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 15,
     marginTop: 15,
   },
   price: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   chatAndLike: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginRight: 10,
   },
   iconContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   icon: {
     width: 21,
@@ -288,10 +476,10 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    position: 'absolute',
-    backgroundColor: 'white',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    position: "absolute",
+    backgroundColor: "white",
     padding: 10,
     bottom: 0,
     left: 20,
@@ -304,11 +492,38 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: 10,
     marginBottom: 10,
-    alignItems: 'center',
+    alignItems: "center",
   },
   buttonText: {
     color: colors.darkGray,
     fontSize: 16,
+  },
+  editButtonsContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 10,
+  },
+  editButton: {
+    backgroundColor: colors.mainBlue,
+    borderRadius: 50,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    marginHorizontal: 5,
+    alignItems: "center",
+  },
+  editButtonText: {
+    color: "white",
+    fontSize: 16,
+  },
+  popoverContent: {
+    padding: 10,
+  },
+  popoverOption: {
+    paddingVertical: 7,
+  },
+  popoverText: {
+    fontSize: 15,
+    color: colors.darkGray,
   },
 });
 

@@ -1,26 +1,26 @@
-import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
-import ProductList from '../Components/ProductList';
+import React from "react";
+import { View, Text, StyleSheet } from "react-native";
+import ProductList from "../Components/ProductList";
 
-const List = ({route, user}) => {
+const List = ({ route, user }) => {
   // route.params에서 리스트 유형을 가져옴
-  const {listType} = route.params;
-  console.log('Received user in ProfileEdit:', user);
+  const { listType } = route.params;
+  console.log("Received user in ProfileEdit:", user);
 
   // 해당 리스트 유형에 따른 제목 설정
-  let title = '';
+  let title = "";
   switch (listType) {
-    case 'bookmark':
-      title = '장바구니';
+    case "bookmark":
+      title = "장바구니";
       break;
-    case 'sell':
-      title = '판매 내역';
+    case "sell":
+      title = "판매 내역";
       break;
-    case 'buy':
-      title = '구매 내역';
+    case "buy":
+      title = "구매 내역";
       break;
     default:
-      title = '리스트';
+      title = "리스트";
   }
 
   return (
@@ -39,17 +39,17 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 10,
     paddingTop: 30,
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
   title: {
     fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
     marginBottom: 20,
   },
   backButton: {
     marginTop: 20,
-    alignSelf: 'center',
+    alignSelf: "center",
   },
 });
 
