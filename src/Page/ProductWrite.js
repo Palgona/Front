@@ -31,7 +31,6 @@ const ProductWrite = () => {
   const [isStartDatePickerVisible, setIsStartDatePickerVisible] =
     useState(false);
   const [isEndDatePickerVisible, setIsEndDatePickerVisible] = useState(false);
-  const [startButtonText, setStartButtonText] = useState("시작 시간 설정");
   const [endButtonText, setEndButtonText] = useState("종료 시간 설정");
 
   const onSelectImage = () => {
@@ -86,14 +85,13 @@ const ProductWrite = () => {
       const accessToken = await getAccessToken();
 
       const formData = new FormData();
-      const productReq = {
-        name: title,
-        initialPrice: price,
-        content: description,
-        category: category,
-        deadline: endDate.toISOString(),
-      };
-      formData.append("productReq", JSON.stringify(productReq));
+      formData.append("name", title);
+      formData.append("initialPrice", price);
+      formData.append("content", description);
+      formData.append("category", category);
+      const formattedEndDate =
+        endDate.toISOString().split("T")[0] + "T00:00:00";
+      formData.append("deadline", formattedEndDate);
 
       imageFiles.forEach((file, index) => {
         formData.append(`files`, {
@@ -110,13 +108,12 @@ const ProductWrite = () => {
         },
       });
 
-      if (response.status !== 201) {
-        // Check the status code
+      if (response.status === 200) {
+        Alert.alert("제품이 성공적으로 등록되었습니다.");
+        // 등록 후 필요한 작업 수행 (예: 화면 전환 등)
+      } else {
         throw new Error("Failed to submit product");
       }
-
-      Alert.alert("제품이 성공적으로 등록되었습니다.");
-      // 등록 후 필요한 작업 수행 (예: 화면 전환 등)
     } catch (error) {
       console.error("Error submitting product:", error);
       Alert.alert("제품 등록에 실패했습니다. 다시 시도해주세요.");
@@ -207,11 +204,11 @@ const ProductWrite = () => {
               onValueChange={(itemValue, itemIndex) => setCategory(itemValue)}
               style={styles.picker}
             >
-              <Picker.Item label="디지털기기" value="Digital Devices" />
-              <Picker.Item label="의류" value="Clothing" />
-              <Picker.Item label="식품" value="Food" />
-              <Picker.Item label="도서" value="Books" />
-              <Picker.Item label="기타" value="Other" />
+              <Picker.Item label="디지털기기" value="DIGITAL_DEVICE" />
+              <Picker.Item label="의류" value="CLOTHING" />
+              <Picker.Item label="식품" value="FOOD" />
+              <Picker.Item label="도서" value="BOOK" />
+              <Picker.Item label="기타" value="OTHER" />
             </Picker>
           </View>
           <Text style={[styles.label, { color: colors.darkGray }]}>
@@ -230,22 +227,9 @@ const ProductWrite = () => {
           <View style={styles.datePickerContainer}>
             <TouchableOpacity
               style={buttonStyles.button}
-              onPress={() => setIsStartDatePickerVisible(true)}
-            >
-              <Text>{startButtonText}부터</Text>
-              <DateTimePickerModal
-                isVisible={isStartDatePickerVisible}
-                mode="datetime"
-                onConfirm={handleStartDatePicker}
-                onCancel={() => setIsStartDatePickerVisible(false)}
-              />
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={buttonStyles.button}
               onPress={() => setIsEndDatePickerVisible(true)}
             >
-              <Text>{endButtonText}까지</Text>
+              <Text>{endButtonText}</Text>
               <DateTimePickerModal
                 isVisible={isEndDatePickerVisible}
                 mode="datetime"

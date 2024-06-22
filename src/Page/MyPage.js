@@ -16,11 +16,9 @@ import { getAccessToken, getRefreshToken } from "../token.js";
 
 const MyPage = ({ navigation }) => {
   const [userData, setUserData] = useState(null);
-  const [mileage, setMileage] = useState(0);
 
   useEffect(() => {
     fetchUserData();
-    fetchMileage();
   }, []);
 
   const fetchUserData = async () => {
@@ -38,20 +36,6 @@ const MyPage = ({ navigation }) => {
     }
   };
 
-  const fetchMileage = async () => {
-    const accessToken = await getAccessToken();
-    try {
-      const response = await axios.get(`${API_URL}/mileages`, {
-        headers: {
-          Authorization: `${accessToken}`,
-        },
-      });
-      setMileage(response.data);
-    } catch (error) {
-      console.error("Error fetching mileage:", error);
-    }
-  };
-
   const user = userData;
 
   const handleEditProfile = () => {
@@ -59,7 +43,7 @@ const MyPage = ({ navigation }) => {
   };
 
   const handleMileage = () => {
-    navigation.navigate("MileageCharge", { user });
+    navigation.navigate("MileageCharge", { user: userData });
   };
 
   const handleList = (listType) => {

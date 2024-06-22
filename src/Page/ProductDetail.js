@@ -9,6 +9,7 @@ import {
   ScrollView,
   Alert,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import Popover from "react-native-popover-view";
 import { icons, colors, theme } from "../styles/theme";
 import { API_URL } from "../globalVariables.js";
@@ -26,56 +27,38 @@ const ProductDetail = ({ route, navigation }) => {
   const [popoverVisible, setPopoverVisible] = useState(false);
   const [liked, setLiked] = useState(false);
   const [alarmEnabled, setAlarmEnabled] = useState(false);
-  const [user, setUser] = useState(null);
   const etcButtonRef = useRef();
   const [etcButtonLayout, setEtcButtonLayout] = useState(null);
-
-  useLayoutEffect(() => {
-    if (etcButtonRef.current) {
-      etcButtonRef.current.measure((x, y, width, height, pageX, pageY) => {
-        setEtcButtonLayout({ x: pageX, y: pageY, width, height });
-      });
-    }
-  }, []);
-
-  const exampleProduct = {
-    productId: 0,
-    productName: "나의 아이폰14",
-    content: "아이폰14 화이트 깨끗해요 잘썼어요".repeat(50), // 긴 설명을 위해 반복
-    category: "스마트폰",
-    productState: "중고",
-    deadline: "2024-03-27T08:24:43.012Z",
-    created_at: "2024-03-27T08:24:43.012Z",
-    ownerId: 123, // 판매자의 고유 ID
-    ownerName: "김가룡",
-    ownerImgUrl: "https://via.placeholder.com/150",
-    highestPrice: 100,
-    bookmarkCount: 20,
-    imageUrls: [
-      "https://via.placeholder.com/300/aabbcc/FFFFFF?text=Image+1",
-      "https://via.placeholder.com/300/3498DB/FFFFFF?text=Image+2",
-      "https://via.placeholder.com/300/2ECC71/FFFFFF?text=Image+3",
-      "https://via.placeholder.com/300/ccbbff/FFFFFF?text=Image+4",
-    ],
-    chatCount: 10, // 채팅 수
-    likeCount: 20, // 찜 수
-  };
+  const [userData, setUserData] = useState(null);
+  const [currentUserId, setCurrentUserId] = useState(null);
 
   useEffect(() => {
-    setUser({
-      userId: 123,
-      userName: "임시 사용자",
-      // 다른 사용자 정보들...
-    });
-  }, []);
-
-  useEffect(() => {
-    // 데이터 가져오는 로직
+    fetchUserData();
     fetchProduct();
-
-    // 예시 데이터를 사용하여 상품 정보를 설정합니다.
-    setProduct(exampleProduct);
+    checkLikedStatus(); // 페이지 로드 시 좋아요 상태를 확인하기 위한 함수 호출
   }, []);
+
+  useEffect(() => {
+    return () => {
+      AsyncStorage.removeItem(`likedStatus_${productId}`);
+    };
+  }, [productId]);
+
+  const fetchUserData = async () => {
+    try {
+      const accessToken = await getAccessToken();
+      const response = await axios.get(`${API_URL}/members/my`, {
+        headers: {
+          Authorization: `${accessToken}`,
+        },
+      });
+      const { id, nickName, mileage, profileImage } = response.data;
+      setUserData({ id, nickName, mileage, profileImage });
+      setCurrentUserId(id);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
 
   const fetchProduct = async () => {
     try {
@@ -108,6 +91,71 @@ const ProductDetail = ({ route, navigation }) => {
     }
   };
 
+  const checkLikedStatus = async () => {
+    try {
+      const likedStatus = await AsyncStorage.getItem(`likedStatus_${productId}`);
+      if (likedStatus === "true") {
+        setLiked(true);
+      } else {
+        setLiked(false);
+      }
+    } catch (error) {
+      console.error("Error getting liked status:", error);
+    }
+  };
+
+  const toggleLikeStatus = async () => {
+    try {
+      const accessToken = await getAccessToken();
+      if (!liked) {
+        const response = await axios.post(
+          `${API_URL}/bookmarks/${productId}`,
+          {},
+          {
+            headers: {
+              Authorization: `${accessToken}`,
+            },
+          }
+        );
+        if (response.status === 200) {
+          setLiked(true);
+          await AsyncStorage.setItem(`likedStatus_${productId}`, "true");
+          setProduct((prevProduct) => ({
+            ...prevProduct,
+            bookmarkCount: prevProduct.bookmarkCount + 1,
+          }));
+        } else {
+          console.error("Failed to add product to bookmarks.");
+        }
+      } else {
+        const response = await axios.delete(
+          `${API_URL}/bookmarks/${productId}`,
+          {
+            headers: {
+              Authorization: `${accessToken}`,
+            },
+          }
+        );
+        if (response.status === 200) {
+          setLiked(false);
+          await AsyncStorage.setItem(`likedStatus_${productId}`, "false");
+          setProduct((prevProduct) => ({
+            ...prevProduct,
+            bookmarkCount: prevProduct.bookmarkCount - 1,
+          }));
+        } else {
+          console.error("Failed to remove product from bookmarks.");
+        }
+      }
+    } catch (error) {
+      console.error("Error toggling like status:", error);
+    }
+  };
+
+  const handleLikePress = async () => {
+    toggleLikeStatus();
+  };
+
   const handleAlarm = () => {
     setAlarmEnabled(!alarmEnabled);
     Alert.alert("알림", "게시물 알림이 설정되었습니다.");
@@ -118,51 +166,11 @@ const ProductDetail = ({ route, navigation }) => {
   };
 
   const handleChatPress = async () => {
-    try {
-      const accessToken = await getAccessToken();
+    // 채팅 버튼 처리 로직
+  };
 
-      // 채팅방 생성 API 호출
-      const createChatResponse = await axios.post(
-        `${API_URL}/chats`,
-        {
-          visitorId: 0,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `${accessToken}`,
-          },
-        }
-      );
-
-      const createChatData = createChatResponse.data;
-
-      // 생성된 채팅방으로 넘어가기
-      const chatRoomId = createChatData.chatRoomId;
-
-      // 필요한 정보만 추출
-      const senderId = createChatData.senderId || 0;
-      const receiverId = createChatData.receiverId || 0;
-      const isLeaveSender =
-        createChatData.isLeaveSender !== undefined
-          ? createChatData.isLeaveSender
-          : true;
-      const isLeaveReceiver =
-        createChatData.isLeaveReceiver !== undefined
-          ? createChatData.isLeaveReceiver
-          : true;
-
-      // 네비게이션으로 채팅방으로 이동하며 필요한 데이터 전달
-      navigation.navigate("ChatRoom", {
-        chatRoomId,
-        senderId,
-        receiverId,
-        isLeaveSender,
-        isLeaveReceiver,
-      });
-    } catch (error) {
-      console.error("Error creating chat room:", error);
-    }
+  const handleBidPress = () => {
+    // 참여하기 버튼 처리 로직
   };
 
   const handleEdit = () => {
@@ -172,29 +180,7 @@ const ProductDetail = ({ route, navigation }) => {
 
   const handleDelete = async () => {
     setPopoverVisible(false);
-    try {
-      const accessToken = await getAccessToken();
-      const response = await axios.delete(`${API_URL}/products/${productId}`, {
-        headers: {
-          Authorization: `${accessToken}`,
-        },
-      });
-      if (response.status === 200) {
-        console.log("Product deleted successfully");
-        Alert.alert("알림", "상품이 삭제되었습니다.", [
-          {
-            text: "확인",
-            onPress: () => navigation.navigate("MainScreen"), // 메인 화면으로 이동
-          },
-        ]);
-      } else {
-        console.error("Failed to delete product:", response.data);
-        Alert.alert("오류", "상품 삭제에 실패했습니다.");
-      }
-    } catch (error) {
-      console.error("Error deleting product:", error);
-      Alert.alert("오류", "상품 삭제 중 오류가 발생했습니다.");
-    }
+    // 삭제하기 기능 구현
   };
 
   const handleReport = () => {
@@ -207,42 +193,8 @@ const ProductDetail = ({ route, navigation }) => {
     // 공유하기 기능 구현
   };
 
-  const handleBidPress = () => {
-    //참여하기 버튼
-  };
-
-  const handleLikePress = async () => {
-    try {
-      const accessToken = await getAccessToken();
-      const response = await axios.post(`${API_URL}/bookmarks/${productId}`, {
-        headers: {
-          Authorization: `${accessToken}`,
-        },
-      });
-      if (response.status === 200) {
-        // 성공적으로 북마크가 추가되면 liked 상태를 토글하고 북마크 수를 업데이트
-        setLiked(!liked);
-        setProduct((prevProduct) => ({
-          ...prevProduct,
-          bookmarkCount: liked
-            ? prevProduct.bookmarkCount - 1
-            : prevProduct.bookmarkCount + 1,
-        }));
-      } else {
-        // API 요청 실패 처리
-        console.error("Failed to bookmark product.");
-      }
-    } catch (error) {
-      console.error("Error while bookmarking product:", error);
-    }
-  };
-
-  const currentUserId = user ? user.userId : null;
-
-  // 팝오버에 표시할 내용을 담을 변수를 초기화합니다.
   let popoverContent;
-
-  if (currentUserId === exampleProduct.ownerId) {
+  if (product && currentUserId === product.ownerId) {
     popoverContent = (
       <View style={styles.popoverContent}>
         <TouchableOpacity style={styles.popoverOption} onPress={handleEdit}>
@@ -254,7 +206,6 @@ const ProductDetail = ({ route, navigation }) => {
       </View>
     );
   } else {
-    // 현재 사용자와 게시글을 올린 사용자가 다른 경우
     popoverContent = (
       <View style={styles.popoverContent}>
         <TouchableOpacity style={styles.popoverOption} onPress={handleReport}>
@@ -268,9 +219,8 @@ const ProductDetail = ({ route, navigation }) => {
   }
 
   if (!product) {
-    return <Text>Loading...</Text>; // 데이터가 로드되지 않은 경우 로딩 메시지를 표시합니다.
+    return <Text>Loading...</Text>;
   }
-
   return (
     <View style={theme.container}>
       {/* 상품 이미지 및 정보 */}
