@@ -1,11 +1,30 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {Text, View, StyleSheet} from 'react-native';
 import {colors} from '../styles/theme';
+import {API_URL} from '../globalVariables.js';
+import axios from 'axios';
+import {getAccessToken} from '../token.js';
 
 const Mileage = ({user}) => {
-  // 사용자 객체가 null이면 null을 반환하고, null이 아니면 mileage 속성을 참조
-  const mileage = user ? user.mileage : 0;
+  const [mileage, setMileage] = useState(0);
 
+  useEffect(() => {
+    fetchMileage();
+  }, []);
+
+  const fetchMileage = async () => {
+    const accessToken = await getAccessToken();
+    try {
+      const response = await axios.get(`${API_URL}/mileages`, {
+        headers: {
+          Authorization: `${accessToken}`,
+        },
+      });
+      setMileage(response.data);
+    } catch (error) {
+      console.error('Error fetching mileage:', error);
+    }
+  };
   return (
     <View style={styles.container}>
       <Text style={styles.inText}>마일리지</Text>

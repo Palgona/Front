@@ -1,33 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  Alert,
+} from "react-native";
 import { icons, colors } from "../styles/theme.js";
-import Mailage from "../Components/Mileage.js";
+import Mileage from "../Components/Mileage.js";
 import { API_URL } from "../globalVariables.js";
 import axios from "axios";
 import { getAccessToken } from "../token.js";
 
-const MileageCharge = ({ user }) => {
+const MileageCharge = ({ user, navigation }) => {
   const [chargeAmount, setChargeAmount] = useState("");
   const [selectedOption, setSelectedOption] = useState(null);
-  const [currentMileage, setCurrentMileage] = useState(0);
-
-  useEffect(() => {
-    fetchMileage();
-  }, []);
-
-  const fetchMileage = async () => {
-    try {
-      const accessToken = await getAccessToken();
-      const response = await axios.get(`${API_URL}/mileages`, {
-        headers: {
-          Authorization: `${accessToken}`,
-        },
-      });
-      setCurrentMileage(response.data); // 마일리지 데이터 설정
-    } catch (error) {
-      console.error("Error fetching mileage:", error);
-    }
-  };
 
   const handleOptionSelect = (amount) => {
     const amountValue = parseInt(amount.replace("p", ""), 10);
@@ -47,17 +35,31 @@ const MileageCharge = ({ user }) => {
           },
         }
       );
-      console.log("Mailage charge response:", response.data);
-      // 여기서 필요한 추가 작업 수행
+      console.log("Milage charge response:", response.data);
+      // 알림창 표시
+      Alert.alert(
+        "충전 완료",
+        `${chargeAmount}p가 충전되었습니다.`,
+        [
+          { text: "확인", onPress: () => navigation.goBack() }
+        ]
+      );
     } catch (error) {
       console.error("Error charging mailage:", error);
-      // 여기서 오류 처리
+      // 오류 처리
+      Alert.alert(
+        "충전 실패",
+        "마일리지 충전 중 오류가 발생했습니다.",
+        [
+          { text: "확인" }
+        ]
+      );
     }
   };
 
   return (
     <View style={styles.container}>
-      <Mailage user={user} mileage={currentMileage} />
+      <Mileage user={user} />
       <View style={styles.optionsContainer}>
         <OptionItem
           label="1,000p"

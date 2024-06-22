@@ -1,9 +1,9 @@
 import React from 'react';
-import {createDrawerNavigator, DrawerItemList} from '@react-navigation/drawer';
-import {colors} from '../styles/theme';
-import {View, StyleSheet, Text} from 'react-native';
-import {StackNavigator} from './StackNavigator';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import { createDrawerNavigator, DrawerItemList } from '@react-navigation/drawer';
+import { colors } from '../styles/theme';
+import { View, StyleSheet } from 'react-native';
+import { StackNavigator } from './StackNavigator';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Drawer = createDrawerNavigator();
 
@@ -53,26 +53,37 @@ const Drawernavigator = () => {
         <Drawer.Screen
           name="디지털기기"
           component={StackNavigator}
+          initialParams={{category: 'DIGITAL_DEVICE'}}
+          options={{headerShown: false}}
+        />
+        <Drawer.Screen
+          name="가구"
+          component={StackNavigator}
+          initialParams={{category: 'FURNITURE'}}
           options={{headerShown: false}}
         />
         <Drawer.Screen
           name="의류"
           component={StackNavigator}
+          initialParams={{category: 'CLOTHING'}}
           options={{headerShown: false}}
         />
         <Drawer.Screen
           name="식품"
           component={StackNavigator}
+          initialParams={{category: 'FOOD'}}
           options={{headerShown: false}}
         />
         <Drawer.Screen
           name="도서"
           component={StackNavigator}
+          initialParams={{category: 'BOOK'}}
           options={{headerShown: false}}
         />
         <Drawer.Screen
           name="기타"
           component={StackNavigator}
+          initialParams={{category: 'OTHER'}}
           options={{headerShown: false}}
         />
       </Drawer.Navigator>

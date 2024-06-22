@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useCallback} from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   Image,
   ImageBackground,
@@ -9,12 +9,12 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import ProductList from '../Components/ProductList';
-import {colors, icons} from '../styles/theme';
-import {buttonStyles} from '../styles/buttonStyles';
-import {API_URL} from '../globalVariables.js';
-import {getAccessToken} from '../token.js';
+import { colors, icons } from '../styles/theme';
+import { buttonStyles } from '../styles/buttonStyles';
+import { API_URL } from '../globalVariables.js';
+import { getAccessToken } from '../token.js';
 
-const Home = ({navigation}) => {
+const Home = ({ navigation, route }) => {
   const [products, setProducts] = useState([]);
   const [sortType, setSortType] = useState('LATEST'); // 기본값
   const [category, setCategory] = useState('');
@@ -23,45 +23,70 @@ const Home = ({navigation}) => {
   const [pageSize, setPageSize] = useState(20); // 기본값
   const [hasNext, setHasNext] = useState(true);
 
-  const fetchData = useCallback(
-    async (reset = false) => {
-      if (!hasNext && !reset) return;
+  // 기본 상품 리스트를 불러오는 함수
+  const fetchDefaultProducts = useCallback(async () => {
+    try {
+      const accessToken = await getAccessToken(); // 액세스 토큰 가져오기
+      const params = {
+        sortType,
+        searchWord,
+        pageSize,
+      };
 
-      try {
-        const accessToken = await getAccessToken(); // 액세스 토큰 가져오기
-        const params = {
-          sortType,
-          category,
-          searchWord,
-          pageSize,
-        };
-        if (!reset && cursor) {
-          params.cursor = cursor;
-        }
+      const response = await axios.get(`${API_URL}/products`, {
+        headers: {
+          Authorization: `${accessToken}`,
+        },
+        params,
+      });
 
-        const response = await axios.get(`${API_URL}/products`, {
-          headers: {
-            Authorization: `${accessToken}`,
-          },
-          params,
-        });
+      setProducts(response.data.values);
+      setHasNext(response.data.hasNext);
+      setCursor(response.data.hasNext ? response.data.cursor : '');
+    } catch (error) {
+      console.error('기본 상품을 불러오는 중 에러 발생:', error);
+    }
+  }, [sortType, searchWord, pageSize]);
 
-        const newProducts = response.data.values;
-        setProducts(prevProducts =>
-          reset ? newProducts : [...prevProducts, ...newProducts],
-        );
-        setHasNext(response.data.hasNext);
-        setCursor(response.data.hasNext ? response.data.cursor : '');
-      } catch (error) {
-        console.error('상품을 불러오는 중 에러 발생:', error);
-      }
-    },
-    [sortType, category, searchWord, cursor, pageSize, hasNext],
-  );
+  // 카테고리 선택에 따라 상품 목록을 필터링하여 불러오는 함수
+  const fetchProductsByCategory = useCallback(async (selectedCategory) => {
+    try {
+      const accessToken = await getAccessToken(); // 액세스 토큰 가져오기
+      const params = {
+        sortType,
+        category: selectedCategory,
+        searchWord,
+        pageSize,
+      };
+
+      const response = await axios.get(`${API_URL}/products`, {
+        headers: {
+          Authorization: `${accessToken}`,
+        },
+        params,
+      });
+
+      setProducts(response.data.values);
+      setHasNext(response.data.hasNext);
+      setCursor(response.data.hasNext ? response.data.cursor : '');
+    } catch (error) {
+      console.error('카테고리 상품을 불러오는 중 에러 발생:', error);
+    }
+  }, [sortType, searchWord, pageSize]);
 
   useEffect(() => {
-    fetchData(true); // 첫 로드 시에는 reset으로 새로운 데이터를 불러옴
-  }, [sortType, category, searchWord, pageSize, fetchData]);
+    fetchDefaultProducts(); // 초기화면에 기본 상품 불러오기
+  }, [fetchDefaultProducts]);
+
+  useEffect(() => {
+    if (route && route.params && route.params.category) {
+      const selectedCategory = route.params.category;
+      setCategory(selectedCategory); // Drawernavigator에서 전달된 카테고리 설정
+      fetchProductsByCategory(selectedCategory); // 카테고리에 맞는 상품 리스트 불러오기
+    } else {
+      fetchDefaultProducts(); // 기본 상품 리스트를 다시 불러옴
+    }
+  }, [route, fetchDefaultProducts, fetchProductsByCategory]);
 
   const handleSearchPress = () => {
     navigation.navigate('Search');
@@ -79,13 +104,16 @@ const Home = ({navigation}) => {
     navigation.navigate('ProductWrite');
   };
 
-  const handleOptionPress = option => {
+  const handleOptionPress = (option) => {
     if (option === 'price') {
       setSortType(
-        sortType === 'LOWEST_PRICE' ? 'HIGHEST_PRICE' : 'LOWEST_PRICE',
+        sortType === "LOWEST_PRICE" ? "HIGHEST_PRICE" : "LOWEST_PRICE"
       );
     } else if (option === 'category') {
       handleCategoryPress();
+    } else if (option === 'latest') {
+      setSortType('LATEST');
+      fetchDefaultProducts(); // 최신순 정렬 시 기본 상품 리스트를 다시 불러옴
     }
   };
 
@@ -96,16 +124,18 @@ const Home = ({navigation}) => {
     >
       <View style={styles.container}>
         <View
-          style={[styles.buttonContainer, {justifyContent: 'space-between'}]}>
+          style={[styles.buttonContainer, { justifyContent: 'space-between' }]}
+        >
           <Image
             source={require('../../assets/logoWhite.png')}
             style={styles.logo}
             resizeMode="contain"
           />
-          <View style={{flexDirection: 'row'}}>
+          <View style={{ flexDirection: 'row' }}>
             <TouchableOpacity
               onPress={handleSearchPress}
-              style={buttonStyles.smallButton}>
+              style={buttonStyles.smallButton}
+            >
               <Image
                 source={icons.search}
                 style={buttonStyles.iconimage}
@@ -114,7 +144,8 @@ const Home = ({navigation}) => {
             </TouchableOpacity>
             <TouchableOpacity
               onPress={handleNotificationsPress}
-              style={buttonStyles.smallButton}>
+              style={buttonStyles.smallButton}
+            >
               <Image
                 source={icons.alarm}
                 style={buttonStyles.iconimage}
@@ -123,7 +154,8 @@ const Home = ({navigation}) => {
             </TouchableOpacity>
             <TouchableOpacity
               onPress={handleCategoryPress}
-              style={buttonStyles.smallButton}>
+              style={buttonStyles.smallButton}
+            >
               <Image
                 source={icons.category}
                 style={buttonStyles.iconimage}
@@ -136,15 +168,23 @@ const Home = ({navigation}) => {
         <View style={styles.optionButtonsContainer}>
           <TouchableOpacity
             onPress={() => handleOptionPress('price')}
-            style={styles.optionButton}>
+            style={styles.optionButton}
+          >
             <Text style={styles.optionButtonText}>
               {sortType === 'LOWEST_PRICE' ? '최고가' : '최저가'}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={handleCategoryPress}
-            style={styles.optionButton}>
+            onPress={() => handleOptionPress('category')}
+            style={styles.optionButton}
+          >
             <Text style={styles.optionButtonText}>카테고리</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => handleOptionPress('latest')}
+            style={styles.optionButton}
+          >
+            <Text style={styles.optionButtonText}>최신순</Text>
           </TouchableOpacity>
         </View>
 
@@ -152,7 +192,8 @@ const Home = ({navigation}) => {
 
         <TouchableOpacity
           onPress={handleProductWritePress}
-          style={styles.addButton}>
+          style={styles.addButton}
+        >
           <Text style={styles.addButtonText}>+</Text>
         </TouchableOpacity>
       </View>
