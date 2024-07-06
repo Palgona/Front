@@ -26,10 +26,9 @@ const ProductWrite = () => {
   const [imageFiles, setImageFiles] = useState([]);
   const [category, setCategory] = useState("Digital Devices");
   const [price, setPrice] = useState("");
-  const [startDate, setStartDate] = useState(null);
+  
   const [endDate, setEndDate] = useState(null);
-  const [isStartDatePickerVisible, setIsStartDatePickerVisible] =
-    useState(false);
+  
   const [isEndDatePickerVisible, setIsEndDatePickerVisible] = useState(false);
   const [endButtonText, setEndButtonText] = useState("종료 시간 설정");
 
@@ -74,7 +73,6 @@ const ProductWrite = () => {
       !description ||
       !category ||
       !price ||
-      !startDate ||
       !endDate
     ) {
       Alert.alert("내용을 모두 작성해주세요.");
@@ -110,7 +108,7 @@ const ProductWrite = () => {
 
       if (response.status === 200) {
         Alert.alert("제품이 성공적으로 등록되었습니다.");
-        // 등록 후 필요한 작업 수행 (예: 화면 전환 등)
+        navigation.navigate("Home");
       } else {
         throw new Error("Failed to submit product");
       }
@@ -118,12 +116,6 @@ const ProductWrite = () => {
       console.error("Error submitting product:", error);
       Alert.alert("제품 등록에 실패했습니다. 다시 시도해주세요.");
     }
-  };
-
-  const handleStartDatePicker = (date) => {
-    setStartDate(date);
-    setStartButtonText(date.toLocaleString("ko-KR"));
-    setIsStartDatePickerVisible(false);
   };
 
   const handleEndDatePicker = (date) => {

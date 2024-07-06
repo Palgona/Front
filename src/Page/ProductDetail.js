@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Dimensions,
   View,
@@ -166,11 +166,62 @@ const ProductDetail = ({ route, navigation }) => {
   };
 
   const handleChatPress = async () => {
-    // 채팅 버튼 처리 로직
+    try {
+      const accessToken = await getAccessToken();
+      const response = await axios.post(
+        `${API_URL}/chats`,
+        { visitorId: product.ownerId },
+        {
+          headers: {
+            Authorization: `${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.status === 200) {
+        const chatRoomId = response.data.chatRoomId;
+        navigation.navigate("ChatRoom", { chatRoomId });
+      } else {
+        Alert.alert("Error", "Failed to create or retrieve chat room.");
+      }
+    } catch (error) {
+      console.error("Error creating chat room:", error);
+      Alert.alert("Error", "An error occurred while creating the chat room.");
+    }
   };
 
-  const handleBidPress = () => {
-    // 참여하기 버튼 처리 로직
+  const handleBidPress = async () => {
+    try {
+      const accessToken = await getAccessToken();
+      const price = 1000;
+      if (!price) {
+        Alert.alert("Error", "Bid price cannot be empty.");
+        return;
+      }
+
+      const response = await axios.post(
+        `${API_URL}/biddings/attempt`,
+        {
+          productId: parseInt(productId),
+          price: parseFloat(price),
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        Alert.alert("Success", "Bid placed successfully!");
+        // Handle successful bid placement (e.g., navigate to another screen)
+      } else {
+        Alert.alert("Error", "Failed to place bid. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error placing bid:", error);
+      Alert.alert("Error", "Failed to place bid. Please try again.");
+    }
   };
 
   const handleEdit = () => {

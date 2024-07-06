@@ -19,7 +19,7 @@ const ChatRoom = ({ route, navigation }) => {
   const { roomId, user } = route.params;
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
-  const [partnerProfile, setPartnerProfile] = useState(user);
+  const [partnerProfile, setPartnerProfile] = useState(user || { profileImage: '', nickname: '' });
 
   useEffect(() => {
     fetchChatMessages();
