@@ -19,6 +19,7 @@
     "@react-navigation/drawer": "^6.6.15",
     "@react-navigation/native": "^6.1.10",
     "@react-navigation/stack": "^6.3.29",
+    "@stomp/stompjs": "^7.0.0",
     "axios": "^1.6.7",
     "faker": "^6.6.6",
     "jwt-decode": "^4.0.0",
@@ -35,6 +36,7 @@
     "react-native-screens": "^3.29.0",
     "react-native-swiper": "^1.6.0",
     "react-native-toast-message": "^2.2.0",
+    "sockjs-client": "^1.6.1",
     "styled-components": "^6.1.8"
   },
   "devDependencies": {

@@ -16,6 +16,7 @@ import MileageCharge from '../Page/MileageCharge';
 import List from '../Page/List';
 import Ask from '../Page/Ask';
 import Notifications from '../Page/Notifications';
+import Bookmark from '../Page/Bookmark';
 
 const Stack = createStackNavigator();
 
@@ -98,6 +99,13 @@ const StackNavigator = () => {
         component={MileageCharge}
         options={{
           title: '마일리지 충전',
+        }}
+      />
+      <Stack.Screen
+        name="Bookmark"
+        component={Bookmark}
+        options={{
+          title: '북마크',
         }}
       />
       <Stack.Screen name="Ask" component={Ask} options={{title: '문의사항'}} />

@@ -38,8 +38,9 @@ const Home = ({ navigation, route }) => {
           Authorization: `${accessToken}`,
         },
         params,
+        
       });
-
+      console.log(accessToken);
       setProducts(response.data.values);
       setHasNext(response.data.hasNext);
       setCursor(response.data.hasNext ? response.data.cursor : '');

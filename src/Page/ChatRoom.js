@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   View,
   Text,
@@ -12,32 +12,106 @@ import {
 import axios from "axios";
 import { launchImageLibrary } from "react-native-image-picker";
 import { colors, icons } from "../styles/theme.js";
-import { API_URL } from "../globalVariables.js";
+import { API_URL, API_URL_WS} from "../globalVariables.js";
 import { getAccessToken } from "../token.js";
+import { Client } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
 
 const ChatRoom = ({ route, navigation }) => {
-  const { roomId, user } = route.params;
+  const { chatRoomId, user } = route.params;
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
   const [partnerProfile, setPartnerProfile] = useState(user || { profileImage: '', nickname: '' });
 
+  const client = useRef(null);
+  console.log("채팅룸 아이디", chatRoomId);
   useEffect(() => {
     fetchChatMessages();
+    connectWebSocket();
+
+    return () => {
+      if (client.current) {
+        client.current.deactivate();
+      }
+    };
   }, []);
 
   const fetchChatMessages = async () => {
+    const accessToken = await getAccessToken();
     try {
-      const response = await axios.get(`${API_URL}/chats/${roomId}`);
-      setMessages(response.data.messages);
+      const response = await axios.get(`${API_URL}/chats/${chatRoomId}`, {
+        headers: {
+          Authorization: `${accessToken}`,
+        },
+      });
+      const formattedMessages = response.data.map((msg) => ({
+        id: msg.id,
+        sender: msg.senderId === user.id ? "me" : "other",
+        text: msg.chatType === "TEXT" ? msg.message : null,
+        image: msg.chatType === "IMAGE" ? msg.message : null,
+        timestamp: msg.createdAt,
+      }));
+      setMessages(formattedMessages);
     } catch (error) {
       console.error("Error fetching chat messages:", error);
     }
   };
 
+  const connectWebSocket = async () => {
+    const accessToken = await getAccessToken();
+
+    client.current = new Client({
+      webSocketFactory: () => new SockJS(`${API_URL_WS}/ws`),
+      connectHeaders: {
+        Authorization: `${accessToken}`,
+      },
+      onConnect: () => {
+        console.log("Connected to WebSocket");
+        client.current.subscribe(`/sub/chatroom/${roomId}`, (message) => {
+          const receivedMessage = JSON.parse(message.body);
+          const formattedMessage = {
+            id: receivedMessage.id,
+            sender: receivedMessage.senderId === user.id ? "me" : "other",
+            text: receivedMessage.chatType === "TEXT" ? receivedMessage.message : null,
+            image: receivedMessage.chatType === "IMAGE" ? receivedMessage.message : null,
+            timestamp: receivedMessage.createdAt,
+          };
+          setMessages((prevMessages) => [formattedMessage, ...prevMessages]);
+        });
+      },
+      onDisconnect: () => {
+        console.log("Disconnected from WebSocket");
+      },
+      onStompError: (error) => {
+        console.error("STOMP error:", error);
+      },
+    });
+
+    client.current.activate();
+  };
+
   const handleSend = () => {
     if (text.trim() !== "") {
-      sendMessageToServer(text);
-      setMessages([{ id: Date.now(), text, sender: "me" }, ...messages]);
+      const message = {
+        text,
+        sender: "me",
+        timestamp: Date.now(),
+      };
+
+      if (client.current) {
+        client.current.publish({
+          destination: `/app/chats/${roomId}`,
+          body: JSON.stringify({
+            message: text,
+            senderId: user.id,
+            receiverId: partnerProfile.id,
+            roomId: roomId,
+            chatType: "TEXT",
+          }),
+        });
+      }
+
+      setMessages([message, ...messages]);
       setText("");
     }
   };
@@ -62,10 +136,6 @@ const ChatRoom = ({ route, navigation }) => {
     );
   };
 
-  const sendMessageToServer = (message) => {
-    // send message to server logic
-  };
-
   const sendImageToServer = async (uri) => {
     try {
       const formData = new FormData();
@@ -74,16 +144,18 @@ const ChatRoom = ({ route, navigation }) => {
         type: "image/jpeg",
         name: "chatImage.jpg",
       });
+      const accessToken = await getAccessToken();
       const response = await axios.post(
         `${API_URL}/chats/${roomId}/image`,
         formData,
         {
           headers: {
             "Content-Type": "multipart/form-data",
+            Authorization: `${accessToken}`,
           },
         }
       );
-      if (!response.ok) {
+      if (!response.data.ok) {
         throw new Error("Failed to upload image");
       }
     } catch (error) {
@@ -142,7 +214,7 @@ const ChatRoom = ({ route, navigation }) => {
                   method: "POST",
                   headers: {
                     "Content-Type": "application/json",
-                    accessToken: accessToken,
+                    Authorization: `${accessToken}`,
                   },
                 }
               );

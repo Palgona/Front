@@ -7,18 +7,18 @@ import ProductList from "../Components/ProductList";
 import { getAccessToken } from "../token.js";
 
 const Bookmark = () => {
-  const navigation = useNavigation();
   const [bookmarkList, setBookmarkList] = useState([]);
-
+  
   useEffect(() => {
     fetchBookmarkList();
   }, []);
 
   const fetchBookmarkList = async () => {
+    const accessToken = await getAccessToken();
     try {
       const response = await axios.get(`${API_URL}/bookmarks`, {
         "Content-Type": "application/json",
-        Authorization: "BEARER " + getAccessToken,
+        Authorization: `${accessToken}`,
       });
       setBookmarkList(response.data);
     } catch (error) {
@@ -28,19 +28,10 @@ const Bookmark = () => {
 
   return (
     <View style={styles.container}>
-      {/* 페이지 상단에 장바구니 텍스트 표시 */}
-      <Text style={styles.title}>장바구니</Text>
 
       {/* 상품 리스트를 보여주는 ProductList 컴포넌트 */}
       <ProductList products={bookmarkList} />
 
-      {/* 뒤로가기 버튼 */}
-      <TouchableOpacity
-        onPress={() => navigation.goBack()}
-        style={styles.backButton}
-      >
-        <Text style={styles.backButtonText}>{"< 뒤로가기"}</Text>
-      </TouchableOpacity>
     </View>
   );
 };

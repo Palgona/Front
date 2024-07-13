@@ -69,6 +69,7 @@ const styles = StyleSheet.create({
   },
   productItem: {
     flexDirection: 'row',
+    backgroundColor: 'rgba(128, 128, 128, 0.05)',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 10,

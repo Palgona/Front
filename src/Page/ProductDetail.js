@@ -179,7 +179,7 @@ const ProductDetail = ({ route, navigation }) => {
         }
       );
       if (response.status === 200) {
-        const chatRoomId = response.data.chatRoomId;
+        const chatRoomId = response.data.id;
         navigation.navigate("ChatRoom", { chatRoomId });
       } else {
         Alert.alert("Error", "Failed to create or retrieve chat room.");
@@ -208,7 +208,7 @@ const ProductDetail = ({ route, navigation }) => {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
+            Authorization: `${accessToken}`,
           },
         }
       );
@@ -351,16 +351,18 @@ const ProductDetail = ({ route, navigation }) => {
       </ScrollView>
 
       {/* 하단 버튼 */}
-      <View style={styles.buttonContainer}>
-        {/* 채팅하기 버튼 */}
-        <TouchableOpacity style={styles.Button} onPress={handleChatPress}>
-          <Text style={styles.buttonText}>채팅하기</Text>
-        </TouchableOpacity>
-        {/* 참여하기 버튼 */}
-        <TouchableOpacity style={styles.Button} onPress={handleBidPress}>
-          <Text style={styles.buttonText}>참여하기</Text>
-        </TouchableOpacity>
-      </View>
+      {currentUserId !== product.ownerId && (
+        <View style={styles.buttonContainer}>
+          {/* 채팅하기 버튼 */}
+          <TouchableOpacity style={styles.Button} onPress={handleChatPress}>
+            <Text style={styles.buttonText}>채팅하기</Text>
+          </TouchableOpacity>
+          {/* 참여하기 버튼 */}
+          <TouchableOpacity style={styles.Button} onPress={handleBidPress}>
+            <Text style={styles.buttonText}>참여하기</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       {/* 모달 */}
       {modalVisible && (
@@ -419,12 +421,15 @@ const styles = StyleSheet.create({
   nameAndUser: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: "flex-start", // Align items at the start to prevent overlapping
   },
   productName: {
     fontSize: 24,
     fontWeight: "bold",
     color: colors.darkGray,
+    flex: 1,
+    flexWrap: "wrap", // Enable wrapping for long product names
+    marginRight: 10,
   },
   userInfo: {
     flexDirection: "row",

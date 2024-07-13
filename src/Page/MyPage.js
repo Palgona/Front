@@ -58,6 +58,10 @@ const MyPage = ({ navigation }) => {
     Linking.openSettings();
   };
 
+  const handleBookMark = () => {
+    navigation.navigate("Bookmark");
+  }
+
   const handleLogout = async () => {
     try {
       const accessToken = await getAccessToken();
@@ -100,7 +104,7 @@ const MyPage = ({ navigation }) => {
         <Text>My</Text>
         <TouchableOpacity
           style={styles.functionItem}
-          onPress={() => handleList("bookmark")}
+          onPress={handleBookMark}
         >
           <Text style={styles.functionText}>장바구니</Text>
         </TouchableOpacity>
