@@ -17,6 +17,7 @@ import List from '../Page/List';
 import Ask from '../Page/Ask';
 import Notifications from '../Page/Notifications';
 import Bookmark from '../Page/Bookmark';
+import Bidding from '../Page/Bidding';
 
 const Stack = createStackNavigator();
 
@@ -87,6 +88,13 @@ const StackNavigator = () => {
         component={ChatRoom}
         options={{headerShown: false}}
       />
+      <Stack.Screen
+        name="Bidding"
+        component={Bidding}
+        options={{
+          title: '상품 경매',
+        }}
+        />
       <Stack.Screen
         name="ProfileEdit"
         component={ProfileEdit}

@@ -61,13 +61,16 @@ const ChatRoom = ({ route, navigation }) => {
   const connectWebSocket = async () => {
     const accessToken = await getAccessToken();
     const token = accessToken.replace("Bearer ", "");
+    
     client.current = new Client({
       webSocketFactory: () => new SockJS(`${API_URL_WS}/ws`),
       connectHeaders: {
         Authorization: `${token}`,
+        
       },
       onConnect: () => {
         console.log("Connected to WebSocket");
+        console.log("token" + token);
         client.current.subscribe(`/sub/chatroom/${roomId}`, (message) => {
           const receivedMessage = JSON.parse(message.body);
           const formattedMessage = {
@@ -84,7 +87,9 @@ const ChatRoom = ({ route, navigation }) => {
         console.log("Disconnected from WebSocket");
       },
       onStompError: (error) => {
+        console.log("token" + token);
         console.error("STOMP error:", error);
+        
       },
     });
 
@@ -92,32 +97,37 @@ const ChatRoom = ({ route, navigation }) => {
   };
 
   const handleSend = () => {
+    if (!client.current || !client.current.connected) {
+      console.error("STOMP client is not connected. Cannot send message.");
+      Alert.alert("Error", "메시지를 보낼 수 없습니다. 연결 상태를 확인하세요.");
+      return;
+    }
+  
     if (text.trim() !== "") {
       const message = {
         text,
         sender: "me",
         timestamp: Date.now(),
       };
-
-      if (client.current && client.current.connected) {
-        client.current.publish({
-          destination: `/app/chats/${roomId}`,
-          body: JSON.stringify({
-            message: text,
-            senderId: user.id,
-            receiverId: partnerProfile.id,
-            roomId: roomId,
-            chatType: "TEXT",
-          }),
-        });
-      } else {
-        console.error("STOMP client is not connected");
-      }
-
+  
+      // WebSocket이 연결된 경우 메시지 전송
+      client.current.publish({
+        destination: `/app/chats/${roomId}`,
+        body: JSON.stringify({
+          message: text,
+          senderId: user.id,
+          receiverId: partnerProfile.id,
+          roomId: roomId,
+          chatType: "TEXT",
+        }),
+      });
+  
+      // 메시지를 로컬 상태에 추가
       setMessages([message, ...messages]);
       setText("");
     }
   };
+  
 
   const handleImageSend = () => {
     launchImageLibrary(
