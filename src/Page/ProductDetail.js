@@ -73,6 +73,7 @@ const ProductDetail = ({ route, navigation }) => {
       const productData = {
         productId: data.productId,
         productName: data.productName,
+        chatroomCount: data.chatroomCount,
         content: data.content,
         category: data.category,
         productState: data.productState,
@@ -179,8 +180,8 @@ const ProductDetail = ({ route, navigation }) => {
         }
       );
       if (response.status === 200) {
-        const chatRoomId = response.data.id;
-        navigation.navigate("ChatRoom", { chatRoomId });
+        const roomId = response.data.id;
+        navigation.navigate("ChatRoom", { roomId });
       } else {
         Alert.alert("Error", "Failed to create or retrieve chat room.");
       }
@@ -214,7 +215,6 @@ const ProductDetail = ({ route, navigation }) => {
       );
       if (response.status === 200) {
         Alert.alert("Success", "Bid placed successfully!");
-        // Handle successful bid placement (e.g., navigate to another screen)
       } else {
         Alert.alert("Error", "Failed to place bid. Please try again.");
       }
@@ -242,6 +242,25 @@ const ProductDetail = ({ route, navigation }) => {
   const handleShare = () => {
     setPopoverVisible(false);
     // 공유하기 기능 구현
+  };
+
+  const getCategoryName = (category) => {
+    switch (category) {
+      case 'OTHER':
+        return '기타';
+      case 'BOOK':
+        return '도서';
+      case 'FOOD':
+        return '식품';
+      case 'CLOTHING':
+        return '의류';
+      case 'FURNITURE':
+        return '가구';
+      case 'DIGITAL_DEVICE':
+        return '디지털 기기';
+      default:
+        return category; // 기본적으로 원래 값을 반환
+    }
   };
 
   let popoverContent;
@@ -308,6 +327,7 @@ const ProductDetail = ({ route, navigation }) => {
           </Swiper>
           <View style={styles.productInfo}>
             {/* 상품 이름 및 판매자 정보 */}
+            <Text>{getCategoryName(product.category)}</Text>
             <View style={styles.nameAndUser}>
               <Text style={styles.productName}>{product.productName}</Text>
               <TouchableOpacity
@@ -330,7 +350,7 @@ const ProductDetail = ({ route, navigation }) => {
               <View style={styles.chatAndLike}>
                 <TouchableOpacity style={styles.iconContainer}>
                   <Image source={icons.chat} style={styles.icon} />
-                  <Text style={styles.iconText}>{product.chatCount}</Text>
+                  <Text style={styles.iconText}>{product.chatroomCount}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={handleLikePress}
@@ -421,14 +441,14 @@ const styles = StyleSheet.create({
   nameAndUser: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "flex-start", // Align items at the start to prevent overlapping
+    alignItems: "flex-start", 
   },
   productName: {
     fontSize: 24,
     fontWeight: "bold",
     color: colors.darkGray,
     flex: 1,
-    flexWrap: "wrap", // Enable wrapping for long product names
+    flexWrap: "wrap", 
     marginRight: 10,
   },
   userInfo: {

@@ -40,7 +40,7 @@ const ProductList = ({products}) => {
         <View style={styles.chatAndLike}>
           <View style={styles.iconTextContainer}>
             <Image source={icons.chat} style={styles.icon} />
-            <Text style={styles.chatAndLikeText}>{item.chatCount}</Text>
+            <Text style={styles.chatAndLikeText}>{item.chatroomCount}</Text>
           </View>
           <View style={styles.iconTextContainer}>
             <Image source={icons.heart} style={styles.icon} />

@@ -12,19 +12,19 @@ import {
 import axios from "axios";
 import { launchImageLibrary } from "react-native-image-picker";
 import { colors, icons } from "../styles/theme.js";
-import { API_URL, API_URL_WS} from "../globalVariables.js";
+import { API_URL, API_URL_WS } from "../globalVariables.js";
 import { getAccessToken } from "../token.js";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 
 const ChatRoom = ({ route, navigation }) => {
-  const { chatRoomId, user } = route.params;
+  const { roomId, user } = route.params;
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
   const [partnerProfile, setPartnerProfile] = useState(user || { profileImage: '', nickname: '' });
 
   const client = useRef(null);
-  console.log("채팅룸 아이디", chatRoomId);
+
   useEffect(() => {
     fetchChatMessages();
     connectWebSocket();
@@ -38,10 +38,11 @@ const ChatRoom = ({ route, navigation }) => {
 
   const fetchChatMessages = async () => {
     const accessToken = await getAccessToken();
+    const token = accessToken.replace("Bearer ", "");
     try {
-      const response = await axios.get(`${API_URL}/chats/${chatRoomId}`, {
+      const response = await axios.get(`${API_URL}/chats/${roomId}`, {
         headers: {
-          Authorization: `${accessToken}`,
+          Authorization: `${token}`,
         },
       });
       const formattedMessages = response.data.map((msg) => ({
@@ -59,11 +60,11 @@ const ChatRoom = ({ route, navigation }) => {
 
   const connectWebSocket = async () => {
     const accessToken = await getAccessToken();
-
+    const token = accessToken.replace("Bearer ", "");
     client.current = new Client({
       webSocketFactory: () => new SockJS(`${API_URL_WS}/ws`),
       connectHeaders: {
-        Authorization: `${accessToken}`,
+        Authorization: `${token}`,
       },
       onConnect: () => {
         console.log("Connected to WebSocket");
@@ -98,7 +99,7 @@ const ChatRoom = ({ route, navigation }) => {
         timestamp: Date.now(),
       };
 
-      if (client.current) {
+      if (client.current && client.current.connected) {
         client.current.publish({
           destination: `/app/chats/${roomId}`,
           body: JSON.stringify({
@@ -109,6 +110,8 @@ const ChatRoom = ({ route, navigation }) => {
             chatType: "TEXT",
           }),
         });
+      } else {
+        console.error("STOMP client is not connected");
       }
 
       setMessages([message, ...messages]);
@@ -145,13 +148,14 @@ const ChatRoom = ({ route, navigation }) => {
         name: "chatImage.jpg",
       });
       const accessToken = await getAccessToken();
+      const token = accessToken.replace("Bearer ", "");
       const response = await axios.post(
         `${API_URL}/chats/${roomId}/image`,
         formData,
         {
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: `${accessToken}`,
+            Authorization: `${token}`,
           },
         }
       );
@@ -256,7 +260,7 @@ const ChatRoom = ({ route, navigation }) => {
       <FlatList
         data={messages}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => (item.id ? item.id.toString() : Math.random().toString())}
         inverted
       />
       <View style={styles.inputContainer}>
